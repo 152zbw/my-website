@@ -1,0 +1,40 @@
+{
+  "name": "consulting-company-backend",
+  "version": "1.0.0",
+  "description": "咨询公司官网后端服务",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start:pm2": "pm2 start app.js --name consulting-company",
+    "stop:pm2": "pm2 stop consulting-company",
+    "restart:pm2": "pm2 restart consulting-company",
+    "logs:pm2": "pm2 logs consulting-company",
+    "status:pm2": "pm2 status consulting-company",
+    "init-db": "DB_DIALECT=sqlite node init-db.js",
+    "postinstall": "echo 'Dependencies installed. Run npm run init-db to initialize database.'"
+  },
+  "keywords": [
+    "consulting",
+    "backend",
+    "api"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^1.4.5-lts.1",
+    "mysql2": "^3.16.0",
+    "sequelize": "^6.35.2",
+    "sqlite3": "^5.1.7"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  }
+}

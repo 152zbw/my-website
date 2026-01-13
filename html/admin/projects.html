@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>成功案例管理 - 后台管理系统</title>
+    <!-- 只使用本地资源，避免外网CDN加载过慢 -->
+    <script src="../js/api.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #354879 0%, #28334f 100%);
+            color: #fff;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-menu li {
+            margin: 0;
+        }
+
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: #fff;
+            color: #fff;
+        }
+
+        .nav-menu a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-left-color: #fff;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .nav-menu a i {
+            margin-right: 15px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .content {
+            margin-left: 280px;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .top-nav {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            margin-right: 20px;
+            color: #333;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #354879;
+        }
+
+        .top-nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #354879;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background-color: #dc0000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background-color: #b71c1c;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .content-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .content-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #354879;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+        }
+
+        .btn-primary {
+            background-color: #354879;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #28334f;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .btn-danger {
+            background-color: #e74c3c;
+            color: #fff;
+        }
+
+        .btn-danger:hover {
+            background-color: #c0392b;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ecf0f1;
+        }
+
+        .data-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #354879;
+        }
+
+        .data-table tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .data-table img {
+            max-width: 80px;
+            max-height: 60px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 25px;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 700px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #354879;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #354879;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .image-preview {
+            margin-top: 10px;
+            max-width: 200px;
+            max-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .message {
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1002;
+            min-width: 250px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        #projectContent {
+            min-height: 200px;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>后台管理</h3>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="dashboard-new.html"><i class="fas fa-tachometer-alt"></i>仪表盘</a></li>
+                <li><a href="website-info.html"><i class="fas fa-info-circle"></i>网站信息</a></li>
+                <li><a href="navigation.html"><i class="fas fa-bars"></i>导航管理</a></li>
+                <li><a href="services.html"><i class="fas fa-concierge-bell"></i>服务项目</a></li>
+                <li><a href="projects.html" class="active"><i class="fas fa-briefcase"></i>成功案例</a></li>
+                <li><a href="news.html"><i class="fas fa-newspaper"></i>博客/新闻</a></li>
+                <li><a href="testimonials.html"><i class="fas fa-comments"></i>客户评价</a></li>
+                <li><a href="partners.html"><i class="fas fa-handshake"></i>合作伙伴</a></li>
+                <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
+                <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
+                <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
+                <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <header class="top-nav">
+                <div class="top-nav-left">
+                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                    <h2 class="page-title">成功案例管理</h2>
+                </div>
+                <div class="top-nav-right">
+                    <div class="user-info">
+                        <div class="user-avatar">A</div>
+                        <span>admin</span>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">退出登录</button>
+                </div>
+            </header>
+
+            <div class="main-content">
+                <div class="content-header">
+                    <h3 class="content-title">成功案例列表</h3>
+                        <button class="btn btn-primary" onclick="addProject()">
+                            <i class="fas fa-plus"></i> 添加成功案例
+                        </button>
+                </div>
+
+                <div class="card">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>标题</th>
+                                    <th>分类</th>
+                                    <th>图片</th>
+                                <th>客户</th>
+                                    <th>排序</th>
+                                    <th>状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="projectsTableBody"></tbody>
+                        </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="projectModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">添加成功案例</h3>
+                <span class="close">&times;</span>
+            </div>
+            <form id="projectForm">
+                <input type="hidden" id="projectId">
+                <div class="form-group">
+                    <label for="projectTitle" class="form-label">标题</label>
+                    <input type="text" id="projectTitle" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="projectCategory" class="form-label">分类</label>
+                    <input type="text" id="projectCategory" class="form-input" placeholder="例如：战略咨询">
+                </div>
+                <div class="form-group">
+                    <label for="projectImage" class="form-label">图片URL</label>
+                    <input type="text" id="projectImage" class="form-input" placeholder="例如：images/project1.jpg">
+                    <div class="image-preview" id="imagePreview" style="display:none;">
+                        <img id="previewImg" src="" alt="预览">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="projectClient" class="form-label">客户名称</label>
+                    <input type="text" id="projectClient" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="projectDescription" class="form-label">描述</label>
+                    <textarea id="projectDescription" class="form-textarea"></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="projectContent" class="form-label">详细内容</label>
+                    <div id="projectContent"></div>
+                </div>
+                <div class="form-group">
+                    <label for="projectSortOrder" class="form-label">排序</label>
+                    <input type="number" id="projectSortOrder" class="form-input" min="1" value="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">状态</label>
+                    <div style="display: flex; gap: 20px;">
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" id="projectActive" name="projectStatus" value="1" checked>
+                            <span style="margin-left: 5px;">激活</span>
+                        </label>
+                        <label style="display: flex; align-items: center;">
+                            <input type="radio" id="projectInactive" name="projectStatus" value="0">
+                            <span style="margin-left: 5px;">未激活</span>
+                        </label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>确认删除</h3>
+                <span class="close">&times;</span>
+            </div>
+            <p>确定要删除这个成功案例吗？此操作不可恢复。</p>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">取消</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let projectToDelete = null;
+
+        document.addEventListener('DOMContentLoaded', async function () {
+            const user = localStorage.getItem('adminUser');
+            const token = localStorage.getItem('adminToken');
+            if (!user || !token) {
+                window.location.href = 'index.html';
+                return;
+            }
+            initMenuToggle();
+            initModalEvents();
+            await loadProjects();
+            
+            // 图片预览
+            document.getElementById('projectImage').addEventListener('input', function() {
+                const url = this.value.trim();
+            const preview = document.getElementById('imagePreview');
+                const img = document.getElementById('previewImg');
+                if (url) {
+                    img.src = url;
+                    preview.style.display = 'block';
+            } else {
+                    preview.style.display = 'none';
+                }
+            });
+        });
+
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('adminUser');
+                localStorage.removeItem('adminToken');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function initMenuToggle() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+            });
+        }
+
+        async function loadProjects() {
+            const tableBody = document.getElementById('projectsTableBody');
+            tableBody.innerHTML = '<tr><td colspan="8">加载中...</td></tr>';
+            try {
+                const projects = await window.API.Projects.getAll();
+                renderProjectsTable(projects || []);
+            } catch (error) {
+                console.error('加载案例列表失败:', error);
+                tableBody.innerHTML = '<tr><td colspan="8">加载失败，请稍后重试</td></tr>';
+            }
+        }
+
+        function renderProjectsTable(projects) {
+            const tableBody = document.getElementById('projectsTableBody');
+            tableBody.innerHTML = '';
+            if (!projects || projects.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8">暂无成功案例</td></tr>';
+                return;
+            }
+            projects.forEach(project => {
+                const tr = document.createElement('tr');
+                const imageUrl = project.image || '';
+                tr.innerHTML = `
+                    <td>${project.id}</td>
+                    <td>${project.title || ''}</td>
+                    <td>${project.category || ''}</td>
+                    <td>${imageUrl ? `<img src="${imageUrl}" alt="${project.title}" onerror="this.style.display='none'">` : '-'}</td>
+                    <td>${project.client || ''}</td>
+                    <td>${project.sortOrder ?? project.sort_order ?? ''}</td>
+                    <td>${project.isActive ?? project.is_active ? '激活' : '未激活'}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="editProject(${project.id})">
+                            <i class="fas fa-edit"></i> 编辑
+                        </button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteProject(${project.id})">
+                            <i class="fas fa-trash"></i> 删除
+                        </button>
+                    </td>
+                `;
+                tableBody.appendChild(tr);
+            });
+        }
+
+        function initModalEvents() {
+            const modal = document.getElementById('projectModal');
+            const closeBtn = document.querySelector('#projectModal .close');
+            const deleteModal = document.getElementById('deleteModal');
+            const deleteCloseBtn = document.querySelector('#deleteModal .close');
+
+            closeBtn.onclick = function () { modal.style.display = 'none'; };
+            deleteCloseBtn.onclick = function () { deleteModal.style.display = 'none'; };
+            window.onclick = function (event) {
+                if (event.target == modal) modal.style.display = 'none';
+                if (event.target == deleteModal) deleteModal.style.display = 'none';
+            };
+
+            document.getElementById('projectForm').onsubmit = function (e) {
+                e.preventDefault();
+                saveProject();
+            };
+        }
+
+        function addProject() {
+            const modal = document.getElementById('projectModal');
+            const modalTitle = document.getElementById('modalTitle');
+            const form = document.getElementById('projectForm');
+            form.reset();
+            document.getElementById('projectId').value = '';
+            document.getElementById('projectActive').checked = true;
+            document.getElementById('imagePreview').style.display = 'none';
+            modalTitle.textContent = '添加成功案例';
+            modal.style.display = 'block';
+            document.getElementById('projectContent').value = '';
+        }
+
+        async function editProject(id) {
+            const modal = document.getElementById('projectModal');
+            const modalTitle = document.getElementById('modalTitle');
+            try {
+                const project = await window.API.Projects.get(id);
+                if (!project) return alert('未找到该案例');
+                document.getElementById('projectId').value = project.id;
+                document.getElementById('projectTitle').value = project.title || '';
+                document.getElementById('projectCategory').value = project.category || '';
+                document.getElementById('projectImage').value = project.image || '';
+                document.getElementById('projectClient').value = project.client || '';
+                document.getElementById('projectDescription').value = project.description || '';
+                document.getElementById('projectSortOrder').value = project.sortOrder ?? project.sort_order ?? 0;
+                document.getElementById('projectActive').checked = project.isActive ?? project.is_active ? true : false;
+                document.getElementById('projectInactive').checked = !(project.isActive ?? project.is_active);
+                
+                const preview = document.getElementById('imagePreview');
+                const img = document.getElementById('previewImg');
+                if (project.image) {
+                    img.src = project.image;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
+                }
+
+                modalTitle.textContent = '编辑成功案例';
+                modal.style.display = 'block';
+                document.getElementById('projectContent').value = project.content || '';
+            } catch (err) {
+                console.error('加载案例详情失败:', err);
+                alert('加载案例详情失败');
+            }
+        }
+
+        async function saveProject() {
+            const id = document.getElementById('projectId').value;
+            const title = document.getElementById('projectTitle').value.trim();
+            const category = document.getElementById('projectCategory').value.trim();
+            const image = document.getElementById('projectImage').value.trim();
+            const client = document.getElementById('projectClient').value.trim();
+            const description = document.getElementById('projectDescription').value.trim();
+            const content = document.getElementById('projectContent').value.trim();
+            const sortOrder = parseInt(document.getElementById('projectSortOrder').value || '0', 10);
+            const isActive = document.getElementById('projectActive').checked ? 1 : 0;
+
+            if (!title) {
+                showMessage('请填写案例标题', 'error');
+                return;
+            }
+
+            const payload = { title, category, image, client, description, content, sortOrder, isActive };
+
+            try {
+            if (id) {
+                    await window.API.Projects.update(id, payload);
+                    showMessage('案例编辑成功', 'success');
+            } else {
+                    await window.API.Projects.create(payload);
+                    showMessage('案例添加成功', 'success');
+                }
+            document.getElementById('projectModal').style.display = 'none';
+                await loadProjects();
+            } catch (err) {
+                console.error('保存案例失败:', err);
+                showMessage('保存失败，请稍后重试', 'error');
+        }
+        }
+
+        function deleteProject(id) {
+            projectToDelete = id;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+                projectToDelete = null;
+        }
+
+        async function confirmDelete() {
+            if (!projectToDelete) return;
+            try {
+                await window.API.Projects.delete(projectToDelete);
+                showMessage('删除成功', 'success');
+                document.getElementById('deleteModal').style.display = 'none';
+                projectToDelete = null;
+                await loadProjects();
+            } catch (err) {
+                console.error('删除案例失败:', err);
+                showMessage('删除失败，请稍后重试', 'error');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('projectModal').style.display = 'none';
+        }
+
+        function showMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            document.body.appendChild(messageDiv);
+            setTimeout(() => { messageDiv.remove(); }, 3000);
+        }
+    </script>
+</body>
+
+</html>

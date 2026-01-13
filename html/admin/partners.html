@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>合作伙伴管理 - 后台管理系统</title>
+    <script src="../js/api.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:#f5f7fa;color:#333;line-height:1.6;}
+        .main-container{display:flex;min-height:100vh;}
+        .sidebar{width:280px;background:linear-gradient(180deg,#354879 0%,#28334f 100%);color:#fff;padding:20px 0;box-shadow:2px 0 10px rgba(0,0,0,0.1);position:fixed;height:100vh;overflow-y:auto;z-index:1000;}
+        .sidebar-header{text-align:center;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:20px;}
+        .sidebar-header h3{font-size:24px;font-weight:600;margin:0;}
+        .nav-menu{list-style:none;padding:0;}
+        .nav-menu li{margin:0;}
+        .nav-menu a{display:flex;align-items:center;padding:15px 20px;color:rgba(255,255,255,0.9);text-decoration:none;transition:all 0.3s ease;border-left:3px solid transparent;}
+        .nav-menu a:hover{background:rgba(255,255,255,0.1);border-left-color:#fff;color:#fff;}
+        .nav-menu a.active{background:rgba(255,255,255,0.15);border-left-color:#fff;color:#fff;font-weight:500;}
+        .nav-menu a i{margin-right:15px;font-size:18px;width:20px;text-align:center;}
+        .content{margin-left:280px;flex:1;transition:all 0.3s ease;}
+        .top-nav{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:15px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:999;}
+        .top-nav-left{display:flex;align-items:center;}
+        .menu-toggle{background:none;border:none;font-size:20px;cursor:pointer;margin-right:20px;color:#333;}
+        .page-title{font-size:20px;font-weight:600;color:#354879;}
+        .top-nav-right{display:flex;align-items:center;}
+        .user-info{display:flex;align-items:center;margin-right:20px;}
+        .user-avatar{width:40px;height:40px;border-radius:50%;background:#354879;color:#fff;display:flex;align-items:center;justify-content:center;margin-right:10px;font-weight:600;}
+        .logout-btn{background:#dc0000;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;transition:background-color 0.3s ease;font-weight:500;}
+        .logout-btn:hover{background:#b71c1c;}
+        .main-content{padding:20px;}
+        .content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+        .content-title{font-size:24px;font-weight:600;color:#354879;}
+        .btn{display:inline-block;padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:500;transition:all 0.3s ease;text-decoration:none;}
+        .btn-primary{background:#354879;color:#fff;}
+        .btn-primary:hover{background:#28334f;}
+        .btn-secondary{background:#95a5a6;color:#fff;}
+        .btn-secondary:hover{background:#7f8c8d;}
+        .btn-danger{background:#e74c3c;color:#fff;}
+        .btn-danger:hover{background:#c0392b;}
+        .btn-sm{padding:6px 12px;font-size:12px;}
+        .card{background:#fff;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:25px;margin-bottom:20px;}
+        .data-table{width:100%;border-collapse:collapse;margin-top:20px;}
+        .data-table th,.data-table td{padding:12px;text-align:left;border-bottom:1px solid #ecf0f1;}
+        .data-table th{background:#f8f9fa;font-weight:600;color:#354879;}
+        .data-table tr:hover{background:#f5f5f5;}
+        .logo-img{width:80px;height:50px;object-fit:contain;}
+        .modal{display:none;position:fixed;z-index:1001;left:0;top:0;width:100%;height:100%;overflow:auto;background:rgba(0,0,0,0.5);}
+        .modal-content{background:#fff;margin:5% auto;padding:25px;border-radius:8px;width:90%;max-width:520px;box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+        .modal-title{font-size:18px;font-weight:600;color:#354879;}
+        .close{color:#aaa;font-size:28px;font-weight:bold;cursor:pointer;}
+        .close:hover{color:#333;}
+        .form-group{margin-bottom:15px;}
+        .form-label{display:block;margin-bottom:5px;font-weight:600;color:#354879;}
+        .form-input,.form-textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;}
+        .form-textarea{resize:vertical;min-height:80px;}
+        .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+        .message{padding:15px;border-radius:4px;position:fixed;top:80px;right:20px;z-index:1002;min-width:250px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+        .message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
+        .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+        @media(max-width:768px){.sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);} .content{margin-left:0;} .content-header{flex-direction:column;align-items:flex-start;} .btn{margin-top:10px;}}
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><h3>后台管理</h3></div>
+            <ul class="nav-menu">
+                <li><a href="dashboard-new.html"><i class="fas fa-tachometer-alt"></i>仪表盘</a></li>
+                <li><a href="website-info.html"><i class="fas fa-info-circle"></i>网站信息</a></li>
+                <li><a href="navigation.html"><i class="fas fa-bars"></i>导航管理</a></li>
+                <li><a href="services.html"><i class="fas fa-concierge-bell"></i>服务项目</a></li>
+                <li><a href="projects.html"><i class="fas fa-briefcase"></i>成功案例</a></li>
+                <li><a href="news.html"><i class="fas fa-newspaper"></i>博客/新闻</a></li>
+                <li><a href="testimonials.html"><i class="fas fa-comments"></i>客户评价</a></li>
+                <li><a href="partners.html" class="active"><i class="fas fa-handshake"></i>合作伙伴</a></li>
+                <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
+                <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
+                <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
+                <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <header class="top-nav">
+                <div class="top-nav-left">
+                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                    <h2 class="page-title">合作伙伴管理</h2>
+                </div>
+                <div class="top-nav-right">
+                    <div class="user-info">
+                        <div class="user-avatar">A</div>
+                        <span>admin</span>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">退出登录</button>
+                </div>
+            </header>
+
+            <div class="main-content">
+                <div class="content-header">
+                    <h3 class="content-title">合作伙伴列表</h3>
+                    <button class="btn btn-primary" onclick="openAddModal()">添加合作伙伴</button>
+                </div>
+
+                <div class="card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>名称</th>
+                                <th>网站</th>
+                                <th>图片</th>
+                                <th>排序</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="partnersTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="partnerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle" class="modal-title">添加合作伙伴</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="partnerForm">
+                <input type="hidden" id="partnerId">
+                <div class="form-group">
+                    <label class="form-label" for="partnerName">名称</label>
+                    <input type="text" id="partnerName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="partnerWebsite">网站</label>
+                    <input type="url" id="partnerWebsite" class="form-input" placeholder="例如：https://www.example.com">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="partnerImage">图片 URL</label>
+                    <input type="text" id="partnerImage" class="form-input" placeholder="例如：images/partners-1-270x145.png">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="partnerSortOrder">排序</label>
+                    <input type="number" id="partnerSortOrder" class="form-input" min="0" value="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">状态</label>
+                    <div style="display:flex;gap:20px;">
+                        <label style="display:flex;align-items:center;"><input type="radio" id="partnerActive" name="partnerStatus" value="1" checked><span style="margin-left:5px;">激活</span></label>
+                        <label style="display:flex;align-items:center;"><input type="radio" id="partnerInactive" name="partnerStatus" value="0"><span style="margin-left:5px;">未激活</span></label>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">确认删除</h3>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <p>确定要删除这个合作伙伴吗？此操作不可恢复。</p>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">取消</button>
+                <button type="button" class="btn btn-danger" onclick="confirmDelete()">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let partnerToDelete = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = localStorage.getItem('adminUser');
+            const token = localStorage.getItem('adminToken');
+            if (!user || !token) { window.location.href = 'index.html'; return; }
+            initMenuToggle();
+            initModalEvents();
+            await loadPartners();
+        });
+
+        function initMenuToggle() {
+            document.getElementById('menuToggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+        }
+
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('adminUser');
+                localStorage.removeItem('adminToken');
+                window.location.href = 'index.html';
+            }
+        }
+
+        async function loadPartners() {
+            const tbody = document.getElementById('partnersTableBody');
+            tbody.innerHTML = '<tr><td colspan="7">加载中...</td></tr>';
+            try {
+                const list = await window.API.Partners.getAll();
+                renderTable(list || []);
+            } catch (err) {
+                console.error('加载失败', err);
+                tbody.innerHTML = '<tr><td colspan="7">加载失败，请稍后重试</td></tr>';
+            }
+        }
+
+        function renderTable(list) {
+            const tbody = document.getElementById('partnersTableBody');
+            tbody.innerHTML = '';
+            if (!list.length) { tbody.innerHTML = '<tr><td colspan="7">暂无数据</td></tr>'; return; }
+            list.forEach(item => {
+                const tr = document.createElement('tr');
+                const img = item.logo || item.image || '';
+                tr.innerHTML = `
+                    <td>${item.id}</td>
+                    <td>${item.name || ''}</td>
+                    <td>${item.website || ''}</td>
+                    <td>${img ? `<img src="${img}" class="logo-img" onerror="this.style.display='none'">` : '-'}</td>
+                    <td>${item.sortOrder ?? item.sort_order ?? ''}</td>
+                    <td>${item.isActive ?? item.is_active ? '激活' : '未激活'}</td>
+                    <td>
+                        <button class="btn btn-primary btn-sm" onclick="editItem(${item.id})">编辑</button>
+                        <button class="btn btn-danger btn-sm" onclick="deleteItem(${item.id})">删除</button>
+                    </td>`;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function initModalEvents() {
+            const modal = document.getElementById('partnerModal');
+            const deleteModal = document.getElementById('deleteModal');
+            document.getElementById('partnerForm').onsubmit = e => { e.preventDefault(); saveItem(); };
+            window.onclick = e => {
+                if (e.target === modal) modal.style.display = 'none';
+                if (e.target === deleteModal) deleteModal.style.display = 'none';
+            };
+        }
+
+        function openAddModal() {
+            const modal = document.getElementById('partnerModal');
+            document.getElementById('partnerForm').reset();
+            document.getElementById('partnerId').value = '';
+            document.getElementById('partnerActive').checked = true;
+            document.getElementById('modalTitle').textContent = '添加合作伙伴';
+            modal.style.display = 'block';
+        }
+
+        async function editItem(id) {
+            const modal = document.getElementById('partnerModal');
+            try {
+                const item = await window.API.Partners.get(id);
+                if (!item) return alert('未找到记录');
+                document.getElementById('partnerId').value = item.id;
+                document.getElementById('partnerName').value = item.name || '';
+                document.getElementById('partnerWebsite').value = item.website || '';
+                document.getElementById('partnerImage').value = item.logo || item.image || '';
+                document.getElementById('partnerSortOrder').value = item.sortOrder ?? item.sort_order ?? 0;
+                document.getElementById('partnerActive').checked = item.isActive ?? item.is_active ? true : false;
+                document.getElementById('partnerInactive').checked = !(item.isActive ?? item.is_active);
+                document.getElementById('modalTitle').textContent = '编辑合作伙伴';
+                modal.style.display = 'block';
+            } catch (err) {
+                console.error('加载详情失败', err);
+                alert('加载详情失败');
+            }
+        }
+
+        async function saveItem() {
+            const id = document.getElementById('partnerId').value;
+            const name = document.getElementById('partnerName').value.trim();
+            if (!name) { showMessage('请填写名称', 'error'); return; }
+            const payload = {
+                name,
+                website: document.getElementById('partnerWebsite').value.trim(),
+                logo: document.getElementById('partnerImage').value.trim(),
+                sortOrder: parseInt(document.getElementById('partnerSortOrder').value || '0', 10),
+                isActive: document.getElementById('partnerActive').checked ? 1 : 0
+            };
+            try {
+                if (id) { await window.API.Partners.update(id, payload); showMessage('编辑成功', 'success'); }
+                else { await window.API.Partners.create(payload); showMessage('添加成功', 'success'); }
+                document.getElementById('partnerModal').style.display = 'none';
+                await loadPartners();
+            } catch (err) {
+                console.error('保存失败', err);
+                showMessage('保存失败，请稍后重试', 'error');
+            }
+        }
+
+        function deleteItem(id) {
+            partnerToDelete = id;
+            document.getElementById('deleteModal').style.display = 'block';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
+        async function confirmDelete() {
+            if (!partnerToDelete) return;
+            try {
+                await window.API.Partners.delete(partnerToDelete);
+                showMessage('删除成功', 'success');
+                partnerToDelete = null;
+                closeDeleteModal();
+                await loadPartners();
+            } catch (err) {
+                console.error('删除失败', err);
+                showMessage('删除失败，请稍后重试', 'error');
+            }
+        }
+
+        function closeModal() {
+            document.getElementById('partnerModal').style.display = 'none';
+        }
+
+        function showMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.textContent = text;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>网站信息管理 - 后台管理系统</title>
+    <!-- 只使用本地资源，避免外网CDN加载过慢 -->
+    <script src="../js/api.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f7fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .main-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #354879 0%, #28334f 100%);
+            color: #fff;
+            padding: 20px 0;
+            box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            z-index: 1000;
+        }
+
+        .sidebar-header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h3 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .nav-menu li {
+            margin: 0;
+        }
+
+        .nav-menu a {
+            display: flex;
+            align-items: center;
+            padding: 15px 20px;
+            color: rgba(255, 255, 255, 0.9);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .nav-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-left-color: #fff;
+            color: #fff;
+        }
+
+        .nav-menu a.active {
+            background-color: rgba(255, 255, 255, 0.15);
+            border-left-color: #fff;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .nav-menu a i {
+            margin-right: 15px;
+            font-size: 18px;
+            width: 20px;
+            text-align: center;
+        }
+
+        .content {
+            margin-left: 280px;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+
+        .top-nav {
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .top-nav-left {
+            display: flex;
+            align-items: center;
+        }
+
+        .menu-toggle {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            margin-right: 20px;
+            color: #333;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #354879;
+        }
+
+        .top-nav-right {
+            display: flex;
+            align-items: center;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #354879;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .logout-btn {
+            background-color: #dc0000;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: 500;
+        }
+
+        .logout-btn:hover {
+            background-color: #b71c1c;
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 24px;
+            font-weight: 600;
+            color: #354879;
+            margin-bottom: 20px;
+        }
+
+        .card h4 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #354879;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #354879;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #354879;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-textarea:focus {
+            outline: none;
+            border-color: #354879;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #ecf0f1;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background-color: #354879;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background-color: #28334f;
+        }
+
+        .btn-secondary {
+            background-color: #95a5a6;
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background-color: #7f8c8d;
+        }
+
+        .message {
+            padding: 15px 20px;
+            border-radius: 6px;
+            position: fixed;
+            top: 80px;
+            right: 20px;
+            z-index: 1002;
+            min-width: 250px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        .message.success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .message.error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .image-preview {
+            margin-top: 10px;
+            max-width: 200px;
+            max-height: 150px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .sidebar.open {
+                transform: translateX(0);
+            }
+
+            .content {
+                margin-left: 0;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="main-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h3>后台管理</h3>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="dashboard-new.html"><i class="fas fa-tachometer-alt"></i>仪表盘</a></li>
+                <li><a href="website-info.html" class="active"><i class="fas fa-info-circle"></i>网站信息</a></li>
+                <li><a href="navigation.html"><i class="fas fa-bars"></i>导航管理</a></li>
+                <li><a href="services.html"><i class="fas fa-concierge-bell"></i>服务项目</a></li>
+                <li><a href="projects.html"><i class="fas fa-briefcase"></i>成功案例</a></li>
+                <li><a href="news.html"><i class="fas fa-newspaper"></i>博客/新闻</a></li>
+                <li><a href="testimonials.html"><i class="fas fa-comments"></i>客户评价</a></li>
+                <li><a href="partners.html"><i class="fas fa-handshake"></i>合作伙伴</a></li>
+                <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
+                <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
+                <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
+                <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <header class="top-nav">
+                <div class="top-nav-left">
+                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                    <h2 class="page-title">网站信息管理</h2>
+                </div>
+                <div class="top-nav-right">
+                    <div class="user-info">
+                        <div class="user-avatar">A</div>
+                        <span>admin</span>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">退出登录</button>
+                </div>
+            </header>
+
+            <div class="main-content">
+                <div class="card">
+                    <h3>编辑网站信息</h3>
+                    <form id="websiteInfoForm">
+                        <div class="form-group">
+                            <label for="title" class="form-label">网站标题</label>
+                            <input type="text" id="title" name="title" class="form-input" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="description" class="form-label">网站描述</label>
+                            <textarea id="description" name="description" class="form-textarea" rows="4"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="keywords" class="form-label">网站关键词</label>
+                            <input type="text" id="keywords" name="keywords" class="form-input"
+                                placeholder="用逗号分隔多个关键词">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="phone" class="form-label">联系电话</label>
+                            <input type="text" id="phone" name="phone" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email" class="form-label">联系邮箱</label>
+                            <input type="email" id="email" name="email" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="address" class="form-label">公司地址</label>
+                            <textarea id="address" name="address" class="form-textarea" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="logo" class="form-label">Logo路径</label>
+                            <input type="text" id="logo" name="logo" class="form-input"
+                                placeholder="例如：images/logo.png">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="favicon" class="form-label">Favicon路径</label>
+                            <input type="text" id="favicon" name="favicon" class="form-input"
+                                placeholder="例如：images/favicon.ico">
+                        </div>
+
+                        <h4>首页头图与统计配置</h4>
+
+                        <div class="form-group">
+                            <label for="heroBackground" class="form-label">首页头图背景图片路径（screens-3）</label>
+                            <input type="text" id="heroBackground" name="heroBackground" class="form-input"
+                                placeholder="例如：images/screens-3-960x752.png">
+                            <div class="image-preview" id="heroPreview" style="display:none; margin-top:10px;">
+                                <img id="heroPreviewImg" src="" alt="预览">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="heroTitle" class="form-label">首页主标题（左侧大字）</label>
+                            <input type="text" id="heroTitle" name="heroTitle" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="heroSubtitle" class="form-label">首页副标题（& 后面的文字）</label>
+                            <input type="text" id="heroSubtitle" name="heroSubtitle" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="heroDescription" class="form-label">首页简介文案</label>
+                            <textarea id="heroDescription" name="heroDescription" class="form-textarea" rows="3"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="heroButtonText" class="form-label">按钮文字</label>
+                            <input type="text" id="heroButtonText" name="heroButtonText" class="form-input">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="heroButtonLink" class="form-label">按钮链接地址</label>
+                            <input type="text" id="heroButtonLink" name="heroButtonLink" class="form-input"
+                                placeholder="例如：# 或 /about.html">
+                        </div>
+
+                        <div class="form-group">
+                            <label class="form-label">首页统计数字</label>
+                            <div class="form-row">
+                                <div>
+                                    <label for="statAwards" class="form-label">国际奖项</label>
+                                    <input type="number" id="statAwards" name="statAwards" class="form-input" min="0">
+                                </div>
+                                <div>
+                                    <label for="statSatisfaction" class="form-label">客户满意度（%）</label>
+                                    <input type="number" id="statSatisfaction" name="statSatisfaction" class="form-input"
+                                        min="0" max="100">
+                                </div>
+                                <div>
+                                    <label for="statExperience" class="form-label">行业经验（年）</label>
+                                    <input type="number" id="statExperience" name="statExperience" class="form-input"
+                                        min="0">
+                                </div>
+                                <div>
+                                    <label for="statConsultants" class="form-label">专业顾问</label>
+                                    <input type="number" id="statConsultants" name="statConsultants" class="form-input"
+                                        min="0">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-actions">
+                            <button type="reset" class="btn btn-secondary">重置</button>
+                            <button type="submit" class="btn btn-primary">保存更改</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const user = localStorage.getItem('adminUser');
+            const token = localStorage.getItem('adminToken');
+            if (!user || !token) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            initMenuToggle();
+            loadWebsiteInfo();
+
+            // 图片预览
+            document.getElementById('heroBackground').addEventListener('input', function () {
+                const url = this.value.trim();
+                const preview = document.getElementById('heroPreview');
+                const img = document.getElementById('heroPreviewImg');
+                if (url) {
+                    img.src = url;
+                    preview.style.display = 'block';
+                } else {
+                    preview.style.display = 'none';
+                }
+            });
+        });
+
+        function initMenuToggle() {
+            const menuToggle = document.getElementById('menuToggle');
+            const sidebar = document.getElementById('sidebar');
+            menuToggle.addEventListener('click', function () {
+                sidebar.classList.toggle('open');
+            });
+        }
+
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('adminUser');
+                localStorage.removeItem('adminToken');
+                window.location.href = 'index.html';
+            }
+        }
+
+        async function loadWebsiteInfo() {
+            try {
+                const data = await window.API.WebsiteInfo.get();
+                if (!data) return;
+
+                document.getElementById('title').value = data.title || '';
+                document.getElementById('description').value = data.description || '';
+                document.getElementById('keywords').value = data.keywords || '';
+                document.getElementById('phone').value = data.phone || '';
+                document.getElementById('email').value = data.email || '';
+                document.getElementById('address').value = data.address || '';
+                document.getElementById('logo').value = data.logo || '';
+                document.getElementById('favicon').value = data.favicon || '';
+
+                document.getElementById('heroBackground').value = data.heroBackground || '';
+                document.getElementById('heroTitle').value = data.heroTitle || '';
+                document.getElementById('heroSubtitle').value = data.heroSubtitle || '';
+                document.getElementById('heroDescription').value = data.heroDescription || '';
+                document.getElementById('heroButtonText').value = data.heroButtonText || '';
+                document.getElementById('heroButtonLink').value = data.heroButtonLink || '';
+
+                document.getElementById('statAwards').value = data.statAwards ?? 0;
+                document.getElementById('statSatisfaction').value = data.statSatisfaction ?? 0;
+                document.getElementById('statExperience').value = data.statExperience ?? 0;
+                document.getElementById('statConsultants').value = data.statConsultants ?? 0;
+
+                // 触发图片预览
+                if (data.heroBackground) {
+                    const preview = document.getElementById('heroPreview');
+                    const img = document.getElementById('heroPreviewImg');
+                    img.src = data.heroBackground;
+                    preview.style.display = 'block';
+                }
+            } catch (err) {
+                console.error('加载网站信息失败:', err);
+                showMessage('从服务器加载网站信息失败', 'error');
+            }
+        }
+
+        document.getElementById('websiteInfoForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const data = {
+                title: document.getElementById('title').value.trim(),
+                description: document.getElementById('description').value.trim(),
+                keywords: document.getElementById('keywords').value.trim(),
+                phone: document.getElementById('phone').value.trim(),
+                email: document.getElementById('email').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                logo: document.getElementById('logo').value.trim(),
+                favicon: document.getElementById('favicon').value.trim(),
+                heroBackground: document.getElementById('heroBackground').value.trim(),
+                heroTitle: document.getElementById('heroTitle').value.trim(),
+                heroSubtitle: document.getElementById('heroSubtitle').value.trim(),
+                heroDescription: document.getElementById('heroDescription').value.trim(),
+                heroButtonText: document.getElementById('heroButtonText').value.trim(),
+                heroButtonLink: document.getElementById('heroButtonLink').value.trim(),
+                statAwards: parseInt(document.getElementById('statAwards').value || '0', 10),
+                statSatisfaction: parseInt(document.getElementById('statSatisfaction').value || '0', 10),
+                statExperience: parseInt(document.getElementById('statExperience').value || '0', 10),
+                statConsultants: parseInt(document.getElementById('statConsultants').value || '0', 10)
+            };
+
+            if (!data.title) {
+                showMessage('请填写网站标题', 'error');
+                return;
+            }
+
+            try {
+                await window.API.WebsiteInfo.update(data);
+                showMessage('网站信息更新成功', 'success');
+            } catch (err) {
+                console.error('更新网站信息失败:', err);
+                showMessage('保存失败，请稍后重试', 'error');
+            }
+        });
+
+        function showMessage(text, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}`;
+            messageDiv.textContent = text;
+            document.body.appendChild(messageDiv);
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 3000);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,979 @@
+<!DOCTYPE html>
+<html class="wide wow-animation" lang="zh-CN">
+
+<head>
+  <title>咨询公司官网 - 专业的商业咨询服务</title>
+  <meta name="format-detection" content="telephone=no">
+  <meta name="viewport"
+    content="width=device-width height=device-height initial-scale=1.0 maximum-scale=1.0 user-scalable=0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta charset="utf-8">
+  <meta name="description" content="专业的商业咨询服务，包括战略规划、市场分析、管理咨询等，帮助企业实现可持续发展。">
+  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <!-- Stylesheets-->
+  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+  <!--[if lt IE 10]>
+    <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
+    <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+  <div class="page">
+    <!-- Page Header-->
+    <header class="section page-header">
+      <!-- RD Navbar-->
+      <div class="rd-navbar-wrap rd-navbar-absolute">
+        <nav class="rd-navbar rd-navbar-thin" data-layout="rd-navbar-fixed" data-sm-layout="rd-navbar-fixed"
+          data-md-layout="rd-navbar-fixed" data-md-device-layout="rd-navbar-fixed" data-lg-layout="rd-navbar-static"
+          data-lg-device-layout="rd-navbar-fixed" data-xl-layout="rd-navbar-static"
+          data-xl-device-layout="rd-navbar-fixed" data-xxl-layout="rd-navbar-static"
+          data-xxl-device-layout="rd-navbar-static" data-lg-stick-up-offset="46px" data-xl-stick-up-offset="46px"
+          data-xxl-stick-up-offset="46px" data-lg-stick-up="true" data-xl-stick-up="true" data-xxl-stick-up="true">
+          <div class="rd-navbar-main-outer">
+            <button class="rd-navbar-collapse-toggle rd-navbar-fixed-element-2"
+              data-rd-navbar-toggle=".rd-navbar-collapse"><span></span></button>
+            <div class="rd-navbar-main">
+              <!-- RD Navbar Panel-->
+              <div class="rd-navbar-panel">
+                <!-- RD Navbar Toggle-->
+                <button class="rd-navbar-toggle"
+                  data-rd-navbar-toggle="#rd-navbar-nav-wrap-1, #rd-navbar-hidden-1"><span></span></button>
+                <!-- RD Navbar Brand--><a class="rd-navbar-brand" href="index.html"><img src="images/ce-logo.png"
+                    alt="CE International Group Co.,LTD" width="169" height="24" /></a>
+                <div class="rd-navbar-block" id="rd-navbar-hidden-1">
+                  <div class="rd-navbar-collapse">
+                    <ul class="list-inline-bordered rd-navbar-list">
+                      <li><span class="icon mdi mdi-comment-text-outline"></span><a href="contacts.html">联系我们</a></li>
+                      <li><span class="icon mdi mdi-cellphone-android"></span><a href="tel:#">+86-400-123-4567</a></li>
+                    </ul>
+                  </div>
+                  <button class="rd-navbar-search-toggle"
+                    data-rd-navbar-toggle="#rd-navbar-search-1"><span></span></button>
+                </div>
+              </div>
+              <!-- RD Navbar Search-->
+              <div class="rd-navbar-search" id="rd-navbar-search-1">
+                <form class="rd-search" action="search-results.html" data-search-live="rd-search-results-live-1"
+                  method="GET">
+                  <div class="form-wrap">
+                    <label class="form-label" for="rd-navbar-search-form-input-1">搜索...</label>
+                    <input class="form-input rd-navbar-search-form-input" id="rd-navbar-search-form-input-1" type="text"
+                      name="s" autocomplete="off">
+                    <div class="rd-search-results-live" id="rd-search-results-live-1"></div>
+                  </div>
+                  <button class="rd-search-form-submit fa-search" type="submit"></button>
+                </form>
+              </div>
+              <div class="rd-navbar-nav-wrap" id="rd-navbar-nav-wrap-1">
+                <!-- RD Navbar Brand--><a class="rd-navbar-brand" href="index.html"><img src="images/ce-logo.png"
+                    alt="CE International Group Co.,LTD" width="169" height="24" /></a>
+                <!-- RD Navbar Nav-->
+                <ul class="rd-navbar-nav" id="dynamicNavbar"></ul>
+                <!-- 动态导航栏脚本 -->
+                <script>
+                  // 初始化导航栏数据
+                  function initNavigationData() {
+                    // 总是使用最新的导航栏数据，替换旧数据
+                    const initialNavigation = {
+                      groups: [
+                        { id: 1, name: '首页', parentId: null },
+                        { id: 2, name: '服务', parentId: null },
+                        { id: 3, name: '博客', parentId: null },
+                        { id: 4, name: '成功案例', parentId: null },
+                        { id: 5, name: '关于我们', parentId: null }
+                      ],
+                      items: [
+                        { id: 1, name: '首页', url: 'index.html', group: '', parentId: null, order: 1, status: 1 },
+                        { id: 2, name: '服务项目', url: 'services.html', group: '2', parentId: null, order: 2, status: 1 },
+                        { id: 3, name: '博客', url: 'sidebar-blog.html', group: '3', parentId: null, order: 3, status: 1 },
+                        { id: 4, name: '成功案例', url: 'grid-gallery.html', group: '4', parentId: null, order: 4, status: 1 },
+                        { id: 5, name: '关于我们', url: 'about.html', group: '5', parentId: null, order: 5, status: 1 },
+                        { id: 6, name: '联系我们', url: 'contacts.html', group: '', parentId: null, order: 6, status: 1 },
+                        // 二级导航
+                        { id: 7, name: '案例展示', url: 'grid-gallery.html', group: '4', parentId: 4, order: 1, status: 1 },
+                        { id: 8, name: '案例详情', url: 'single-project.html', group: '4', parentId: 4, order: 2, status: 1 },
+                        { id: 9, name: '博客列表', url: 'sidebar-blog.html', group: '3', parentId: 3, order: 1, status: 1 },
+                        { id: 10, name: '博客详情', url: 'single-blog-post.html', group: '3', parentId: 3, order: 2, status: 1 },
+                        { id: 11, name: '公司简介', url: 'about-company.html', group: '5', parentId: 5, order: 1, status: 1 },
+                        { id: 12, name: '个人简介', url: 'about-me.html', group: '5', parentId: 5, order: 2, status: 1 },
+                        { id: 13, name: '团队成员', url: 'team.html', group: '5', parentId: 5, order: 3, status: 1 },
+                        { id: 14, name: '招贤纳士', url: 'careers.html', group: '5', parentId: 5, order: 4, status: 1 },
+                        { id: 15, name: '服务项目', url: 'services.html', group: '2', parentId: 2, order: 1, status: 1 },
+                        { id: 16, name: '服务详情', url: 'single-service.html', group: '2', parentId: 2, order: 2, status: 1 }
+                      ]
+                    };
+                    localStorage.setItem('navigation', JSON.stringify(initialNavigation));
+                  }
+
+                  // 生成导航栏HTML
+                  function generateNavbar() {
+                    // 确保导航栏数据存在
+                    initNavigationData();
+
+                    const navigation = JSON.parse(localStorage.getItem('navigation'));
+                    const navbarContainer = document.getElementById('dynamicNavbar');
+
+                    // 按排序字段排序导航项
+                    navigation.items.sort((a, b) => {
+                      if (a.parentId === b.parentId) {
+                        return a.order - b.order;
+                      }
+                      return (a.parentId || 0) - (b.parentId || 0);
+                    });
+
+                    // 分离一级导航和二级导航
+                    const primaryNavs = navigation.items.filter(item => item.parentId === null && item.status === 1);
+                    const secondaryNavs = navigation.items.filter(item => item.parentId !== null && item.status === 1);
+
+                    let navbarHTML = '';
+
+                    // 生成一级导航
+                    primaryNavs.forEach(primaryNav => {
+                      // 获取当前一级导航的二级导航
+                      const children = secondaryNavs.filter(nav => nav.parentId === primaryNav.id);
+
+                      // 检查是否为活动链接
+                      const isActive = window.location.pathname.includes(primaryNav.url) ? 'active' : '';
+
+                      if (children.length > 0) {
+                        // 有二级导航的一级导航
+                        navbarHTML += `
+                          <li class="rd-nav-item ${isActive}">
+                            <a class="rd-nav-link" href="${primaryNav.url}">${primaryNav.name}</a>
+                            <!-- RD Navbar Dropdown-->
+                            <ul class="rd-menu rd-navbar-dropdown">
+                        `;
+
+                        // 生成二级导航
+                        children.forEach(child => {
+                          navbarHTML += `
+                            <li class="rd-dropdown-item">
+                              <a class="rd-dropdown-link" href="${child.url}">${child.name}</a>
+                            </li>
+                          `;
+                        });
+
+                        navbarHTML += `
+                            </ul>
+                          </li>
+                        `;
+                      } else {
+                        // 没有二级导航的一级导航
+                        navbarHTML += `
+                          <li class="rd-nav-item ${isActive}">
+                            <a class="rd-nav-link" href="${primaryNav.url}">${primaryNav.name}</a>
+                          </li>
+                        `;
+                      }
+                    });
+
+                    navbarContainer.innerHTML = navbarHTML;
+                  }
+
+                  // 页面加载时生成导航栏
+                  document.addEventListener('DOMContentLoaded', function () {
+                    generateNavbar();
+                  });
+                </script>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
+    <!-- FScreen-->
+    <section class="section section-halfscreen bg-image" id="heroSection" style="background-image: url(images/header-bg.jpg);">
+      <div class="section-halfscreen-inner">
+        <div class="section-halfscreen-image wow fadeIn" id="heroImage" style="background-image: url(images/screens-3-960x752.png);">
+        </div>
+        <div class="container">
+          <div class="row">
+            <div class="col-md-6 col-lg-5">
+              <div class="section-halfscreen-content">
+                <div class="wow-outer heading-3">
+                  <h2 class="wow fadeInUp" data-wow-delay=".2s" id="heroTitle"><span class="font-weight-bold">专业咨询</span><br><span
+                      class="font-weight-bold sumbol text-primary">&</span><span class="font-weight-light">战略规划</span>
+                  </h2>
+                </div>
+                <div class="wow-outer p">
+                  <p class="custom-article wow fadeInDown" data-wow-delay=".2s" id="heroDescription">我们公司提供各类专业咨询和规划服务，帮助全球中小企业实现可持续发展。</p>
+                </div><a class="button button-primary button-winona wow FadeIn" id="heroButton" href="#">了解更多</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="tabs-horizontal"></div>
+    <!-- Small Features-->
+    <section class="section section-lg bg-gray-100">
+      <div class="container">
+        <div class="row row-30">
+          <div class="col-sm-6 col-lg-4 wow-outer">
+            <!-- Box Minimal-->
+            <article class="box-minimal">
+              <div class="box-minimal-icon linearicons-pie-chart wow fadeIn"></div>
+              <div class="box-minimal-main wow-outer">
+                <h4 class="box-minimal-title wow slideInDown">数据分析</h4>
+                <p class="wow fadeInUpSmall">我们通过专业的数据分析服务，帮助您为企业设定正确的发展方向，打造成功的商业模式。</p>
+              </div>
+            </article>
+          </div>
+          <div class="col-sm-6 col-lg-4 wow-outer">
+            <!-- Box Minimal-->
+            <article class="box-minimal">
+              <div class="box-minimal-icon linearicons-briefcase wow fadeIn" data-wow-delay=".1s"></div>
+              <div class="box-minimal-main wow-outer">
+                <h4 class="box-minimal-title wow slideInDown" data-wow-delay=".1s">企业管理</h4>
+                <p class="wow fadeInUpSmall" data-wow-delay=".1s">我们提供的企业管理服务，帮助企业高管更好地管理关键业务流程，提升运营效率。</p>
+              </div>
+            </article>
+          </div>
+          <div class="col-sm-6 col-lg-4 wow-outer">
+            <!-- Box Minimal-->
+            <article class="box-minimal">
+              <div class="box-minimal-icon linearicons-credit-card wow fadeIn" data-wow-delay=".2s"></div>
+              <div class="box-minimal-main wow-outer">
+                <h4 class="box-minimal-title wow slideInDown" data-wow-delay=".2s">人力咨询</h4>
+                <p class="wow fadeInUpSmall" data-wow-delay=".2s">我们的专家提供多样化的财务解决方案，确保为您的企业带来更高的利润回报。</p>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Advantages and Achievements-->
+    <section class="section section-lg text-center">
+      <div class="container">
+        <h3 class="wow-outer"><span class="wow slideInUp">我们的成就</span></h3>
+        <p class="wow-outer"><span
+            class="text-width-1 wow slideInDown">自2002年成立以来，我们的团队取得了丰硕的成果。以下是关于我们咨询公司的一些统计数据和有趣事实。</span></p>
+        <div class="row row-50">
+          <div class="col-6 col-md-3 wow-outer">
+            <!-- Counter Minimal-->
+            <article class="counter-minimal wow slideInDown" data-counter-type="awards">
+              <div class="counter-minimal-icon linearicons-star"></div>
+              <div class="counter-minimal-main">
+                <div class="counter">12</div>
+              </div>
+              <h5 class="counter-minimal-title">国际奖项</h5>
+            </article>
+          </div>
+          <div class="col-6 col-md-3 wow-outer">
+            <!-- Counter Minimal-->
+            <article class="counter-minimal wow slideInDown" data-counter-type="satisfaction">
+              <div class="counter-minimal-icon linearicons-folder"></div>
+              <div class="counter-minimal-main">
+                <div class="counter">99</div><span class="value">%</span>
+              </div>
+              <h5 class="counter-minimal-title">客户满意度</h5>
+            </article>
+          </div>
+          <div class="col-6 col-md-3 wow-outer">
+            <!-- Counter Minimal-->
+            <article class="counter-minimal wow slideInDown" data-counter-type="experience">
+              <div class="counter-minimal-icon linearicons-flag"></div>
+              <div class="counter-minimal-main">
+                <div class="counter">15</div>
+              </div>
+              <h5 class="counter-minimal-title">行业经验</h5>
+            </article>
+          </div>
+          <div class="col-6 col-md-3 wow-outer">
+            <!-- Counter Minimal-->
+            <article class="counter-minimal wow slideInDown" data-counter-type="consultants">
+              <div class="counter-minimal-icon linearicons-lamp"></div>
+              <div class="counter-minimal-main">
+                <div class="counter">54</div>
+              </div>
+              <h5 class="counter-minimal-title">专业顾问</h5>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- CTA Thin-->
+    <section class="section section-xs bg-primary-darken text-center">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-sm-10 col-md-12">
+            <div class="box-cta-thin">
+              <h4 class="title wow-outer"><span class="wow slideInRight">助力全球企业成长</span></h4>
+              <div class="wow-outer button-outer"><a class="button button-white-outline button-winona wow slideInLeft"
+                  href="contacts.html">联系我们</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Services-->
+    <section class="section section-lg bg-gray-100 text-center">
+      <div class="container">
+        <h3 class="wow-outer"><span class="wow slideInUp">我们的服务</span></h3>
+        <div class="row row-30" id="servicesContainer"></div>
+      </div>
+    </section>
+    <!-- Projects-->
+    <section class="section section-md text-center">
+      <div class="container">
+        <h3 class="wow-outer"><span class="wow slideInUp">成功案例</span></h3>
+        <p class="wow-outer"><span
+            class="text-width-1 wow slideInDown">查看我们最近完成的一些项目案例。每个项目都经过了大量的研究和分析，以创造出卓越的解决方案。</span>
+        </p>
+        <div class="row row-20 offset-top-3 hoverdir" id="projectsContainer">
+          <div class="col-sm-6 col-lg-4 wow-outer">
+            <div class="thumbnail-classic thumbnail-classic-sm">
+              <a href="single-project.html?id=1">
+                <img class="thumbnail-classic-image" src="images/grid-layout-1-370x256.jpg" alt="华为技术有限公司全球供应链优化项目"
+                  width="370" height="256">
+                <div class="thumbnail-classic-caption">
+                  <p class="thumbnail-classic-title">华为技术有限公司全球供应链优化项目</p>
+                  <p class="thumbnail-classic-text">供应链优化</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4 wow-outer">
+            <div class="thumbnail-classic thumbnail-classic-sm">
+              <a href="single-project.html?id=2">
+                <img class="thumbnail-classic-image" src="images/grid-layout-2-370x256.jpg" alt="阿里巴巴集团新零售战略规划与落地"
+                  width="370" height="256">
+                <div class="thumbnail-classic-caption">
+                  <p class="thumbnail-classic-title">阿里巴巴集团新零售战略规划与落地</p>
+                  <p class="thumbnail-classic-text">新零售战略</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4 wow-outer">
+            <div class="thumbnail-classic thumbnail-classic-sm">
+              <a href="single-project.html?id=3">
+                <img class="thumbnail-classic-image" src="images/grid-layout-3-370x256.jpg" alt="腾讯公司组织架构调整与数字化转型"
+                  width="370" height="256">
+                <div class="thumbnail-classic-caption">
+                  <p class="thumbnail-classic-title">腾讯公司组织架构调整与数字化转型</p>
+                  <p class="thumbnail-classic-text">组织架构调整</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4 wow-outer">
+            <div class="thumbnail-classic thumbnail-classic-sm">
+              <a href="single-project.html?id=4">
+                <img class="thumbnail-classic-image" src="images/grid-layout-4-370x256.jpg" alt="字节跳动全球化战略与市场进入策略"
+                  width="370" height="256">
+                <div class="thumbnail-classic-caption">
+                  <p class="thumbnail-classic-title">字节跳动全球化战略与市场进入策略</p>
+                  <p class="thumbnail-classic-text">全球化战略</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4 wow-outer">
+            <div class="thumbnail-classic thumbnail-classic-sm">
+              <a href="single-project.html?id=5">
+                <img class="thumbnail-classic-image" src="images/grid-layout-5-370x256.jpg" alt="招商银行数字化银行转型项目"
+                  width="370" height="256">
+                <div class="thumbnail-classic-caption">
+                  <p class="thumbnail-classic-title">招商银行数字化银行转型项目</p>
+                  <p class="thumbnail-classic-text">数字化转型</p>
+                </div>
+              </a>
+            </div>
+          </div>
+          <div class="col-sm-6 col-lg-4 wow-outer">
+            <div class="thumbnail-classic thumbnail-classic-sm">
+              <a href="single-project.html?id=6">
+                <img class="thumbnail-classic-image" src="images/grid-layout-6-370x256.jpg" alt="特斯拉上海超级工厂精益生产咨询项目"
+                  width="370" height="256">
+                <div class="thumbnail-classic-caption">
+                  <p class="thumbnail-classic-title">特斯拉上海超级工厂精益生产咨询项目</p>
+                  <p class="thumbnail-classic-text">精益生产</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- A Few Words About Us-->
+    <section class="section bg-gray-100">
+      <div class="range justify-content-xl-between">
+        <div class="cell-lg-6 cell-xl-5 align-self-center container">
+          <div class="row">
+            <div class="col-md-10 cell-inner">
+              <div class="section-lg inset-right-2">
+                <h3 class="wow-outer"><span class="wow slideInDown">关于我们</span></h3>
+                <p class="wow fadeIn">咨询公司是一家拥有10多年行业经验的商业咨询公司，为广泛的客户提供可靠且价格合理的服务。</p>
+                <div class="progress-linear-outer wow-outer">
+                  <!-- Linear progress bar-->
+                  <article class="progress-linear wow slideInDown" data-wow-delay=".05s">
+                    <div class="progress-header">
+                      <p>咨询服务</p><span class="progress-value">90</span>
+                    </div>
+                    <div class="progress-bar-linear-wrap">
+                      <div class="progress-bar-linear"></div>
+                    </div>
+                  </article>
+                </div>
+                <div class="progress-linear-outer wow-outer">
+                  <!-- Linear progress bar-->
+                  <article class="progress-linear progress-linear-color-1 wow slideInDown" data-wow-delay=".1s">
+                    <div class="progress-header">
+                      <p>数据分析</p><span class="progress-value">65</span>
+                    </div>
+                    <div class="progress-bar-linear-wrap">
+                      <div class="progress-bar-linear"></div>
+                    </div>
+                  </article>
+                </div>
+                <div class="progress-linear-outer wow-outer">
+                  <!-- Linear progress bar-->
+                  <article class="progress-linear progress-linear-color-2 wow slideInDown" data-wow-delay=".15s">
+                    <div class="progress-header">
+                      <p>市场研究</p><span class="progress-value">100</span>
+                    </div>
+                    <div class="progress-bar-linear-wrap">
+                      <div class="progress-bar-linear"></div>
+                    </div>
+                  </article>
+                </div>
+                <div class="progress-linear-outer wow-outer">
+                  <!-- Linear progress bar-->
+                  <article class="progress-linear progress-linear-color-3 wow slideInDown" data-wow-delay=".2s">
+                    <div class="progress-header">
+                      <p>战略规划</p><span class="progress-value">75</span>
+                    </div>
+                    <div class="progress-bar-linear-wrap">
+                      <div class="progress-bar-linear"></div>
+                    </div>
+                  </article>
+                </div>
+                <div class="wow-outer button-outer"><a class="button button-primary button-winona wow slideInUp"
+                    href="about-me.html">了解更多</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cell-lg-6 height-fill">
+          <div class="figure-card">
+            <div class="figure-card-sizer"></div><img src="images/screens-2-960x762.jpg" alt="公司团队" width="960"
+              height="762" />
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Recent Blogs-->
+    <section class="section section-lg text-center">
+      <div class="container">
+        <h3 class="wow-outer"><span class="wow slideInDown">博客</span></h3>
+        <div class="row row-50" id="blogsContainer"></div>
+        <div class="wow-outer button-outer offset-top-2"><a
+            class="button button-dark-outline button-winona wow slideInUp" href="sidebar-blog.html">查看所有博客</a></div>
+      </div>
+    </section>
+    <!-- Testimonials-->
+    <section class="section section-lg bg-gray-100 text-center">
+      <div class="container">
+        <h3 class="wow-outer"><span class="wow slideInDown">客户评价</span></h3>
+        <div class="slick-widget-testimonials wow fadeIn" id="testimonialsContainer"></div>
+      </div>
+    </section>
+    <!-- Partners-->
+    <section class="section section-sm text-center">
+      <div class="container">
+        <!-- Owl Carousel-->
+        <div class="owl-carousel owl-carousel-1" data-items="2" data-sm-items="3" data-md-items="4" data-lg-items="5"
+          data-dots="true" data-nav="false" data-stage-padding="0" data-loop="true" data-margin="30"
+          data-mouse-drag="false">
+          <div class="item wow-outer">
+            <div class="wow slideInLeft"><a class="link-image" href="#"><img src="images/logo-john-brad-135x87.png"
+                  alt="" width="135" height="87" /></a></div>
+          </div>
+          <div class="item wow-outer">
+            <div class="wow slideInLeft" data-wow-delay=".05s"><a class="link-image" href="#"><img
+                  src="images/logo-the-oldbrand-134x104.png" alt="" width="134" height="104" /></a></div>
+          </div>
+          <div class="item wow-outer">
+            <div class="wow slideInLeft" data-wow-delay=".1s"><a class="link-image" href="#"><img
+                  src="images/logo-havana-cabana-132x87.png" alt="" width="132" height="87" /></a></div>
+          </div>
+          <div class="item wow-outer">
+            <div class="wow slideInLeft" data-wow-delay=".15s"><a class="link-image" href="#"><img
+                  src="images/logo-brownie-143x85.png" alt="" width="143" height="85" /></a></div>
+          </div>
+          <div class="item wow-outer">
+            <div class="wow slideInLeft" data-wow-delay=".2s"><a class="link-image" href="#"><img
+                  src="images/logo-hillplan-111x85.png" alt="" width="111" height="85" /></a></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- CTA Thin-->
+    <section class="section section-xs bg-primary-darken text-center">
+      <div class="container">
+        <div class="row justify-content-center">
+          <div class="col-sm-10 col-md-12">
+            <div class="box-cta-thin">
+              <h4 class="wow-outer"><span class="wow slideInRight">让我们讨论如何帮助您</span></h4>
+              <div class="wow-outer button-outer"><a class="button button-white-outline button-winona wow slideInLeft"
+                  href="#">免费咨询</a></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Map & contacts-->
+    <section class="section bg-gray-100">
+      <div class="range justify-content-xl-between">
+        <div class="cell-xl-6 align-self-center container">
+          <div class="row">
+            <div class="col-lg-9 cell-inner">
+              <div class="section-lg">
+                <h3 class="wow-outer"><span class="wow slideInDown">联系我们</span></h3>
+                <!-- RD Mailform-->
+                <form class="rd-form rd-mailform" data-form-output="form-output-global" data-form-type="contact"
+                  method="post" action="bat/rd-mailform.php">
+                  <div class="row row-10">
+                    <div class="col-md-6 wow-outer">
+                      <div class="form-wrap wow fadeSlideInUp">
+                        <label class="form-label-outside" for="contact-first-name">姓</label>
+                        <input class="form-input" id="contact-first-name" type="text" name="name"
+                          data-constraints="@Required">
+                      </div>
+                    </div>
+                    <div class="col-md-6 wow-outer">
+                      <div class="form-wrap wow fadeSlideInUp">
+                        <label class="form-label-outside" for="contact-last-name">名</label>
+                        <input class="form-input" id="contact-last-name" type="text" name="name"
+                          data-constraints="@Required">
+                      </div>
+                    </div>
+                    <div class="col-md-6 wow-outer">
+                      <div class="form-wrap wow fadeSlideInUp">
+                        <label class="form-label-outside" for="contact-email">电子邮箱</label>
+                        <input class="form-input" id="contact-email" type="email" name="email"
+                          data-constraints="@Email @Required">
+                      </div>
+                    </div>
+                    <div class="col-md-6 wow-outer">
+                      <div class="form-wrap wow fadeSlideInUp">
+                        <label class="form-label-outside" for="contact-phone">电话</label>
+                        <input class="form-input" id="contact-phone" type="text" name="phone"
+                          data-constraints="@PhoneNumber">
+                      </div>
+                    </div>
+                    <div class="col-12 wow-outer">
+                      <div class="form-wrap wow fadeSlideInUp">
+                        <label class="form-label-outside" for="contact-message">留言内容</label>
+                        <textarea class="form-input" id="contact-message" name="message"
+                          data-constraints="@Required"></textarea>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="group group-middle">
+                    <div class="wow-outer">
+                      <button class="button button-primary button-winona wow slideInRight" type="submit">发送消息</button>
+                    </div>
+                    <p>或使用</p>
+                    <div class="wow-outer"><a
+                        class="button button-primary-outline button-icon button-icon-left button-winona wow slideInLeft"
+                        href="#"><span class="icon text-primary mdi mdi-facebook-messenger"></span> 信使</a></div>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="cell-xl-5 height-fill wow fadeIn">
+          <div class="google-map-container google-map-align" id="googleMapContainer"></div>
+        </div>
+      </div>
+    </section>
+    <!-- Page Footer-->
+    <footer class="section footer-minimal bg-primary-darken">
+      <div class="container">
+        <div class="footer-minimal-inner"><a class="brand" href="index.html"><img src="images/ce-logo.png"
+              alt="CE International Group Co.,LTD" width="169" height="24" /></a>
+          <!-- Rights-->
+          <p class="rights"><span>&copy;&nbsp;</span><span
+              class="copyright-year"></span><span>&nbsp;</span><span>保留所有权利。</span><span>&nbsp;</span><br
+              class="d-sm-none" /><a href="#">使用条款</a><span> 和</span><span>&nbsp;</span><a
+              href="privacy-policy.html">隐私政策</a> <a target="_blank" href="https://www.mobanwang.com/"
+              title="网站模板">网站模板</a></p>
+        </div>
+      </div>
+    </footer>
+  </div>
+  <div class="preloader">
+    <div class="preloader-logo"><img src="images/ce-logo.png" alt="CE International Group Co.,LTD" width="169"
+        height="24" />
+    </div>
+    <div class="preloader-body">
+      <div id="loadingProgressG">
+        <div class="loadingProgressG" id="loadingProgressG_1"></div>
+      </div>
+    </div>
+  </div>
+  <!-- Global Mailform Output-->
+  <div class="snackbars" id="form-output-global"></div>
+  <!-- 成功案例显示样式 -->
+  <style>
+    /* 简单确保成功案例元素不被隐藏 */
+    section.section.section-md.text-center,
+    #projectsContainer,
+    .wow-outer,
+    .thumbnail-classic,
+    .thumbnail-classic-image,
+    .thumbnail-classic-caption {
+      opacity: 1 !important;
+      visibility: visible !important;
+      display: block !important;
+    }
+
+    /* 使用flexbox实现一行三个的布局 */
+    #projectsContainer {
+      display: flex !important;
+      flex-wrap: wrap !important;
+    }
+
+    /* 每个案例占33.333%宽度 */
+    #projectsContainer>div {
+      width: 33.333% !important;
+      padding: 0 10px !important;
+    }
+
+    /* 确保图片正常显示 */
+    .thumbnail-classic-image {
+      max-width: 100% !important;
+      height: auto !important;
+    }
+  </style>
+
+  <!-- 引入通用JavaScript功能 -->
+  <script src="../js/common.js"></script>
+
+  <!-- 动态内容渲染脚本 -->
+  <script>
+    // 页面加载时渲染所有动态内容
+    document.addEventListener('DOMContentLoaded', async function () {
+      console.log('DOMContentLoaded事件触发，开始渲染动态内容');
+
+      // 加载网站信息
+      await loadWebsiteInfo();
+      
+      // 渲染动态内容
+      await renderServices();
+      console.log('服务项目渲染完成，开始渲染成功案例');
+      await renderProjects();
+      console.log('成功案例渲染完成，开始渲染博客');
+      await renderBlogs();
+      console.log('博客渲染完成，开始渲染客户评价');
+      await renderTestimonials();
+      console.log('所有动态内容渲染完成');
+    });
+
+    // 加载网站信息
+    async function loadWebsiteInfo() {
+      try {
+        const info = await window.API.WebsiteInfo.get();
+        if (info) {
+          // 更新页面标题
+          if (info.title) {
+            document.title = info.title;
+            const titleMeta = document.querySelector('title');
+            if (titleMeta) titleMeta.textContent = info.title;
+          }
+          // 更新meta描述
+          if (info.description) {
+            const descMeta = document.querySelector('meta[name="description"]');
+            if (descMeta) descMeta.setAttribute('content', info.description);
+          }
+          // 更新联系方式
+          if (info.phone) {
+            const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
+            phoneLinks.forEach(link => {
+              link.textContent = info.phone;
+              link.setAttribute('href', `tel:${info.phone}`);
+            });
+          }
+          // 更新首页头图背景
+          const heroSection = document.getElementById('heroSection');
+          const heroImage = document.getElementById('heroImage');
+          if (info.heroBackground) {
+            if (heroImage) {
+              heroImage.style.backgroundImage = `url(${info.heroBackground})`;
+            }
+          }
+          // 更新首页文案
+          const heroTitle = document.getElementById('heroTitle');
+          const heroDescription = document.getElementById('heroDescription');
+          const heroButton = document.getElementById('heroButton');
+          if (heroTitle && (info.heroTitle || info.heroSubtitle)) {
+            heroTitle.innerHTML = `
+              <span class="font-weight-bold">${info.heroTitle || '专业咨询'}</span><br>
+              <span class="font-weight-bold sumbol text-primary">&</span>
+              <span class="font-weight-light">${info.heroSubtitle || '战略规划'}</span>
+            `;
+          }
+          if (heroDescription && info.heroDescription) {
+            heroDescription.textContent = info.heroDescription;
+          }
+          if (heroButton) {
+            heroButton.textContent = info.heroButtonText || '了解更多';
+            heroButton.href = info.heroButtonLink || '#';
+          }
+          // 更新统计数字
+          if (typeof info.statAwards === 'number') {
+            const el = document.querySelector('[data-counter-type="awards"] .counter');
+            if (el) el.textContent = info.statAwards;
+          }
+          if (typeof info.statSatisfaction === 'number') {
+            const el = document.querySelector('[data-counter-type="satisfaction"] .counter');
+            if (el) el.textContent = info.statSatisfaction;
+          }
+          if (typeof info.statExperience === 'number') {
+            const el = document.querySelector('[data-counter-type="experience"] .counter');
+            if (el) el.textContent = info.statExperience;
+          }
+          if (typeof info.statConsultants === 'number') {
+            const el = document.querySelector('[data-counter-type="consultants"] .counter');
+            if (el) el.textContent = info.statConsultants;
+          }
+        }
+      } catch (error) {
+        console.error('加载网站信息失败:', error);
+      }
+    }
+
+    // 渲染服务项目 - 从API获取
+    async function renderServices() {
+      const servicesContainer = document.getElementById('servicesContainer');
+      if (!servicesContainer) return;
+
+      try {
+        const services = await window.API.Services.getAll();
+        if (services && services.length > 0) {
+        servicesContainer.innerHTML = '';
+        // 只显示前3个服务项目
+          const displayServices = services.slice(0, 3);
+
+        displayServices.forEach((service, index) => {
+          const serviceHTML = `
+            <div class="col-sm-6 col-lg-4 wow-outer">
+              <!-- Box Creative-->
+              <article class="box-creative wow slideInDown" data-wow-delay=".${index * 0.05}s">
+                <div class="box-creative-icon linearicons-power"></div>
+                  <h4 class="box-creative-title"><a href="single-service.html?id=${service.id}">${service.title || ''}</a></h4>
+                  <p>${service.description || ''}</p>
+              </article>
+            </div>
+          `;
+          servicesContainer.insertAdjacentHTML('beforeend', serviceHTML);
+        });
+        } else {
+          servicesContainer.innerHTML = '<p>暂无服务项目</p>';
+        }
+      } catch (error) {
+        console.error('加载服务项目失败:', error);
+        servicesContainer.innerHTML = '<p>加载服务项目失败，请稍后重试</p>';
+      }
+    }
+
+    // 渲染成功案例 - 从API获取
+    async function renderProjects() {
+      const container = document.getElementById('projectsContainer');
+      if (!container) return;
+
+      try {
+        const projects = await window.API.Projects.getAll();
+        if (projects && projects.length > 0) {
+          container.innerHTML = '';
+          
+          projects.forEach((project, index) => {
+            const imageUrl = project.image || `images/grid-layout-${(index % 6) + 1}-370x256.jpg`;
+            const projectHTML = `
+          <div class="col-sm-6 col-lg-4 wow-outer">
+            <div class="thumbnail-classic thumbnail-classic-sm">
+                  <a href="single-project.html?id=${project.id}">
+                    <img class="thumbnail-classic-image" src="${imageUrl}" alt="${project.title || ''}" width="370" height="256">
+                <div class="thumbnail-classic-caption">
+                      <p class="thumbnail-classic-title">${project.title || ''}</p>
+                      <p class="thumbnail-classic-text">${project.category || ''}</p>
+                </div>
+              </a>
+            </div>
+          </div>
+        `;
+            container.insertAdjacentHTML('beforeend', projectHTML);
+          });
+      } else {
+          container.innerHTML = '<p>暂无成功案例</p>';
+        }
+      } catch (error) {
+        console.error('加载成功案例失败:', error);
+        container.innerHTML = '<p>加载成功案例失败，请稍后重试</p>';
+      }
+    }
+
+    // 渲染博客 - 从API获取
+    async function renderBlogs() {
+      const blogsContainer = document.getElementById('blogsContainer');
+      if (!blogsContainer) return;
+
+      try {
+        const news = await window.API.News.getAll();
+        if (news && news.length > 0) {
+        blogsContainer.innerHTML = '';
+          // 只显示前4条新闻
+          const displayNews = news.slice(0, 4);
+
+          displayNews.forEach((item, index) => {
+            const imageUrl = item.image || `images/blog-${(index % 4) + 1}.jpg`;
+            const date = item.createdAt || new Date().toISOString();
+          const blogHTML = `
+            <div class="col-sm-6 col-md-4 col-lg-3 wow-outer">
+              <!-- Post Tiny-->
+                <article class="post-tiny wow fadeSlideInDown" data-wow-delay=".${index * 0.05}s">
+                  <a class="post-tiny-media" href="single-blog-post.html?id=${item.id}">
+                    <img src="${imageUrl}" alt="${item.title || ''}" width="270" height="184" />
+                  </a>
+                  <h5 class="post-tiny-title">
+                    <a href="single-blog-post.html?id=${item.id}">${item.title || ''}</a>
+                  </h5>
+                  <time class="post-tiny-time" datetime="${new Date(date).toISOString().split('T')[0]}">
+                    ${new Date(date).toLocaleDateString('zh-CN')}
+                  </time>
+              </article>
+            </div>
+          `;
+          blogsContainer.insertAdjacentHTML('beforeend', blogHTML);
+        });
+        } else {
+          blogsContainer.innerHTML = '<p>暂无新闻动态</p>';
+        }
+      } catch (error) {
+        console.error('加载新闻动态失败:', error);
+        blogsContainer.innerHTML = '<p>加载新闻动态失败，请稍后重试</p>';
+      }
+    }
+
+    // 渲染客户评价 - 从API获取
+    async function renderTestimonials() {
+      const testimonialsContainer = document.getElementById('testimonialsContainer');
+      if (!testimonialsContainer) return;
+
+      try {
+        const testimonials = await window.API.Testimonials.getAll();
+        if (testimonials && testimonials.length > 0) {
+        // 生成客户评价HTML
+        let childCarouselHTML = `
+                  <div class="slick-slider carousel-child" id="child-carousel" data-for=".carousel-parent" data-arrows="true"
+                    data-loop="true" data-dots="false" data-swipe="true" data-items="1" data-sm-items="3" data-md-items="5"
+                    data-lg-items="5" data-xl-items="5" data-center-mode="true" data-slide-to-scroll="1">
+                `;
+
+        let parentCarouselHTML = `
+                  <!-- Slick Carousel-->
+                  <div class="slick-slider carousel-parent" data-arrows="false" data-loop="true" data-dots="false"
+                    data-swipe="false" data-items="1" data-fade="true" data-child="#child-carousel" data-for="#child-carousel">
+                `;
+
+          testimonials.forEach((testimonial, index) => {
+            const avatarUrl = testimonial.image || `images/avatar-${(index % 3) + 1}.jpg`;
+            const positionText = testimonial.position ? 
+              (testimonial.company ? `${testimonial.position} - ${testimonial.company}` : testimonial.position) : 
+              (testimonial.company || '');
+            
+          // 生成子轮播（头像）HTML
+          childCarouselHTML += `
+              <div class="item"><img src="${avatarUrl}" alt="客户头像" width="96" height="96" /></div>
+                    `;
+
+          // 生成父轮播（评价内容）HTML
+          parentCarouselHTML += `
+                      <div class="item">
+                        <!-- Quote Light-->
+                        <blockquote class="quote-light">
+                  <cite class="quote-light-cite">${testimonial.name || ''}</cite>
+                  <p class="quote-light-caption">${positionText}</p>
+                          <svg class="quote-light-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
+                    <path d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5L7.539,10.206z"></path>
+                          </svg>
+                          <div class="quote-light-text">
+                    <p>${testimonial.content || ''}</p>
+                          </div>
+                  <div class="quote-light-footer">
+                    <img class="quote-light-image" src="images/logo-majestic-104x64.png" alt="公司logo" width="104" height="64" />
+                          </div>
+                        </blockquote>
+                      </div>
+                    `;
+        });
+
+        childCarouselHTML += '</div>';
+        parentCarouselHTML += '</div>';
+
+        testimonialsContainer.innerHTML = childCarouselHTML + parentCarouselHTML;
+
+        // 手动初始化slick轮播
+        if (window.jQuery) {
+          const $ = window.jQuery;
+          // 先销毁可能存在的实例
+          if ($('.carousel-child').hasClass('slick-initialized')) {
+            $('.carousel-child').slick('unslick');
+          }
+          if ($('.carousel-parent').hasClass('slick-initialized')) {
+            $('.carousel-parent').slick('unslick');
+          }
+          // 重新初始化
+          $('.carousel-child').slick({
+            slidesToScroll: 1,
+            asNavFor: '.carousel-parent',
+            dots: false,
+            infinite: true,
+            focusOnSelect: true,
+            arrows: true,
+            swipe: true,
+            centerMode: true,
+            slidesToShow: 1,
+            responsive: [
+              { breakpoint: 576, settings: { slidesToShow: 3 } },
+              { breakpoint: 768, settings: { slidesToShow: 5 } },
+              { breakpoint: 992, settings: { slidesToShow: 5 } },
+              { breakpoint: 1200, settings: { slidesToShow: 5 } }
+            ]
+          });
+          $('.carousel-parent').slick({
+            slidesToScroll: 1,
+            asNavFor: '.carousel-child',
+            dots: false,
+            infinite: true,
+            focusOnSelect: true,
+            fade: true,
+            arrows: false,
+            swipe: false,
+            slidesToShow: 1
+          });
+        }
+        } else {
+          testimonialsContainer.innerHTML = '<p>暂无客户评价</p>';
+        }
+      } catch (error) {
+        console.error('加载客户评价失败:', error);
+        testimonialsContainer.innerHTML = '<p>加载客户评价失败，请稍后重试</p>';
+      }
+    }
+  </script>
+  <!-- Javascript-->
+  <script src="js/core.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/script.js"></script>
+  <script src="js/map.js"></script>
+</body>
+
+</html>

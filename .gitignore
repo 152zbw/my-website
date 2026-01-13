@@ -1,0 +1,53 @@
+# 依赖
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# 环境变量（重要！不要上传）
+.env
+.env.local
+.env.production
+
+# 数据库文件
+*.sqlite
+*.sqlite3
+*.db
+config/database.sqlite
+data/database.sqlite
+
+# 上传文件
+uploads/*
+!uploads/.gitkeep
+
+# 日志文件
+*.log
+logs/
+server.log
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# 临时文件
+*.tmp
+*.temp
+.cache/
+
+# PM2 文件
+.pm2/
+ecosystem.config.js
+
+# 备份文件
+*.backup
+*.bak
+*.old
+

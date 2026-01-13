@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>后台管理系统 - 咨询公司官网</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        
+        .login-form {
+            background-color: #fff;
+            padding: 40px;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+        
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 30px;
+            color: #354879;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #354879;
+        }
+        
+        .btn {
+            width: 100%;
+            padding: 12px;
+            background-color: #354879;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        
+        .btn:hover {
+            background-color: #28334f;
+        }
+        
+        .error-message {
+            color: #dc0000;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .success-message {
+            color: #28a745;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <form class="login-form" id="loginForm">
+            <h2>后台管理系统</h2>
+            <div id="message"></div>
+            <div class="form-group">
+                <label for="username">用户名</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            <button type="submit" class="btn">登录</button>
+        </form>
+    </div>
+    
+    <!-- 引入前端API工具，复用统一的请求和Token逻辑 -->
+    <script src="../js/api.js"></script>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageDiv = document.getElementById('message');
+
+            messageDiv.textContent = '';
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    messageDiv.className = 'error-message';
+                    messageDiv.textContent = data.message || '登录失败，请检查用户名和密码';
+                    return;
+                }
+
+                // 保存Token和用户信息
+                if (data.token) {
+                    localStorage.setItem('adminToken', data.token);
+                }
+                if (data.user) {
+                    localStorage.setItem('adminUser', JSON.stringify(data.user));
+                }
+
+                // 跳转到管理首页
+                messageDiv.className = 'success-message';
+                messageDiv.textContent = '登录成功，正在跳转到管理首页...';
+                setTimeout(() => {
+                    window.location.href = 'dashboard-new.html';
+                }, 1000);
+            } catch (error) {
+                console.error('登录请求错误:', error);
+                messageDiv.className = 'error-message';
+                messageDiv.textContent = '登录请求失败，请稍后重试';
+            }
+        });
+        </script>
+</body>
+</html>

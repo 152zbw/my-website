@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>团队成员管理 - 后台管理系统</title>
+    <script src="../js/api.js"></script>
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box;}
+        body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:#f5f7fa;color:#333;line-height:1.6;}
+        .main-container{display:flex;min-height:100vh;}
+        .sidebar{width:280px;background:linear-gradient(180deg,#354879 0%,#28334f 100%);color:#fff;padding:20px 0;box-shadow:2px 0 10px rgba(0,0,0,0.1);position:fixed;height:100vh;overflow-y:auto;z-index:1000;}
+        .sidebar-header{text-align:center;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:20px;}
+        .sidebar-header h3{font-size:24px;font-weight:600;margin:0;}
+        .nav-menu{list-style:none;padding:0;}
+        .nav-menu li{margin:0;}
+        .nav-menu a{display:flex;align-items:center;padding:15px 20px;color:rgba(255,255,255,0.9);text-decoration:none;transition:all 0.3s ease;border-left:3px solid transparent;}
+        .nav-menu a:hover{background:rgba(255,255,255,0.1);border-left-color:#fff;color:#fff;}
+        .nav-menu a.active{background:rgba(255,255,255,0.15);border-left-color:#fff;color:#fff;font-weight:500;}
+        .nav-menu a i{margin-right:15px;font-size:18px;width:20px;text-align:center;}
+        .content{margin-left:280px;flex:1;transition:all 0.3s ease;}
+        .top-nav{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:15px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:999;}
+        .top-nav-left{display:flex;align-items:center;}
+        .menu-toggle{background:none;border:none;font-size:20px;cursor:pointer;margin-right:20px;color:#333;}
+        .page-title{font-size:20px;font-weight:600;color:#354879;}
+        .top-nav-right{display:flex;align-items:center;}
+        .user-info{display:flex;align-items:center;margin-right:20px;}
+        .user-avatar{width:40px;height:40px;border-radius:50%;background:#354879;color:#fff;display:flex;align-items:center;justify-content:center;margin-right:10px;font-weight:600;}
+        .logout-btn{background:#dc0000;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;transition:background-color 0.3s ease;font-weight:500;}
+        .logout-btn:hover{background:#b71c1c;}
+        .main-content{padding:20px;}
+        .content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+        .content-title{font-size:24px;font-weight:600;color:#354879;}
+        .btn{display:inline-block;padding:10px 20px;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:500;transition:all 0.3s ease;text-decoration:none;}
+        .btn-primary{background:#354879;color:#fff;}
+        .btn-primary:hover{background:#28334f;}
+        .btn-secondary{background:#95a5a6;color:#fff;}
+        .btn-secondary:hover{background:#7f8c8d;}
+        .btn-danger{background:#e74c3c;color:#fff;}
+        .btn-danger:hover{background:#c0392b;}
+        .btn-sm{padding:6px 12px;font-size:12px;}
+        .card{background:#fff;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:25px;margin-bottom:20px;}
+        .data-table{width:100%;border-collapse:collapse;margin-top:20px;}
+        .data-table th,.data-table td{padding:12px;text-align:left;border-bottom:1px solid #ecf0f1;}
+        .data-table th{background:#f8f9fa;font-weight:600;color:#354879;}
+        .data-table tr:hover{background:#f5f5f5;}
+        .avatar-img{width:50px;height:50px;object-fit:cover;border-radius:50%;}
+        .modal{display:none;position:fixed;z-index:1001;left:0;top:0;width:100%;height:100%;overflow:auto;background:rgba(0,0,0,0.5);}
+        .modal-content{background:#fff;margin:5% auto;padding:25px;border-radius:8px;width:90%;max-width:540px;box-shadow:0 5px 15px rgba(0,0,0,0.3);}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
+        .modal-title{font-size:18px;font-weight:600;color:#354879;}
+        .close{color:#aaa;font-size:28px;font-weight:bold;cursor:pointer;}
+        .close:hover{color:#333;}
+        .form-group{margin-bottom:15px;}
+        .form-label{display:block;margin-bottom:5px;font-weight:600;color:#354879;}
+        .form-input,.form-textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;}
+        .form-textarea{resize:vertical;min-height:80px;}
+        .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
+        .message{padding:15px;border-radius:4px;position:fixed;top:80px;right:20px;z-index:1002;min-width:250px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
+        .message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
+        .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+        @media(max-width:768px){.sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);} .content{margin-left:0;} .content-header{flex-direction:column;align-items:flex-start;} .btn{margin-top:10px;}}
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header"><h3>后台管理</h3></div>
+            <ul class="nav-menu">
+                <li><a href="dashboard-new.html"><i class="fas fa-tachometer-alt"></i>仪表盘</a></li>
+                <li><a href="website-info.html"><i class="fas fa-info-circle"></i>网站信息</a></li>
+                <li><a href="navigation.html"><i class="fas fa-bars"></i>导航管理</a></li>
+                <li><a href="services.html"><i class="fas fa-concierge-bell"></i>服务项目</a></li>
+                <li><a href="projects.html"><i class="fas fa-briefcase"></i>成功案例</a></li>
+                <li><a href="news.html"><i class="fas fa-newspaper"></i>博客/新闻</a></li>
+                <li><a href="testimonials.html"><i class="fas fa-comments"></i>客户评价</a></li>
+                <li><a href="partners.html"><i class="fas fa-handshake"></i>合作伙伴</a></li>
+                <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
+                <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
+                <li><a href="team.html" class="active"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
+                <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
+            </ul>
+        </aside>
+
+        <main class="content">
+            <header class="top-nav">
+                <div class="top-nav-left">
+                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
+                    <h2 class="page-title">团队成员管理</h2>
+                </div>
+                <div class="top-nav-right">
+                    <div class="user-info">
+                        <div class="user-avatar">A</div>
+                        <span>admin</span>
+                    </div>
+                    <button class="logout-btn" onclick="logout()">退出登录</button>
+                </div>
+            </header>
+
+            <div class="main-content">
+                <div class="content-header">
+                    <h3 class="content-title">成员列表</h3>
+                    <button class="btn btn-primary" onclick="openModal()">添加成员</button>
+                </div>
+
+                <div class="card">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID</th><th>姓名</th><th>职位</th><th>头像</th><th>排序</th><th>状态</th><th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teamTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <div id="teamModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle" class="modal-title">添加成员</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="teamForm">
+                <input type="hidden" id="memberId">
+                <div class="form-group">
+                    <label class="form-label" for="memberName">姓名</label>
+                    <input id="memberName" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="memberPosition">职位</label>
+                    <input id="memberPosition" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="memberAvatar">头像 URL</label>
+                    <input id="memberAvatar" class="form-input" placeholder="images/team-1-270x273.jpg">
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="memberSort">排序</label>
+                    <input id="memberSort" type="number" class="form-input" value="0" min="0">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">状态</label>
+                    <div style="display:flex;gap:20px;">
+                        <label style="display:flex;align-items:center;"><input type="radio" name="memberStatus" value="1" checked><span style="margin-left:5px;">激活</span></label>
+                        <label style="display:flex;align-items:center;"><input type="radio" name="memberStatus" value="0"><span style="margin-left:5px;">禁用</span></label>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="memberBio">简介</label>
+                    <textarea id="memberBio" class="form-textarea" rows="5" placeholder="成员简介"></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
+                    <button type="submit" class="btn btn-primary">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">确认删除</h3>
+                <span class="close" onclick="closeDeleteModal()">&times;</span>
+            </div>
+            <p>确定要删除该成员吗？</p>
+            <div class="form-actions">
+                <button class="btn btn-secondary" onclick="closeDeleteModal()">取消</button>
+                <button class="btn btn-danger" onclick="confirmDelete()">删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let deleteId = null;
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            const user = localStorage.getItem('adminUser');
+            const token = localStorage.getItem('adminToken');
+            if (!user || !token) { window.location.href = 'index.html'; return; }
+            initMenuToggle();
+            await loadTeam();
+            document.getElementById('teamForm').addEventListener('submit', onSave);
+        });
+
+        function initMenuToggle(){document.getElementById('menuToggle').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');});}
+        
+        function logout(){if(confirm('确定要退出登录吗？')){localStorage.removeItem('adminUser');localStorage.removeItem('adminToken');window.location.href='index.html';}}
+
+        async function loadTeam(){
+            const tbody = document.getElementById('teamTableBody');
+            tbody.innerHTML = '<tr><td colspan="7">加载中...</td></tr>';
+            try {
+                // 使用管理接口获取所有成员（包括禁用的）
+                const list = await window.API.Team.getAllAdmin();
+                render(list || []);
+            } catch (err) {
+                console.error('加载团队成员失败', err);
+                const errorMsg = err.message || '加载失败，请稍后重试';
+                tbody.innerHTML = `<tr><td colspan="7" style="color:red;">${errorMsg}<br><small>请检查：1. 后端服务器是否运行 2. 是否已运行 node init-db.js 初始化数据库</small></td></tr>`;
+                showMessage('加载失败：' + errorMsg, 'error');
+            }
+        }
+
+        function render(list){
+            const tbody = document.getElementById('teamTableBody');
+            tbody.innerHTML='';
+            if(!list.length){ tbody.innerHTML='<tr><td colspan="7">暂无数据</td></tr>'; return; }
+            list.sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
+            list.forEach(i=>{
+                tbody.insertAdjacentHTML('beforeend',`
+                    <tr>
+                        <td>${i.id}</td>
+                        <td>${i.name||''}</td>
+                        <td>${i.position||''}</td>
+                        <td>${i.image?`<img src="${i.image}" class="avatar-img" alt="${i.name}">`:'-'}</td>
+                        <td>${i.sortOrder||0}</td>
+                        <td>${i.isActive?'激活':'禁用'}</td>
+                        <td>
+                            <button class="btn btn-primary btn-sm" onclick="editItem(${i.id})">编辑</button>
+                            <button class="btn btn-danger btn-sm" onclick="removeItem(${i.id})">删除</button>
+                        </td>
+                    </tr>
+                `);
+            });
+        }
+
+        function openModal(){
+            document.getElementById('teamForm').reset();
+            document.getElementById('memberId').value='';
+            document.querySelector('input[name="memberStatus"][value="1"]').checked=true;
+            document.getElementById('modalTitle').textContent='添加成员';
+            document.getElementById('teamModal').style.display='block';
+        }
+
+        function closeModal(){document.getElementById('teamModal').style.display='none';}
+
+        async function onSave(e){
+            e.preventDefault();
+            const id = document.getElementById('memberId').value;
+            const name = document.getElementById('memberName').value.trim();
+            const position = document.getElementById('memberPosition').value.trim();
+            const image = document.getElementById('memberAvatar').value.trim();
+            const sortOrder = parseInt(document.getElementById('memberSort').value||'0',10);
+            const isActive = document.querySelector('input[name="memberStatus"]:checked').value==='1' ? 1 : 0;
+            const bio = document.getElementById('memberBio').value.trim();
+            if(!name||!position){showMessage('请填写姓名和职位','error');return;}
+            try {
+                const payload = { name, position, image, bio, sortOrder, isActive };
+                if(id){
+                    await window.API.Team.update(id, payload);
+                    showMessage('更新成功','success');
+                }else{
+                    await window.API.Team.create(payload);
+                    showMessage('创建成功','success');
+                }
+                await loadTeam();
+                closeModal();
+            } catch (err) {
+                console.error('保存失败', err);
+                showMessage(err.message || '保存失败','error');
+            }
+        }
+
+        async function editItem(id){
+            try {
+                const item = await window.API.Team.get(id);
+                if(!item) return;
+                document.getElementById('memberId').value=item.id;
+                document.getElementById('memberName').value=item.name||'';
+                document.getElementById('memberPosition').value=item.position||'';
+                document.getElementById('memberAvatar').value=item.image||'';
+                document.getElementById('memberSort').value=item.sortOrder||0;
+                document.getElementById('memberBio').value=item.bio||'';
+                document.querySelector(`input[name="memberStatus"][value="${item.isActive?1:0}"]`).checked=true;
+                document.getElementById('modalTitle').textContent='编辑成员';
+                document.getElementById('teamModal').style.display='block';
+            } catch (err) {
+                console.error('加载成员详情失败', err);
+                showMessage('加载成员详情失败','error');
+            }
+        }
+
+        function removeItem(id){deleteId=id;document.getElementById('deleteModal').style.display='block';}
+
+        function closeDeleteModal(){document.getElementById('deleteModal').style.display='none';deleteId=null;}
+
+        async function confirmDelete(){
+            if(!deleteId) return;
+            try {
+                await window.API.Team.delete(deleteId);
+                showMessage('删除成功','success');
+                await loadTeam();
+                closeDeleteModal();
+            } catch (err) {
+                console.error('删除失败', err);
+                showMessage(err.message || '删除失败','error');
+                closeDeleteModal();
+            }
+        }
+
+        function showMessage(text,type){
+            const div=document.createElement('div');
+            div.className=`message ${type}`;
+            div.textContent=text;
+            document.body.appendChild(div);
+            setTimeout(()=>div.remove(),3000);
+        }
+
+        window.onclick=(e)=>{
+            if(e.target===document.getElementById('teamModal'))closeModal();
+            if(e.target===document.getElementById('deleteModal'))closeDeleteModal();
+        }
+    </script>
+</body>
+</html>
