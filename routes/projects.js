@@ -34,7 +34,7 @@ router.get('/:id', async (req, res) => {
 // 创建项目
 router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { title, category, image, description, content, client, sortOrder, isActive } = req.body;
+        const { title, category, image, description, content, client, services, duration, sortOrder, isActive } = req.body;
         const project = await Project.create({
             title,
             category,
@@ -42,6 +42,8 @@ router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
             description,
             content,
             client,
+            services,
+            duration,
             sortOrder,
             isActive
         });
@@ -55,7 +57,7 @@ router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
 // 更新项目
 router.put('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { title, category, image, description, content, client, sortOrder, isActive } = req.body;
+        const { title, category, image, description, content, client, services, duration, sortOrder, isActive } = req.body;
         const project = await Project.findByPk(req.params.id);
         if (!project) {
             return res.status(404).json({ message: '项目不存在' });
@@ -67,6 +69,8 @@ router.put('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
             description,
             content,
             client,
+            services,
+            duration,
             sortOrder,
             isActive
         });
@@ -93,6 +97,3 @@ router.delete('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
 });
 
 module.exports = router;
-
-
-

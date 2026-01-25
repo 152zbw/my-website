@@ -7,6 +7,8 @@
     <title>网站信息管理 - 后台管理系统</title>
     <!-- 只使用本地资源，避免外网CDN加载过慢 -->
     <script src="../js/api.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <style>
         * {
             margin: 0;
@@ -330,6 +332,75 @@
             display: block;
         }
 
+        .file-upload-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .file-upload-group .form-input {
+            flex: 1;
+        }
+
+        .upload-btn {
+            padding: 10px 20px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .upload-btn:hover {
+            background-color: #218838;
+        }
+
+        .upload-btn:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            display: inline-block;
+        }
+
+        .file-input-wrapper input[type="file"] {
+            position: absolute;
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .upload-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #354879;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .upload-label:hover {
+            background-color: #28334f;
+        }
+
+        #description-editor-container,
+        #hero-description-editor-container {
+            height: 150px; /* Quill editor height */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
         @media (max-width: 768px) {
             .sidebar {
                 transform: translateX(-100%);
@@ -368,6 +439,8 @@
                 <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
                 <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
                 <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="pricing.html"><i class="fas fa-dollar-sign"></i>价格表</a></li>
+                <li><a href="home-features.html"><i class="fas fa-star"></i>首页特色模块</a></li>
                 <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
                 <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
             </ul>
@@ -399,7 +472,7 @@
 
                         <div class="form-group">
                             <label for="description" class="form-label">网站描述</label>
-                            <textarea id="description" name="description" class="form-textarea" rows="4"></textarea>
+                            <div id="description-editor-container"></div>
                         </div>
 
                         <div class="form-group">
@@ -424,23 +497,41 @@
                         </div>
 
                         <div class="form-group">
-                            <label for="logo" class="form-label">Logo路径</label>
-                            <input type="text" id="logo" name="logo" class="form-input"
-                                placeholder="例如：images/logo.png">
+                            <label for="logo" class="form-label">Logo</label>
+                            <div class="file-upload-group">
+                                <input type="text" id="logo" name="logo" class="form-input"
+                                    placeholder="例如：images/logo.png 或 /uploads/xxx.png">
+                                <label for="logoFile" class="upload-label">选择文件</label>
+                                <input type="file" id="logoFile" accept="image/*" style="display:none;">
+                            </div>
+                            <div class="image-preview" id="logoPreview" style="display:none; margin-top:10px;">
+                                <img id="logoPreviewImg" src="" alt="Logo预览">
+                            </div>
                         </div>
 
                         <div class="form-group">
-                            <label for="favicon" class="form-label">Favicon路径</label>
-                            <input type="text" id="favicon" name="favicon" class="form-input"
-                                placeholder="例如：images/favicon.ico">
+                            <label for="favicon" class="form-label">Favicon</label>
+                            <div class="file-upload-group">
+                                <input type="text" id="favicon" name="favicon" class="form-input"
+                                    placeholder="例如：images/favicon.ico 或 /uploads/xxx.ico">
+                                <label for="faviconFile" class="upload-label">选择文件</label>
+                                <input type="file" id="faviconFile" accept="image/*" style="display:none;">
+                            </div>
+                            <div class="image-preview" id="faviconPreview" style="display:none; margin-top:10px;">
+                                <img id="faviconPreviewImg" src="" alt="Favicon预览">
+                            </div>
                         </div>
 
                         <h4>首页头图与统计配置</h4>
 
                         <div class="form-group">
-                            <label for="heroBackground" class="form-label">首页头图背景图片路径（screens-3）</label>
-                            <input type="text" id="heroBackground" name="heroBackground" class="form-input"
-                                placeholder="例如：images/screens-3-960x752.png">
+                            <label for="heroBackground" class="form-label">首页头图背景图片</label>
+                            <div class="file-upload-group">
+                                <input type="text" id="heroBackground" name="heroBackground" class="form-input"
+                                    placeholder="例如：images/screens-3-960x752.png 或 /uploads/xxx.png">
+                                <label for="heroBackgroundFile" class="upload-label">选择文件</label>
+                                <input type="file" id="heroBackgroundFile" accept="image/*" style="display:none;">
+                            </div>
                             <div class="image-preview" id="heroPreview" style="display:none; margin-top:10px;">
                                 <img id="heroPreviewImg" src="" alt="预览">
                             </div>
@@ -458,7 +549,7 @@
 
                         <div class="form-group">
                             <label for="heroDescription" class="form-label">首页简介文案</label>
-                            <textarea id="heroDescription" name="heroDescription" class="form-textarea" rows="3"></textarea>
+                            <div id="hero-description-editor-container"></div>
                         </div>
 
                         <div class="form-group">
@@ -495,12 +586,12 @@
                                         min="0">
                                 </div>
                             </div>
-                        </div>
+                            </div>
 
-                        <div class="form-actions">
+                            <div class="form-actions">
                             <button type="reset" class="btn btn-secondary">重置</button>
-                            <button type="submit" class="btn btn-primary">保存更改</button>
-                        </div>
+                                <button type="submit" class="btn btn-primary">保存更改</button>
+                            </div>
                     </form>
                 </div>
             </div>
@@ -508,6 +599,9 @@
     </div>
 
     <script>
+        let descriptionQuill;
+        let heroDescriptionQuill;
+
         document.addEventListener('DOMContentLoaded', function () {
             const user = localStorage.getItem('adminUser');
             const token = localStorage.getItem('adminToken');
@@ -517,21 +611,154 @@
             }
 
             initMenuToggle();
+            initQuillEditors();
             loadWebsiteInfo();
+            initFileUploads();
 
             // 图片预览
             document.getElementById('heroBackground').addEventListener('input', function () {
-                const url = this.value.trim();
-                const preview = document.getElementById('heroPreview');
-                const img = document.getElementById('heroPreviewImg');
-                if (url) {
-                    img.src = url;
-                    preview.style.display = 'block';
-                } else {
-                    preview.style.display = 'none';
-                }
+                updateImagePreview(this.value, 'heroPreview', 'heroPreviewImg');
+            });
+            document.getElementById('logo').addEventListener('input', function () {
+                updateImagePreview(this.value, 'logoPreview', 'logoPreviewImg');
+            });
+            document.getElementById('favicon').addEventListener('input', function () {
+                updateImagePreview(this.value, 'faviconPreview', 'faviconPreviewImg');
             });
         });
+
+        function initQuillEditors() {
+            descriptionQuill = new Quill('#description-editor-container', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{'list': 'ordered'}, {'list': 'bullet'}],
+                        [{'script': 'sub'}, {'script': 'super'}],
+                        [{'indent': '-1'}, {'indent': '+1'}],
+                        [{'direction': 'rtl'}],
+                        [{'size': ['small', false, 'large', 'huge']}],
+                        [{'header': [1, 2, 3, 4, 5, 6, false]}],
+                        [{'color': []}, {'background': []}],
+                        [{'font': []}],
+                        [{'align': []}],
+                        ['clean']
+                    ]
+                }
+            });
+
+            heroDescriptionQuill = new Quill('#hero-description-editor-container', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{'list': 'ordered'}, {'list': 'bullet'}],
+                        [{'indent': '-1'}, {'indent': '+1'}],
+                        [{'header': [1, 2, 3, 4, 5, 6, false]}],
+                        [{'color': []}, {'background': []}],
+                        [{'align': []}],
+                        ['clean']
+                    ]
+                }
+            });
+        }
+
+        function updateImagePreview(url, previewId, imgId) {
+            const urlValue = url.trim();
+            const preview = document.getElementById(previewId);
+            const img = document.getElementById(imgId);
+            if (urlValue) {
+                img.src = urlValue;
+                preview.style.display = 'block';
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+
+        function initFileUploads() {
+            // Logo上传
+            const logoFile = document.getElementById('logoFile');
+            const logoLabel = logoFile.previousElementSibling;
+            logoLabel.addEventListener('click', (e) => {
+                e.preventDefault();
+                logoFile.click();
+            });
+            logoFile.addEventListener('change', async function() {
+                if (this.files && this.files[0]) {
+                    await uploadFile(this.files[0], 'logo');
+                }
+            });
+
+            // Favicon上传
+            const faviconFile = document.getElementById('faviconFile');
+            const faviconLabel = faviconFile.previousElementSibling;
+            faviconLabel.addEventListener('click', (e) => {
+                e.preventDefault();
+                faviconFile.click();
+            });
+            faviconFile.addEventListener('change', async function() {
+                if (this.files && this.files[0]) {
+                    await uploadFile(this.files[0], 'favicon');
+                }
+            });
+
+            // Hero背景上传
+            const heroFile = document.getElementById('heroBackgroundFile');
+            const heroLabel = heroFile.previousElementSibling;
+            heroLabel.addEventListener('click', (e) => {
+                e.preventDefault();
+                heroFile.click();
+            });
+            heroFile.addEventListener('change', async function() {
+                if (this.files && this.files[0]) {
+                    await uploadFile(this.files[0], 'heroBackground');
+                }
+            });
+        }
+
+        async function uploadFile(file, fieldName) {
+            try {
+                if (!file) {
+                    showMessage('请选择文件', 'error');
+                    return;
+                }
+                
+                showMessage('正在上传...', 'success');
+                console.log('开始上传文件:', file.name, file.size);
+                
+                const result = await window.API.Upload.uploadSingle(file);
+                console.log('上传结果:', result);
+                
+                if (result && result.success && result.file) {
+                    const input = document.getElementById(fieldName);
+                    if (input) {
+                        input.value = result.file.path;
+                        console.log('文件路径已设置:', result.file.path);
+                    }
+                    
+                    // 更新预览
+                    if (fieldName === 'logo') {
+                        updateImagePreview(result.file.path, 'logoPreview', 'logoPreviewImg');
+                    } else if (fieldName === 'favicon') {
+                        updateImagePreview(result.file.path, 'faviconPreview', 'faviconPreviewImg');
+                    } else if (fieldName === 'heroBackground') {
+                        updateImagePreview(result.file.path, 'heroPreview', 'heroPreviewImg');
+                    }
+                    
+                    showMessage('上传成功！图片路径已自动填入', 'success');
+                } else {
+                    showMessage('上传失败：服务器返回格式错误', 'error');
+                    console.error('上传结果格式错误:', result);
+                }
+            } catch (error) {
+                console.error('上传失败:', error);
+                const errorMsg = error.message || '上传失败，请检查网络连接或服务器状态';
+                showMessage('上传失败: ' + errorMsg, 'error');
+                if (errorMsg.includes('登录已过期') || errorMsg.includes('认证')) {
+                    setTimeout(() => { window.location.href = 'index.html'; }, 800);
+                }
+            }
+        }
 
         function initMenuToggle() {
             const menuToggle = document.getElementById('menuToggle');
@@ -555,7 +782,11 @@
                 if (!data) return;
 
                 document.getElementById('title').value = data.title || '';
-                document.getElementById('description').value = data.description || '';
+                // descriptionQuill.setContents([]);
+                if (data.description) {
+                    descriptionQuill.root.innerHTML = data.description;
+                }
+
                 document.getElementById('keywords').value = data.keywords || '';
                 document.getElementById('phone').value = data.phone || '';
                 document.getElementById('email').value = data.email || '';
@@ -566,7 +797,11 @@
                 document.getElementById('heroBackground').value = data.heroBackground || '';
                 document.getElementById('heroTitle').value = data.heroTitle || '';
                 document.getElementById('heroSubtitle').value = data.heroSubtitle || '';
-                document.getElementById('heroDescription').value = data.heroDescription || '';
+                // heroDescriptionQuill.setContents([]);
+                if (data.heroDescription) {
+                    heroDescriptionQuill.root.innerHTML = data.heroDescription;
+                }
+
                 document.getElementById('heroButtonText').value = data.heroButtonText || '';
                 document.getElementById('heroButtonLink').value = data.heroButtonLink || '';
 
@@ -576,11 +811,14 @@
                 document.getElementById('statConsultants').value = data.statConsultants ?? 0;
 
                 // 触发图片预览
+                if (data.logo) {
+                    updateImagePreview(data.logo, 'logoPreview', 'logoPreviewImg');
+                }
+                if (data.favicon) {
+                    updateImagePreview(data.favicon, 'faviconPreview', 'faviconPreviewImg');
+                }
                 if (data.heroBackground) {
-                    const preview = document.getElementById('heroPreview');
-                    const img = document.getElementById('heroPreviewImg');
-                    img.src = data.heroBackground;
-                    preview.style.display = 'block';
+                    updateImagePreview(data.heroBackground, 'heroPreview', 'heroPreviewImg');
                 }
             } catch (err) {
                 console.error('加载网站信息失败:', err);
@@ -593,7 +831,7 @@
 
             const data = {
                 title: document.getElementById('title').value.trim(),
-                description: document.getElementById('description').value.trim(),
+                description: descriptionQuill.root.innerHTML.trim(), // 从Quill获取内容
                 keywords: document.getElementById('keywords').value.trim(),
                 phone: document.getElementById('phone').value.trim(),
                 email: document.getElementById('email').value.trim(),
@@ -603,7 +841,7 @@
                 heroBackground: document.getElementById('heroBackground').value.trim(),
                 heroTitle: document.getElementById('heroTitle').value.trim(),
                 heroSubtitle: document.getElementById('heroSubtitle').value.trim(),
-                heroDescription: document.getElementById('heroDescription').value.trim(),
+                heroDescription: heroDescriptionQuill.root.innerHTML.trim(), // 从Quill获取内容
                 heroButtonText: document.getElementById('heroButtonText').value.trim(),
                 heroButtonLink: document.getElementById('heroButtonLink').value.trim(),
                 statAwards: parseInt(document.getElementById('statAwards').value || '0', 10),
@@ -619,9 +857,18 @@
 
             try {
                 await window.API.WebsiteInfo.update(data);
-                showMessage('网站信息更新成功', 'success');
+            showMessage('网站信息更新成功', 'success');
             } catch (err) {
                 console.error('更新网站信息失败:', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 showMessage('保存失败，请稍后重试', 'error');
             }
         });

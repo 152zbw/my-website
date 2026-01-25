@@ -4,10 +4,12 @@ const fs = require('fs');
 require('dotenv').config();
 
 // 确保上传目录存在
-const uploadDir = path.join(__dirname, '..', process.env.UPLOAD_DIR);
+const uploadDir = path.join(__dirname, '..', process.env.UPLOAD_DIR || 'uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
+    console.log('创建上传目录:', uploadDir);
 }
+console.log('上传目录:', uploadDir);
 
 // 配置multer
 const storage = multer.diskStorage({
@@ -38,7 +40,7 @@ const fileFilter = (req, file, cb) => {
 const upload = multer({
     storage: storage,
     limits: {
-        fileSize: parseInt(process.env.MAX_FILE_SIZE)
+        fileSize: parseInt(process.env.MAX_FILE_SIZE || '5242880') // 默认5MB
     },
     fileFilter: fileFilter
 });

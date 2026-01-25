@@ -8,6 +8,12 @@
     <!-- 只使用本地资源，避免外网CDN加载过慢 -->
     <!-- 引入API -->
     <script src="../js/api.js"></script>
+    <!-- Quill.js CSS -->
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <!-- Quill.js JS -->
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <!-- 图标字体（FontAwesome/MDI/Linearicons） -->
+    <link rel="stylesheet" href="../css/fonts.css">
     <style>
         /* 全局样式 */
         * {
@@ -347,6 +353,14 @@
             min-height: 100px;
         }
 
+        #service-description-editor-container {
+            height: 150px; /* Quill editor height */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
         .form-actions {
             display: flex;
             justify-content: flex-end;
@@ -376,6 +390,159 @@
             background-color: #f8d7da;
             color: #721c24;
             border: 1px solid #f5c6cb;
+        }
+
+        /* 图标选择器 */
+        .icon-picker-trigger {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .icon-preview {
+            width: 38px;
+            height: 38px;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #fff;
+            color: #354879;
+            flex: 0 0 auto;
+        }
+        .icon-preview i {
+            font-size: 18px;
+            line-height: 1;
+        }
+        .icon-picker-btn {
+            padding: 9px 12px;
+            border: 1px solid #d0d7e2;
+            border-radius: 6px;
+            background: #fff;
+            cursor: pointer;
+            color: #354879;
+            font-weight: 600;
+            flex: 0 0 auto;
+        }
+        .icon-picker-btn:hover {
+            background: #f8fafc;
+        }
+        .icon-modal {
+            display: none;
+            position: fixed;
+            z-index: 1100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background: rgba(0, 0, 0, 0.45);
+        }
+        .icon-modal-content {
+            background: #fff;
+            margin: 5% auto;
+            padding: 18px;
+            border-radius: 10px;
+            width: 92%;
+            max-width: 860px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+        .icon-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+        .icon-modal-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #354879;
+            flex: 0 0 auto;
+        }
+        .icon-search {
+            flex: 1;
+            max-width: 420px;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+        .icon-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .icon-item {
+            border: 1px solid #e5e7eb;
+            border-radius: 10px;
+            padding: 10px 8px;
+            cursor: pointer;
+            background: #fff;
+            transition: all .15s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            user-select: none;
+        }
+        .icon-item:hover {
+            border-color: #354879;
+            box-shadow: 0 4px 12px rgba(53, 72, 121, 0.18);
+        }
+        .icon-item i {
+            font-size: 20px;
+            color: #354879;
+        }
+        .icon-item .icon-name {
+            font-size: 12px;
+            color: #475569;
+            text-align: center;
+            word-break: break-all;
+        }
+
+        /* 文件上传样式 */
+        .file-upload-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+
+        .file-upload-group .form-input {
+            flex: 1;
+        }
+
+        .upload-label {
+            display: inline-block;
+            padding: 10px 20px;
+            background-color: #354879;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .upload-label:hover {
+            background-color: #28334f;
+        }
+
+        .image-preview {
+            margin-top: 10px;
+            max-width: 200px;
+            max-height: 150px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .image-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
         }
 
         /* 响应式设计 */
@@ -423,6 +590,8 @@
                 <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
                 <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
                 <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="pricing.html"><i class="fas fa-dollar-sign"></i>价格表</a></li>
+                <li><a href="home-features.html"><i class="fas fa-star"></i>首页特色模块</a></li>
                 <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
                 <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
             </ul>
@@ -492,11 +661,26 @@
                 </div>
                 <div class="form-group">
                     <label for="serviceIcon" class="form-label">图标</label>
-                    <input type="text" id="serviceIcon" class="form-input" placeholder="例如：📊">
+                    <div class="icon-picker-trigger">
+                        <span class="icon-preview" title="图标预览"><i id="serviceIconPreview" class="fa fa-star"></i></span>
+                        <button type="button" class="icon-picker-btn" onclick="openIconPicker()">选择图标</button>
+                        <input type="text" id="serviceIcon" class="form-input" placeholder="例如：fa fa-star（也可手动输入）">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="serviceImage" class="form-label">服务图片</label>
+                    <div class="file-upload-group">
+                        <input type="text" id="serviceImage" class="form-input" placeholder="例如：/uploads/xxx.png">
+                        <label for="serviceImageFile" class="upload-label">选择文件</label>
+                        <input type="file" id="serviceImageFile" accept="image/*" style="display:none;">
+                    </div>
+                    <div class="image-preview" id="serviceImagePreview" style="display:none; margin-top:10px;">
+                        <img id="serviceImagePreviewImg" src="" alt="预览">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label for="serviceDescription" class="form-label">描述</label>
-                    <textarea id="serviceDescription" class="form-textarea"></textarea>
+                    <div id="service-description-editor-container"></div>
                 </div>
                 <div class="form-group">
                     <label for="serviceSortOrder" class="form-label">排序</label>
@@ -538,9 +722,41 @@
         </div>
     </div>
 
+    <!-- 图标选择弹窗 -->
+    <div id="iconPickerModal" class="icon-modal">
+        <div class="icon-modal-content">
+            <div class="icon-modal-header">
+                <div class="icon-modal-title">选择图标</div>
+                <input id="iconSearchInput" class="icon-search" placeholder="搜索图标，例如：briefcase / star / phone" />
+                <span class="close" onclick="closeIconPicker()">&times;</span>
+            </div>
+            <div id="iconGrid" class="icon-grid"></div>
+            <div class="form-actions" style="justify-content: space-between;">
+                <button type="button" class="btn btn-secondary" onclick="clearIcon()">清空图标</button>
+                <button type="button" class="btn btn-primary" onclick="closeIconPicker()">完成</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 全局变量
         let serviceToDelete = null;
+        let iconPickerBound = false;
+        let serviceDescriptionQuill;
+
+        // 可选图标（FontAwesome 4.7 常用集）
+        const ICON_OPTIONS = [
+            'fa fa-briefcase','fa fa-line-chart','fa fa-pie-chart','fa fa-bar-chart','fa fa-area-chart',
+            'fa fa-lightbulb-o','fa fa-bullseye','fa fa-cogs','fa fa-cog','fa fa-rocket',
+            'fa fa-users','fa fa-user','fa fa-handshake-o','fa fa-globe','fa fa-map-marker',
+            'fa fa-phone','fa fa-envelope','fa fa-comments','fa fa-commenting','fa fa-pencil',
+            'fa fa-edit','fa fa-file-text-o','fa fa-book','fa fa-newspaper-o','fa fa-bell',
+            'fa fa-star','fa fa-star-o','fa fa-trophy','fa fa-shield','fa fa-lock',
+            'fa fa-credit-card','fa fa-money','fa fa-calculator','fa fa-university','fa fa-industry',
+            'fa fa-sitemap','fa fa-balance-scale','fa fa-search','fa fa-check-circle','fa fa-times-circle',
+            'fa fa-wrench','fa fa-database','fa fa-cloud','fa fa-cloud-upload','fa fa-laptop',
+            'fa fa-desktop','fa fa-mobile','fa fa-paper-plane','fa fa-flag','fa fa-gift'
+        ];
 
         // 页面加载
         document.addEventListener('DOMContentLoaded', async function () {
@@ -552,8 +768,115 @@
             }
             initMenuToggle();
             initModalEvents();
+            initUpload();
+            initIconPicker();
+            initQuillEditor(); // 初始化Quill编辑器
             await loadServices();
         });
+
+        // 初始化Quill编辑器
+        function initQuillEditor() {
+            serviceDescriptionQuill = new Quill('#service-description-editor-container', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],        // toggled buttons
+                        [{'list': 'ordered'}, {'list': 'bullet'}],
+                        [{'script': 'sub'}, {'script': 'super'}],      // superscript/subscript
+                        [{'indent': '-1'}, {'indent': '+1'}],          // outdent/indent
+                        [{'direction': 'rtl'}],                         // text direction
+
+                        [{'size': ['small', false, 'large', 'huge']}],  // custom dropdown
+                        [{'header': [1, 2, 3, 4, 5, 6, false]}],
+
+                        [{'color': []}, {'background': []}],          // dropdown with defaults from theme
+                        [{'font': []}],
+                        [{'align': []}],
+
+                        ['clean']                                         // remove formatting button
+                    ]
+                }
+            });
+        }
+
+        // ---------------- 图标选择器 ----------------
+        function initIconPicker() {
+            if (iconPickerBound) return;
+            iconPickerBound = true;
+            const iconInput = document.getElementById('serviceIcon');
+            if (iconInput) {
+                iconInput.addEventListener('input', () => updateIconPreview(iconInput.value.trim()));
+                updateIconPreview(iconInput.value.trim());
+            }
+            const search = document.getElementById('iconSearchInput');
+            if (search) {
+                search.addEventListener('input', () => renderIconGrid(search.value));
+            }
+            renderIconGrid('');
+        }
+
+        function openIconPicker() {
+            const modal = document.getElementById('iconPickerModal');
+            if (!modal) return;
+            modal.style.display = 'block';
+            const search = document.getElementById('iconSearchInput');
+            if (search) {
+                search.value = '';
+                search.focus();
+            }
+            renderIconGrid('');
+        }
+
+        function closeIconPicker() {
+            const modal = document.getElementById('iconPickerModal');
+            if (modal) modal.style.display = 'none';
+        }
+
+        function clearIcon() {
+            const iconInput = document.getElementById('serviceIcon');
+            if (!iconInput) return;
+            iconInput.value = '';
+            updateIconPreview('');
+        }
+
+        function normalizeIconClass(raw) {
+            const v = (raw || '').trim();
+            if (!v) return '';
+            // 若只输入了 fa-star 之类，自动补全 fa
+            if (v.startsWith('fa-')) return `fa ${v}`;
+            return v;
+        }
+
+        function updateIconPreview(iconClass) {
+            const preview = document.getElementById('serviceIconPreview');
+            if (!preview) return;
+            const normalized = normalizeIconClass(iconClass) || 'fa fa-star';
+            preview.className = normalized;
+        }
+
+        function renderIconGrid(keyword) {
+            const grid = document.getElementById('iconGrid');
+            if (!grid) return;
+            const k = (keyword || '').trim().toLowerCase();
+            const list = ICON_OPTIONS.filter(cls => !k || cls.toLowerCase().includes(k));
+            grid.innerHTML = '';
+            list.forEach(cls => {
+                const div = document.createElement('div');
+                div.className = 'icon-item';
+                div.innerHTML = `<i class="${cls}"></i><div class="icon-name">${cls.replace('fa fa-', '')}</div>`;
+                div.addEventListener('click', () => {
+                    const iconInput = document.getElementById('serviceIcon');
+                    if (!iconInput) return;
+                    iconInput.value = cls;
+                    updateIconPreview(cls);
+                    closeIconPicker();
+                });
+                grid.appendChild(div);
+            });
+            if (list.length === 0) {
+                grid.innerHTML = '<div style="grid-column: 1 / -1; color:#64748b; padding: 12px;">未找到匹配图标</div>';
+            }
+        }
 
         // 退出登录
         function logout() {
@@ -582,6 +905,16 @@
                 renderServicesTable(services || []);
             } catch (error) {
                 console.error('加载服务列表失败:', error);
+                // 检查是否是认证问题
+                if (error.message && (error.message.includes('认证失败') || error.message.includes('登录已过期') || error.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminUser');
+                window.location.href = 'index.html';
+            }
+                    return;
+                }
                 tableBody.innerHTML = '<tr><td colspan="7">加载失败，请稍后重试</td></tr>';
             }
         }
@@ -596,11 +929,12 @@
             }
             services.forEach(service => {
                 const tr = document.createElement('tr');
+                const iconHtml = service.icon ? `<span class="icon-preview" style="width:30px;height:30px;border-radius:8px;"><i class="${service.icon}"></i></span> <span style="margin-left:8px;">${service.icon}</span>` : '';
                 tr.innerHTML = `
                     <td>${service.id}</td>
                     <td>${service.title || ''}</td>
-                    <td>${service.icon || ''}</td>
-                    <td>${service.description || ''}</td>
+                    <td>${iconHtml}</td>
+                    <td><div style="max-height: 100px; overflow-y: auto;">${service.description || ''}</div></td>
                     <td>${service.sortOrder ?? service.sort_order ?? ''}</td>
                     <td>${service.isActive ?? service.is_active ? '激活' : '未激活'}</td>
                     <td>
@@ -623,17 +957,27 @@
             const deleteModal = document.getElementById('deleteModal');
             const deleteCloseBtn = document.querySelector('#deleteModal .close');
 
-            closeBtn.onclick = function () { modal.style.display = 'none'; };
-            deleteCloseBtn.onclick = function () { deleteModal.style.display = 'none'; };
+            closeBtn.onclick = function () { closeModal(); };
+            deleteCloseBtn.onclick = function () { closeDeleteModal(); };
             window.onclick = function (event) {
-                if (event.target == modal) modal.style.display = 'none';
-                if (event.target == deleteModal) deleteModal.style.display = 'none';
+                if (event.target == modal) closeModal();
+                if (event.target == deleteModal) closeDeleteModal();
+                if (event.target == document.getElementById('iconPickerModal')) closeIconPicker();
             };
 
             document.getElementById('serviceForm').onsubmit = function (e) {
                 e.preventDefault();
                 saveService();
             };
+        }
+
+        function closeModal() {
+            document.getElementById('serviceModal').style.display = 'none';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+            serviceToDelete = null;
         }
 
         // 新增
@@ -644,6 +988,10 @@
             form.reset();
             document.getElementById('serviceId').value = '';
             document.getElementById('serviceActive').checked = true;
+            // 重置预览
+            updateImagePreview('', 'serviceImagePreview', 'serviceImagePreviewImg');
+            updateIconPreview('');
+            serviceDescriptionQuill.setContents([]); // 清空Quill编辑器内容
             modalTitle.textContent = '添加服务项目';
             modal.style.display = 'block';
         }
@@ -658,7 +1006,17 @@
                 document.getElementById('serviceId').value = service.id;
                 document.getElementById('serviceTitle').value = service.title || '';
                 document.getElementById('serviceIcon').value = service.icon || '';
-                document.getElementById('serviceDescription').value = service.description || '';
+                document.getElementById('serviceImage').value = service.image || '';
+                // document.getElementById('serviceDescription').value = service.description || ''; // 旧textarea
+                serviceDescriptionQuill.root.innerHTML = service.description || ''; // 设置Quill编辑器内容
+                updateIconPreview(service.icon || '');
+                
+                // 显示图片预览
+                if (service.image) {
+                    updateImagePreview(service.image, 'serviceImagePreview', 'serviceImagePreviewImg');
+                } else {
+                    updateImagePreview('', 'serviceImagePreview', 'serviceImagePreviewImg');
+                }
                 document.getElementById('serviceSortOrder').value = service.sortOrder ?? service.sort_order ?? 0;
                 document.getElementById('serviceActive').checked = service.isActive ?? service.is_active ? true : false;
                 document.getElementById('serviceInactive').checked = !(service.isActive ?? service.is_active);
@@ -666,7 +1024,71 @@
                 modal.style.display = 'block';
             } catch (err) {
                 console.error('加载服务详情失败:', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 alert('加载服务详情失败');
+            }
+        }
+
+        // 初始化上传事件
+        function initUpload() {
+            const fileInput = document.getElementById('serviceImageFile');
+            const imageInput = document.getElementById('serviceImage');
+            if (!fileInput || !imageInput) return;
+
+            fileInput.addEventListener('change', async function () {
+                const file = fileInput.files[0];
+                if (!file) return;
+
+                try {
+                    showMessage('正在上传图片，请稍候...', 'success');
+                    const result = await window.API.Upload.uploadSingle(file);
+                    const filePath = result?.file?.path || result?.path || '';
+                    if (!filePath) {
+                        throw new Error('上传响应中未返回文件路径');
+                    }
+                    imageInput.value = filePath;
+                    updateImagePreview(filePath, 'serviceImagePreview', 'serviceImagePreviewImg');
+                    showMessage('上传成功', 'success');
+                } catch (err) {
+                    console.error('上传图片失败:', err);
+                    // 检查是否是认证问题
+                    if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('未登录'))) {
+                        if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                            // 清除认证信息并跳转到登录页
+                            localStorage.removeItem('adminToken');
+                            localStorage.removeItem('adminUser');
+                            window.location.href = 'index.html';
+                        }
+                        return;
+                    }
+                    showMessage(err.message || '上传失败，请稍后重试', 'error');
+                } finally {
+                    // 清空文件选择，避免重复选择同一文件无事件
+                    fileInput.value = '';
+                }
+            });
+        }
+
+        // 更新图片预览
+        function updateImagePreview(url, containerId, imgId) {
+            const container = document.getElementById(containerId);
+            const img = document.getElementById(imgId);
+            if (!container || !img) return;
+            if (url) {
+                img.src = url;
+                container.style.display = 'block';
+            } else {
+                img.src = '';
+                container.style.display = 'none';
             }
         }
 
@@ -675,7 +1097,8 @@
             const id = document.getElementById('serviceId').value;
             const title = document.getElementById('serviceTitle').value.trim();
             const icon = document.getElementById('serviceIcon').value.trim();
-            const description = document.getElementById('serviceDescription').value.trim();
+            const image = document.getElementById('serviceImage').value.trim();
+            const description = serviceDescriptionQuill.root.innerHTML.trim(); // 从Quill编辑器获取内容
             const sortOrder = parseInt(document.getElementById('serviceSortOrder').value || '0', 10);
             const isActive = document.getElementById('serviceActive').checked ? 1 : 0;
 
@@ -684,20 +1107,30 @@
                 return;
             }
 
-            const payload = { title, icon, description, sortOrder, isActive };
+            const payload = { title, icon, image, description, sortOrder, isActive };
 
             try {
-                if (id) {
+            if (id) {
                     await window.API.Services.update(id, payload);
                     showMessage('服务项目编辑成功', 'success');
-                } else {
+            } else {
                     await window.API.Services.create(payload);
-                    showMessage('服务项目添加成功', 'success');
-                }
-                document.getElementById('serviceModal').style.display = 'none';
+                showMessage('服务项目添加成功', 'success');
+            }
+            closeModal();
                 await loadServices();
             } catch (err) {
                 console.error('保存服务失败:', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+        }
+                    return;
+                }
                 showMessage('保存失败，请稍后重试', 'error');
             }
         }
@@ -713,11 +1146,21 @@
             try {
                 await window.API.Services.delete(serviceToDelete);
                 showMessage('删除成功', 'success');
-                document.getElementById('deleteModal').style.display = 'none';
+                closeDeleteModal();
                 serviceToDelete = null;
                 await loadServices();
             } catch (err) {
                 console.error('删除服务失败:', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 showMessage('删除失败，请稍后重试', 'error');
             }
         }

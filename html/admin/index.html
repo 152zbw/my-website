@@ -117,7 +117,7 @@
             const username = document.getElementById('username').value;
             const password = document.getElementById('password').value;
             const messageDiv = document.getElementById('message');
-
+            
             messageDiv.textContent = '';
 
             try {
@@ -144,7 +144,7 @@
                 if (data.user) {
                     localStorage.setItem('adminUser', JSON.stringify(data.user));
                 }
-
+                
                 // 跳转到管理首页
                 messageDiv.className = 'success-message';
                 messageDiv.textContent = '登录成功，正在跳转到管理首页...';

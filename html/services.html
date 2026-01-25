@@ -14,6 +14,16 @@
   <link rel="stylesheet" href="css/bootstrap.css">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* 统一服务项目图片比例 */
+    .service-card-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+  </style>
   <!--[if lt IE 10]>
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
     <script src="js/html5shiv.min.js"></script>
@@ -232,22 +242,21 @@
         try {
           const services = await window.API.Services.getAll();
           if (services && services.length > 0) {
-            servicesContainer.innerHTML = '';
+          servicesContainer.innerHTML = '';
             services.forEach((service, index) => {
               const thumb = `images/service-thumbnail-${(index % 4) + 1}-270x300.jpg`;
-              const serviceHTML = `
+            const serviceHTML = `
                         <div class="col-sm-6 col-lg-3">
                             <!-- Thumbnail Light-->
                             <article class="thumbnail-light"><a class="thumbnail-light-media" href="single-service.html?id=${service.id}"><img
-                                  class="thumbnail-light-image" src="${service.image || thumb}" alt="${service.title || ''}" width="270"
-                                  height="300" /></a>
+                                  class="service-card-img" src="${service.image || thumb}" alt="${service.title || ''}" /></a>
                               <h5 class="thumbnail-light-title"><a href="single-service.html?id=${service.id}">${service.title || ''}</a></h5>
                             </article>
                         </div>
                     `;
-              servicesContainer.insertAdjacentHTML('beforeend', serviceHTML);
-            });
-          } else {
+            servicesContainer.insertAdjacentHTML('beforeend', serviceHTML);
+          });
+        } else {
             servicesContainer.innerHTML = '<p>暂无服务项目</p>';
           }
         } catch (error) {
@@ -301,11 +310,11 @@
         try {
           const testimonials = await window.API.Testimonials.getAll();
           if (testimonials && testimonials.length > 0) {
-            testimonialsCarousel.innerHTML = '';
+          testimonialsCarousel.innerHTML = '';
 
             testimonials.forEach((testimonial, index) => {
               const avatar = testimonial.image || `images/avatar-${(index % 3) + 1}.jpg`;
-              const testimonialHTML = `
+            const testimonialHTML = `
                         <div class="wow-outer">
                             <blockquote class="quote-modern quote-modern-big wow slideInLeft">
                                 <div class="quote-modern-mark linearicons-quote-open"></div>
@@ -324,8 +333,8 @@
                             </blockquote>
                         </div>
                     `;
-              testimonialsCarousel.insertAdjacentHTML('beforeend', testimonialHTML);
-            });
+            testimonialsCarousel.insertAdjacentHTML('beforeend', testimonialHTML);
+          });
           } else {
             testimonialsCarousel.innerHTML = '<p>暂无客户评价</p>';
           }

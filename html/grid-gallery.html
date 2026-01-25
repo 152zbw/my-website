@@ -105,7 +105,7 @@
                 </div>
                 <!-- RD Navbar Search-->
                 <div class="rd-navbar-search" id="rd-navbar-search-1">
-                  <button class="rd-navbar-search-toggle rd-navbar-fixed-element-2"
+                  <button class="rd-navbar-search-toggle button button-sm button-secondary button-winona"
                     data-rd-navbar-toggle="#rd-navbar-search-1"><span></span></button>
                   <form class="rd-search" action="search-results.html" data-search-live="rd-search-results-live-1"
                     method="GET">
@@ -149,9 +149,7 @@
             data-custom-toggle-disable-on-blur="true">筛选<span class="caret"></span></button>
           <ul class="isotope-filters-list" id="isotope-filters">
             <li><a class="active" data-isotope-filter="*" data-isotope-group="gallery" href="#">全部类型</a></li>
-            <li><a data-isotope-filter="Type 1" data-isotope-group="gallery" href="#">类型 1 </a></li>
-            <li><a data-isotope-filter="Type 2" data-isotope-group="gallery" href="#">类型 2</a></li>
-            <li><a data-isotope-filter="Type 3" data-isotope-group="gallery" href="#">类型 3 </a></li>
+            <!-- 动态分类将在此处渲染 -->
           </ul>
         </div>
         <div class="isotope isotope-responsive row" data-isotope-layout="fitRows" data-isotope-group="gallery"
@@ -254,7 +252,7 @@
   <div class="snackbars" id="form-output-global"></div>
   <!-- 自定义样式 -->
   <style>
-    /* 项目信息样式 */
+   /* 项目信息样式 */
     .project-info {
       text-align: center;
       width: 100%;
@@ -315,40 +313,93 @@
   <script src="js/core.min.js"></script>
   <script src="js/script.js"></script>
   <script src="js/map.js"></script>
+  <script src="js/api.js"></script> <!-- 引入api.js -->
+  <script src="https://unpkg.com/isotope-layout@3/dist/isotope.pkgd.min.js"></script> <!-- 明确引入 Isotope 库 -->
+  <script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script> <!-- 明确引入 imagesLoaded 库 -->
   <script>
-    // 页面加载时渲染成功案例和分类
-    document.addEventListener('DOMContentLoaded', function () {
-      renderCategories();
-      renderProjects();
+    // 全局Isotope实例
+    let myIsotope;
+
+    document.addEventListener('DOMContentLoaded', async function () {
+      await renderCategories();
+      await renderProjects();
+
+      const projectsContainer = document.getElementById('projectsContainer');
+      if (projectsContainer) {
+        // 初始化 Isotope 实例，但不立即布局 (initLayout: false)
+        myIsotope = new Isotope(projectsContainer, {
+          itemSelector: '.isotope-item',
+          layoutMode: 'fitRows',
+          initLayout: false // 禁用初始布局
+        });
+
+        // 等待所有图片加载完成后再执行首次布局和筛选
+        imagesLoaded(projectsContainer).on('progress', function() {
+          myIsotope.layout(); // 每次图片加载进度更新时重新布局，以适应图片大小
+        }).on('always', function() {
+          // 所有图片加载完成后，执行最终布局并应用默认筛选
+          myIsotope.layout();
+          myIsotope.arrange({ filter: '*' });
+          document.querySelector('#isotope-filters li:first-child a').classList.add('active');
+        });
+      }
+
+      // 为分类筛选按钮添加点击事件监听器
+      const filtersList = document.getElementById('isotope-filters');
+      if (filtersList) {
+        filtersList.addEventListener('click', function (event) {
+          event.preventDefault(); // 阻止默认的链接跳转行为，防止页面上滑
+          const target = event.target.closest('a[data-isotope-filter]');
+          if (target && myIsotope) {
+            const filterValue = target.getAttribute('data-isotope-filter');
+            
+            // 移除所有按钮的active类
+            filtersList.querySelectorAll('a').forEach(btn => {
+              btn.classList.remove('active');
+            });
+            // 为当前点击的按钮添加active类
+            target.classList.add('active');
+
+            // 应用筛选
+            if (filterValue === '*') {
+              myIsotope.arrange({ filter: '*' });
+            } else {
+              myIsotope.arrange({ filter: `[data-filter="${filterValue}"]` });
+            }
+          }
+        });
+      }
     });
 
-    // 获取分类数据
-    function getCategories() {
-      const categories = localStorage.getItem('projectCategories');
-      return categories ? JSON.parse(categories) : [];
+    async function getCategoriesFromApi() {
+      try {
+        const projects = await window.API.Projects.getAll();
+        const categories = new Set();
+        projects.forEach(p => {
+          if (p.category) {
+            categories.add(p.category);
+          }
+        });
+        return Array.from(categories).map(name => ({ name }));
+      } catch (error) {
+        console.error('从API获取项目分类失败:', error);
+        return [];
+      }
     }
 
-    // 获取项目数据
-    function getProjects() {
-      const projects = localStorage.getItem('projects');
-      return projects ? JSON.parse(projects) : [];
-    }
-
-    // 动态生成分类筛选菜单
-    function renderCategories() {
-      const categories = getCategories();
+    async function renderCategories() {
+      const categories = await getCategoriesFromApi();
       const filtersList = document.getElementById('isotope-filters');
 
-      // 保留第一个"全部类型"选项，清空其他选项
-      const allTypesOption = filtersList.querySelector('li:first-child');
-      filtersList.innerHTML = '';
-      filtersList.appendChild(allTypesOption);
+      const allTypesLi = filtersList.querySelector('li:first-child');
+      while (allTypesLi.nextElementSibling) {
+          filtersList.removeChild(allTypesLi.nextElementSibling);
+      }
 
-      // 动态添加分类选项
       categories.forEach(category => {
         const li = document.createElement('li');
         const a = document.createElement('a');
-        a.href = '#';
+        a.href = '#'; 
         a.setAttribute('data-isotope-filter', category.name);
         a.setAttribute('data-isotope-group', 'gallery');
         a.textContent = category.name;
@@ -357,43 +408,54 @@
       });
     }
 
-    // 渲染成功案例
-    function renderProjects() {
-      const projectsData = getProjects();
+    async function renderProjects() {
       const projectsContainer = document.getElementById('projectsContainer');
+      if (!projectsContainer) return;
 
-      if (projectsData.length > 0) {
-        // 按排序顺序排序
-        projectsData.sort((a, b) => a.sort_order - b.sort_order);
+      projectsContainer.innerHTML = '<div class="col-12 text-center"><p>加载中...</p></div>';
 
-        projectsContainer.innerHTML = '';
+      try {
+        const projectsData = await window.API.Projects.getAll();
 
-        projectsData.forEach((project, index) => {
-          // 使用项目实际的category字段
-          const projectCategory = project.category || '未分类';
-          const projectHTML = `
-            <div class="col-sm-6 col-lg-4 isotope-item" data-filter="${projectCategory}">
-              <!-- Thumbnail Modern--><a class="thumbnail-modern" href="single-project.html?id=${project.id}" 
-                title="${project.title}">
-                <img class="thumbnail-modern-image" src="${project.image}" alt="${project.title}" 
-                  width="370" height="256" />
-                <div class="thumbnail-modern-caption">
-                  <div class="project-info">
-                    <div class="project-title">${project.title}</div>
-                    <div class="project-category">${projectCategory}</div>
+        if (projectsData && projectsData.length > 0) {
+          projectsData.sort((a, b) => a.sortOrder - b.sortOrder);
+          projectsContainer.innerHTML = ''; 
+
+          projectsData.forEach((project, index) => {
+            const projectCategory = project.category || '未分类';
+            const imageUrl = project.image ? (project.image.startsWith('http') || project.image.startsWith('/') ? project.image : `/${project.image}`) : `images/grid-gallery-${(index % 6) + 1}-370x256.jpg`;
+
+            const projectHTML = `
+              <div class="col-sm-6 col-lg-4 isotope-item" data-filter="${projectCategory}">
+                <a class="thumbnail-modern" href="single-project.html?id=${project.id}" 
+                  title="${project.title}">
+                  <img class="thumbnail-modern-image" src="${imageUrl}" alt="${project.title}" 
+                    width="370" height="256" />
+                  <div class="thumbnail-modern-caption">
+                    <div class="project-info">
+                      <div class="project-title">${project.title}</div>
+                      <div class="project-category">${projectCategory}</div>
+                    </div>
                   </div>
-                </div>
-                <div class="thumbnail-modern-dummy"></div>
-              </a>
+                  <div class="thumbnail-modern-dummy"></div>
+                </a>
+              </div>
+            `;
+            projectsContainer.insertAdjacentHTML('beforeend', projectHTML);
+          });
+
+        } else {
+          projectsContainer.innerHTML = `
+            <div class="col-12 text-center">
+              <p>暂无成功案例，请在后台添加</p>
             </div>
           `;
-          projectsContainer.insertAdjacentHTML('beforeend', projectHTML);
-        });
-      } else {
-        // 如果没有成功案例，显示提示信息
+        }
+      } catch (error) {
+        console.error('加载成功案例失败:', error);
         projectsContainer.innerHTML = `
-          <div class="col-12 text-center">
-            <p>暂无成功案例，请在后台添加</p>
+          <div class="col-12 text-center text-danger">
+            <p>加载成功案例失败，请稍后重试。</p>
           </div>
         `;
       }

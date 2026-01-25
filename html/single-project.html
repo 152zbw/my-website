@@ -148,33 +148,27 @@
         <div class="project-details-grid">
           <div class="project-detail-item">
             <h4>客户</h4>
-            <p class="text-primary" id="projectClient">水果公司</p>
+            <p class="text-primary" id="projectClient"></p>
           </div>
           <div class="project-detail-item">
             <h4>项目分类</h4>
-            <p id="projectCategory">数字化转型</p>
+            <p id="projectCategory"></p>
           </div>
           <div class="project-detail-item">
             <h4>服务内容</h4>
             <ul class="project-services-list" id="projectServices">
-              <li><a href="#">商业规划</a></li>
-              <li><a href="#">分析与研究</a></li>
-              <li><a href="#">战略规划</a></li>
-              <li><a href="#">咨询服务</a></li>
-              <li><a href="#">会计服务</a></li>
-              <li><a href="#">风险管理</a></li>
-              <li><a href="#">市场调研</a></li>
+              <!-- 服务内容将从API动态加载 -->
             </ul>
           </div>
           <div class="project-detail-item">
             <h4>项目简介</h4>
             <div class="project-description" id="projectDescription">
-              <p>上个月，我们完成了为当地水果供应商的最新项目。该项目结合了多种营销策略</p>
+              <!-- 项目简介将从API动态加载 -->
             </div>
           </div>
           <div class="project-detail-item">
             <h4>项目周期</h4>
-            <p id="projectDuration">4个月</p>
+            <p id="projectDuration"></p>
           </div>
         </div>
 
@@ -288,9 +282,11 @@
           <div class="col-md-10 col-lg-5 col-xl-4">
             <div class="inset-left-2">
               <h3>关于此项目</h3>
-              <h4 class="h4-smaller">有时，即使是小型本地企业也需要专业的营销帮助。</h4>
-              <p>这正是水果公司的情况，该公司位于加利福尼亚州圣地亚哥。我们从头开始开发了新的营销策略，以吸引更多客户使用他们的产品和服务。</p><a
-                class="button button-primary button-winona" href="#" style="min-width: 230px;">阅读更多</a>
+              <h4 class="h4-smaller" id="aboutProjectTitle"></h4>
+              <div id="aboutProjectText">
+                <!-- 内容将从API动态加载 -->
+              </div>
+              <a class="button button-primary button-winona" href="#" style="min-width: 230px;">阅读更多</a>
             </div>
           </div>
           <div class="col-md-10 col-lg-7">
@@ -299,7 +295,7 @@
                 <iframe width="570" height="320" src="#" sandbox="" allowfullscreen=""></iframe>
               </div>
               <div class="thumbnail-video__overlay video-overlay"
-                style="background-image: url(images/video-preview-1-570x320.jpg)">
+                style="background-image: url(images/video-preview-1-570x320.jpg)" id="projectVideoOverlay">
                 <div class="button-video button-video-lg"></div>
               </div>
             </div>
@@ -309,22 +305,8 @@
     </section>
     <section class="section swiper-container swiper-slider swiper-slider-tiny text-center" data-loop="true"
       data-slide-effect="fade" data-autoplay="false" data-simulate-touch="true">
-      <div class="swiper-wrapper">
-        <div class="swiper-slide" data-slide-bg="images/single-project-slide-1-1920x760.jpg">
-          <div class="swiper-slide-caption">
-            <div class="container"></div>
-          </div>
-        </div>
-        <div class="swiper-slide" data-slide-bg="images/single-project-slide-2-1920x760.jpg">
-          <div class="swiper-slide-caption">
-            <div class="container"></div>
-          </div>
-        </div>
-        <div class="swiper-slide" data-slide-bg="images/single-project-slide-3-1920x760.jpg">
-          <div class="swiper-slide-caption">
-            <div class="container"></div>
-          </div>
-        </div>
+      <div class="swiper-wrapper" id="swiperWrapper">
+        <!-- Swiper Slides将从API动态加载 -->
       </div>
       <div class="swiper-pagination-outer container">
         <div class="swiper-pagination swiper-pagination-modern swiper-pagination-marked" data-index-bullet="true"></div>
@@ -347,7 +329,7 @@
                   <div class="object-inline"><span class="icon icon-md mdi mdi-phone"></span><a
                       href="tel:#">1-800-1324-567</a></div>
                 </div>
-                <p>波特先生于1995年创立了我们的公司，愿景是帮助美国公司取得更大成就。今天，他管理着我们公司最重要的流程。</p>
+                <p>波特先生于1995年创立了我们的公司，愿景是帮助公司取得更大成就。今天，他管理着我们公司最重要的流程。</p>
               </div>
             </article>
           </div>
@@ -694,49 +676,67 @@
           if (breadcrumb) breadcrumb.textContent = project.title || '项目详情';
 
           const projectClient = document.getElementById('projectClient');
-          if (projectClient) projectClient.textContent = project.client || '客户名称';
+          if (projectClient) projectClient.textContent = project.client || '';
 
           const projectCategory = document.getElementById('projectCategory');
           if (projectCategory) projectCategory.textContent = project.category || '';
 
           const projectServices = document.getElementById('projectServices');
-          if (projectServices) {
-            const services = ['商业规划', '分析与研究', '战略规划', '咨询服务', '供应链优化', '数字化转型', '风险管理', '市场调研'];
+          if (projectServices && project.services && Array.isArray(project.services)) {
             projectServices.innerHTML = '';
-            const randomServices = services.sort(() => 0.5 - Math.random()).slice(0, 4);
-            randomServices.forEach(service => {
+            project.services.forEach(service => {
               const li = document.createElement('li');
               const a = document.createElement('a');
-              a.href = '#';
+              a.href = '#'; // 或者指向服务的详情页
               a.textContent = service;
               li.appendChild(a);
               projectServices.appendChild(li);
             });
+          } else if (projectServices) {
+            projectServices.innerHTML = '<p>暂无服务内容</p>';
           }
 
           const projectDescription = document.getElementById('projectDescription');
-          if (projectDescription) projectDescription.innerHTML = project.description || '';
+          if (projectDescription) projectDescription.innerHTML = project.content || ''; // 修改为 content
 
           const projectDuration = document.getElementById('projectDuration');
           if (projectDuration) {
-            const duration = Math.floor(Math.random() * 4) + 3;
-            projectDuration.textContent = `${duration}个月`;
+            // 假设 project 对象有一个 duration 字段, 否则留空
+            projectDuration.textContent = project.duration ? `${project.duration}个月` : '';
           }
 
-          const aboutProject = document.querySelector('.inset-left-2 h3 + h4');
-          if (aboutProject) aboutProject.textContent = project.title || '';
+          const aboutProjectTitle = document.getElementById('aboutProjectTitle');
+          if (aboutProjectTitle) aboutProjectTitle.textContent = project.title || '';
 
-          const aboutProjectText = document.querySelector('.inset-left-2 h4 + p');
+          const aboutProjectText = document.getElementById('aboutProjectText');
           if (aboutProjectText) {
-            const shortDescription = (project.description || '').replace(/<[^>]*>/g, '').substring(0, 150) + '...';
-            aboutProjectText.textContent = shortDescription;
+            aboutProjectText.innerHTML = project.content || ''; // 修改为 content
           }
 
-          const swiperSlides = document.querySelectorAll('.swiper-slide');
-          if (swiperSlides.length > 0) {
-            const bg = project.image || swiperSlides[0].getAttribute('data-slide-bg');
-            swiperSlides.forEach(slide => slide.setAttribute('data-slide-bg', bg));
+          const swiperWrapper = document.getElementById('swiperWrapper');
+          if (swiperWrapper) {
+            const imageUrl = project.image ? (project.image.startsWith('http') || project.image.startsWith('/') ? project.image : `/${project.image}`) : 'images/single-project-slide-1-1920x760.jpg'; // 默认图片
+            swiperWrapper.innerHTML = `
+              <div class="swiper-slide" data-slide-bg="${imageUrl}">
+                <div class="swiper-slide-caption">
+                  <div class="container"></div>
+                </div>
+              </div>
+            `;
           }
+
+          // 如果有视频，更新视频播放器
+          const projectVideoOverlay = document.getElementById('projectVideoOverlay');
+          if (projectVideoOverlay && project.videoUrl) {
+            projectVideoOverlay.style.backgroundImage = `url(${project.image || 'images/video-preview-1-570x320.jpg'})`;
+            const iframe = projectVideoOverlay.previousElementSibling.querySelector('iframe');
+            if (iframe) iframe.src = project.videoUrl;
+          } else if (projectVideoOverlay) {
+            // 如果没有视频URL，可以隐藏视频部分或显示默认内容
+            projectVideoOverlay.closest('.thumbnail-video-1').style.display = 'none';
+          }
+
+
         } else {
           document.querySelector('.breadcrumbs-custom-title').textContent = '项目不存在';
         }

@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>合作伙伴管理 - 后台管理系统</title>
     <script src="../js/api.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:#f5f7fa;color:#333;line-height:1.6;}
@@ -55,10 +57,54 @@
         .form-label{display:block;margin-bottom:5px;font-weight:600;color:#354879;}
         .form-input,.form-textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;}
         .form-textarea{resize:vertical;min-height:80px;}
+        #partner-description-editor-container {
+            height: 150px; /* Quill editor height */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
         .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
         .message{padding:15px;border-radius:4px;position:fixed;top:80px;right:20px;z-index:1002;min-width:250px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
         .message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
         .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+        /* 文件上传样式 */
+        .file-upload-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .file-upload-group .form-input {
+            flex: 1;
+        }
+        .upload-label {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #354879;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+        }
+        .upload-label:hover {
+            background-color: #28334f;
+        }
+        .image-preview {
+            margin-top: 10px;
+            max-width: 200px;
+            max-height: 150px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .image-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
         @media(max-width:768px){.sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);} .content{margin-left:0;} .content-header{flex-direction:column;align-items:flex-start;} .btn{margin-top:10px;}}
     </style>
 </head>
@@ -78,6 +124,8 @@
                 <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
                 <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
                 <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="pricing.html"><i class="fas fa-dollar-sign"></i>价格表</a></li>
+                <li><a href="home-features.html"><i class="fas fa-star"></i>首页特色模块</a></li>
                 <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
                 <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
             </ul>
@@ -141,8 +189,19 @@
                     <input type="url" id="partnerWebsite" class="form-input" placeholder="例如：https://www.example.com">
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="partnerImage">图片 URL</label>
-                    <input type="text" id="partnerImage" class="form-input" placeholder="例如：images/partners-1-270x145.png">
+                    <label class="form-label" for="partnerImage">Logo图片</label>
+                    <div class="file-upload-group">
+                        <input type="text" id="partnerImage" class="form-input" placeholder="例如：images/partner-logo.png 或 /uploads/xxx.png">
+                        <label for="partnerImageFile" class="upload-label">选择文件</label>
+                        <input type="file" id="partnerImageFile" accept="image/*" style="display:none;">
+                    </div>
+                    <div class="image-preview" id="partnerImagePreview" style="margin-top:10px;display:none;">
+                        <img id="partnerImagePreviewImg" src="" alt="预览">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="partnerDescription">描述</label>
+                    <div id="partner-description-editor-container"></div>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="partnerSortOrder">排序</label>
@@ -179,6 +238,10 @@
 
     <script>
         let partnerToDelete = null;
+        let partnerImageInput = null;
+        let partnerImagePreviewImg = null;
+        let partnerImageNameSpan = null;
+        let partnerDescriptionQuill;
 
         document.addEventListener('DOMContentLoaded', async () => {
             const user = localStorage.getItem('adminUser');
@@ -186,6 +249,8 @@
             if (!user || !token) { window.location.href = 'index.html'; return; }
             initMenuToggle();
             initModalEvents();
+            initUpload();
+            initQuillEditor(); // 初始化Quill编辑器
             await loadPartners();
         });
 
@@ -211,7 +276,77 @@
                 renderTable(list || []);
             } catch (err) {
                 console.error('加载失败', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 tbody.innerHTML = '<tr><td colspan="7">加载失败，请稍后重试</td></tr>';
+        }
+        }
+
+        function initUpload() {
+            const fileInput = document.getElementById('partnerImageFile');
+            partnerImageInput = document.getElementById('partnerImage');
+            partnerImagePreviewImg = document.getElementById('partnerImagePreviewImg');
+            partnerImageNameSpan = document.querySelector('label[for="partnerImageFile"]');
+
+            if (!fileInput || !partnerImageInput || !partnerImagePreviewImg || !partnerImageNameSpan) return;
+
+            // Manual input for image URL
+            partnerImageInput.addEventListener('input', () => updateImagePreview(partnerImageInput.value.trim()));
+
+            // File input for upload
+            fileInput.addEventListener('change', async function () {
+                const file = fileInput.files[0];
+                if (!file) return;
+                try {
+                    showMessage('正在上传图片，请稍候...', 'success');
+                    const result = await window.API.Upload.uploadSingle(file);
+                    const filePath = result?.file?.path || result?.path || '';
+                    if (!filePath) {
+                        throw new Error('上传响应中未返回文件路径');
+                    }
+                    partnerImageInput.value = filePath;
+                    updateImagePreview(filePath);
+                    showMessage('上传成功', 'success');
+                } catch (err) {
+                    console.error('上传图片失败:', err);
+                    // 检查是否是认证问题
+                    if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('未登录'))) {
+                        if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                            // 清除认证信息并跳转到登录页
+                            localStorage.removeItem('adminToken');
+                            localStorage.removeItem('adminUser');
+                            window.location.href = 'index.html';
+                        }
+                        return;
+                    }
+                    showMessage(err.message || '上传失败，请稍后重试', 'error');
+                } finally {
+                    fileInput.value = ''; // Clear file input
+                }
+            });
+        }
+
+        function updateImagePreview(url) {
+            const previewDiv = document.getElementById('partnerImagePreview');
+            if (!previewDiv || !partnerImagePreviewImg) return;
+
+            if (url) {
+                partnerImagePreviewImg.src = url;
+                previewDiv.style.display = 'block';
+                // Optionally update the name span if we want to show the file name from URL
+                // partnerImageNameSpan.textContent = url.split('/').pop();
+            } else {
+                partnerImagePreviewImg.src = '';
+                previewDiv.style.display = 'none';
+                // partnerImageNameSpan.textContent = '未选择文件';
             }
         }
 
@@ -254,6 +389,8 @@
             document.getElementById('partnerActive').checked = true;
             document.getElementById('modalTitle').textContent = '添加合作伙伴';
             modal.style.display = 'block';
+            updateImagePreview(''); // Clear image preview
+            partnerDescriptionQuill.setContents([]); // Clear Quill editor content
         }
 
         async function editItem(id) {
@@ -265,6 +402,8 @@
                 document.getElementById('partnerName').value = item.name || '';
                 document.getElementById('partnerWebsite').value = item.website || '';
                 document.getElementById('partnerImage').value = item.logo || item.image || '';
+                updateImagePreview(item.logo || item.image || ''); // Update image preview
+                partnerDescriptionQuill.root.innerHTML = item.description || ''; // Set Quill editor content
                 document.getElementById('partnerSortOrder').value = item.sortOrder ?? item.sort_order ?? 0;
                 document.getElementById('partnerActive').checked = item.isActive ?? item.is_active ? true : false;
                 document.getElementById('partnerInactive').checked = !(item.isActive ?? item.is_active);
@@ -272,6 +411,16 @@
                 modal.style.display = 'block';
             } catch (err) {
                 console.error('加载详情失败', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 alert('加载详情失败');
             }
         }
@@ -281,9 +430,10 @@
             const name = document.getElementById('partnerName').value.trim();
             if (!name) { showMessage('请填写名称', 'error'); return; }
             const payload = {
-                name,
+                        name,
                 website: document.getElementById('partnerWebsite').value.trim(),
                 logo: document.getElementById('partnerImage').value.trim(),
+                description: partnerDescriptionQuill.root.innerHTML.trim(), // Get content from Quill editor
                 sortOrder: parseInt(document.getElementById('partnerSortOrder').value || '0', 10),
                 isActive: document.getElementById('partnerActive').checked ? 1 : 0
             };
@@ -294,8 +444,18 @@
                 await loadPartners();
             } catch (err) {
                 console.error('保存失败', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 showMessage('保存失败，请稍后重试', 'error');
-            }
+        }
         }
 
         function deleteItem(id) {
@@ -317,6 +477,16 @@
                 await loadPartners();
             } catch (err) {
                 console.error('删除失败', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 showMessage('删除失败，请稍后重试', 'error');
             }
         }
@@ -331,6 +501,27 @@
             div.textContent = text;
             document.body.appendChild(div);
             setTimeout(() => div.remove(), 3000);
+        }
+
+        function initQuillEditor() {
+            partnerDescriptionQuill = new Quill('#partner-description-editor-container', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{'list': 'ordered'}, {'list': 'bullet'}],
+                        [{'script': 'sub'}, {'script': 'super'}],
+                        [{'indent': '-1'}, {'indent': '+1'}],
+                        [{'direction': 'rtl'}],
+                        [{'size': ['small', false, 'large', 'huge']}],
+                        [{'header': [1, 2, 3, 4, 5, 6, false]}],
+                        [{'color': []}, {'background': []}],
+                        [{'font': []}],
+                        [{'align': []}],
+                        ['clean']
+                    ]
+                }
+            });
         }
     </script>
 </body>

@@ -5,8 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>客户评价管理 - 后台管理系统</title>
-    <!-- 使用统一 API 工具，不再依赖外部 CDN -->
     <script src="../js/api.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa; color: #333; line-height: 1.6; }
@@ -61,8 +63,16 @@
         .message { padding:15px; border-radius:4px; position:fixed; top:80px; right:20px; z-index:1002; min-width:250px; box-shadow:0 2px 10px rgba(0,0,0,0.1); }
         .message.success { background:#d4edda; color:#155724; border:1px solid #c3e6cb; }
         .message.error { background:#f8d7da; color:#721c24; border:1px solid #f5c6cb; }
+        #testimonialContent { display: none; } /* Hide old textarea */
+        #testimonial-editor-container {
+            height: 150px; /* Quill editor height */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+        }
         @media (max-width:768px) { .sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);} .content{margin-left:0;} .content-header{flex-direction:column; align-items:flex-start;} .btn{margin-top:10px;} }
     </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 </head>
 
 <body>
@@ -82,6 +92,8 @@
                 <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
                 <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
                 <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="pricing.html"><i class="fas fa-dollar-sign"></i>价格表</a></li>
+                <li><a href="home-features.html"><i class="fas fa-star"></i>首页特色模块</a></li>
                 <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
                 <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
             </ul>
@@ -156,18 +168,18 @@
                 </div>
                 <div class="form-group">
                     <label for="testimonialContent" class="form-label">评价内容</label>
-                    <textarea id="testimonialContent" class="form-textarea" required></textarea>
+                    <div id="testimonial-editor-container" style="height: 150px;"></div>
                 </div>
                 <div class="form-group">
                     <label for="testimonialAvatar" class="form-label">头像</label>
                     <div class="image-upload">
-                        <button type="button" class="image-upload-btn">
+                        <button type="button" class="image-upload-btn" onclick="document.getElementById('testimonialAvatarFile').click()">
                             <i class="fas fa-upload"></i> 选择头像
                         </button>
                         <input type="file" id="testimonialAvatarFile" name="avatar" accept="image/*"
                             onchange="previewImage(this, 'testimonialAvatarPreview')">
                     </div>
-                    <img id="testimonialAvatarPreview" class="image-preview" src="" alt="头像预览">
+                    <img id="testimonialAvatarPreview" class="image-preview" src="" alt="头像预览" style="display: none; margin-top: 10px; max-width: 100px; max-height: 100px; border: 1px solid #ddd; border-radius: 4px;">
                     <input type="hidden" id="testimonialAvatar" name="avatar" value="">
                 </div>
                 <div class="form-group">
@@ -211,24 +223,42 @@
     </div>
 
     <script>
-        // 页面加载时检查登录状态
+        let testimonialQuill = null; // Declare testimonialQuill globally
+        let testimonialToDelete = null;
+
         document.addEventListener('DOMContentLoaded', function () {
             const user = localStorage.getItem('adminUser');
             if (!user) {
                 window.location.href = 'index.html';
             }
 
-            // 初始化数据
-            initTestimonials();
-            // 渲染客户评价列表
-            renderTestimonials();
-            // 初始化菜单切换
+            loadTestimonials();
             initMenuToggle();
-            // 初始化模态框事件
             initModalEvents();
+
+            testimonialQuill = new Quill('#testimonial-editor-container', {
+                theme: 'snow',
+                placeholder: '输入评价内容...',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'script': 'sub' }, { 'script': 'super' }],
+                        [{ 'indent': '-1' }, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'font': [] }],
+                        [{ 'align': [] }],
+                        ['link', 'image', 'video'],
+                        ['clean']
+                    ]
+                }
+            });
         });
 
-        // 图片上传预览
         function previewImage(input, previewId) {
             const preview = document.getElementById(previewId);
             const file = input.files[0];
@@ -237,140 +267,79 @@
             reader.onload = function (e) {
                 preview.src = e.target.result;
                 preview.style.display = 'block';
-                // 保存图片数据到隐藏字段
-                document.getElementById('testimonialAvatar').value = e.target.result;
+                document.getElementById('testimonialAvatar').value = e.target.result; // Store base64 or path
             }
 
             if (file) {
+                // For actual file upload, we usually send the file via FormData.
+                // Here we store a temporary DataURL for preview. The actual upload logic should be in saveTestimonial.
                 reader.readAsDataURL(file);
+            } else {
+                preview.src = '';
+                preview.style.display = 'none';
+                document.getElementById('testimonialAvatar').value = '';
             }
         }
 
-        // 初始化CKEditor
-        function initCKEditor() {
-            if (CKEDITOR.instances.testimonialContent) {
-                CKEDITOR.instances.testimonialContent.destroy();
-            }
-            CKEDITOR.replace('testimonialContent');
-        }
-
-        // 初始化菜单切换
         function initMenuToggle() {
             const menuToggle = document.getElementById('menuToggle');
             const sidebar = document.getElementById('sidebar');
-
             menuToggle.addEventListener('click', function () {
                 sidebar.classList.toggle('open');
             });
         }
 
-        // 退出登录功能
         function logout() {
             if (confirm('确定要退出登录吗？')) {
                 localStorage.removeItem('adminUser');
+                localStorage.removeItem('adminToken');
                 window.location.href = 'index.html';
             }
         }
 
-        // 初始化客户评价数据
-        function initTestimonials() {
-            let testimonials = localStorage.getItem('testimonials');
-            let parsedTestimonials = [];
-
-            // 如果有数据，尝试解析
-            if (testimonials) {
-                try {
-                    parsedTestimonials = JSON.parse(testimonials);
-                    // 检查数据是否有效，并且修复头像路径
-                    parsedTestimonials = parsedTestimonials.map((testimonial, index) => {
-                        // 确保所有必需字段都存在
-                        const fixedTestimonial = {
-                            id: testimonial.id || Date.now() + index,
-                            name: testimonial.name || `客户${index + 1}`,
-                            position: testimonial.position || '职位',
-                            content: testimonial.content || '这是一条客户评价。',
-                            // 强制使用images文件夹中的真实头像，为每个评价分配不同的头像
-                            avatar: `images/testimonials-person-${(index % 5) + 1}-96x96.jpg`,
-                            sort_order: index + 1,
-                            is_active: testimonial.is_active !== undefined ? testimonial.is_active : 1
-                        };
-                        return fixedTestimonial;
-                    });
-                } catch (e) {
-                    // 如果解析失败，使用默认数据
-                    parsedTestimonials = [];
-                }
-            }
-
-            // 如果没有数据或数据无效，使用默认数据
-            if (parsedTestimonials.length === 0) {
-                parsedTestimonials = [
-                    {
-                        id: 1,
-                        name: '刘总',
-                        position: 'CEO',
-                        content: '非常专业的团队，提供了出色的解决方案，帮助我们公司取得了显著的业绩增长。',
-                        avatar: 'images/testimonials-person-1-96x96.jpg',
-                        sort_order: 1,
-                        is_active: 1
-                    },
-                    {
-                        id: 2,
-                        name: '陈总',
-                        position: '市场总监',
-                        content: '合作非常愉快，团队响应迅速，服务质量高，值得推荐！',
-                        avatar: 'images/testimonials-person-2-96x96.jpg',
-                        sort_order: 2,
-                        is_active: 1
-                    },
-                    {
-                        id: 3,
-                        name: '赵总',
-                        position: '技术总监',
-                        content: '技术实力雄厚，解决方案创新，帮助我们解决了很多技术难题。',
-                        avatar: 'images/testimonials-person-3-96x96.jpg',
-                        sort_order: 3,
-                        is_active: 1
-                    }
-                ];
-            }
-
-            // 保存修复后的数据
-            localStorage.setItem('testimonials', JSON.stringify(parsedTestimonials));
-        }
-
-        // 获取客户评价数据
-        function getTestimonials() {
-            const testimonials = localStorage.getItem('testimonials');
-            return testimonials ? JSON.parse(testimonials) : [];
-        }
-
-        // 保存客户评价数据
-        function saveTestimonials(testimonials) {
-            localStorage.setItem('testimonials', JSON.stringify(testimonials));
-        }
-
-        // 渲染客户评价列表
-        function renderTestimonials() {
-            const testimonials = getTestimonials();
+        async function loadTestimonials() {
             const tableBody = document.getElementById('testimonialsTableBody');
+            tableBody.innerHTML = '<tr><td colspan="8">加载中...</td></tr>';
+            try {
+                const testimonials = await window.API.Testimonials.getAll(); // 从公共接口获取激活的评价
+                renderTestimonialsTable(testimonials || []);
+            } catch (error) {
+                console.error('加载客户评价失败:', error);
+                if (error.message && (error.message.includes('认证失败') || error.message.includes('登录已过期') || error.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
+                tableBody.innerHTML = '<tr><td colspan="8">加载失败，请稍后重试</td></tr>';
+                showMessage('加载客户评价失败', 'error');
+            }
+        }
 
+        function renderTestimonialsTable(testimonials) {
+            const tableBody = document.getElementById('testimonialsTableBody');
             tableBody.innerHTML = '';
+
+            if (!testimonials || testimonials.length === 0) {
+                tableBody.innerHTML = '<tr><td colspan="8">暂无客户评价</td></tr>';
+                return;
+            }
 
             testimonials.forEach(testimonial => {
                 const tr = document.createElement('tr');
-                // 处理头像路径，区分相对路径和DataURL
-                const avatarSrc = testimonial.avatar.startsWith('data:') ? testimonial.avatar : `../${testimonial.avatar}`;
+                const avatarSrc = testimonial.image && testimonial.image !== '' ? (testimonial.image.startsWith('http') || testimonial.image.startsWith('/') ? testimonial.image : `../${testimonial.image}`) : `../images/testimonials-person-1-96x96.jpg`;
                 tr.innerHTML = `
                     <td>${testimonial.id}</td>
                     <td>${testimonial.name}</td>
                     <td>${testimonial.position}</td>
-                    <td>${testimonial.content}</td>
+                    <td><div style="max-height: 100px; overflow-y: auto;">${testimonial.content || ''}</div></td>
                     <td>
-                        <img src="${avatarSrc}" alt="${testimonial.name}" width="60" height="60" style="border-radius: 50%; object-fit: cover;">
+                        <img src="${avatarSrc}" alt="${testimonial.name}" class="avatar-img">
                     </td>
-                    <td>${testimonial.sort_order}</td>
-                    <td>${testimonial.is_active ? '激活' : '未激活'}</td>
+                    <td>${testimonial.sortOrder ?? 0}</td>
+                    <td>${testimonial.isActive ? '激活' : '未激活'}</td>
                     <td>
                         <button class="btn btn-primary btn-sm" onclick="editTestimonial(${testimonial.id})">
                             <i class="fas fa-edit"></i> 编辑
@@ -384,24 +353,18 @@
             });
         }
 
-        // 初始化模态框事件
         function initModalEvents() {
             const modal = document.getElementById('testimonialModal');
             const closeBtn = document.querySelector('#testimonialModal .close');
             const deleteModal = document.getElementById('deleteModal');
             const deleteCloseBtn = document.querySelector('#deleteModal .close');
 
-            // 关闭客户评价模态框
             closeBtn.onclick = function () {
                 modal.style.display = 'none';
             };
-
-            // 关闭删除确认模态框
             deleteCloseBtn.onclick = function () {
                 deleteModal.style.display = 'none';
             };
-
-            // 点击模态框外部关闭
             window.onclick = function (event) {
                 if (event.target == modal) {
                     modal.style.display = 'none';
@@ -410,67 +373,62 @@
                 }
             };
 
-            // 表单提交
             document.getElementById('testimonialForm').onsubmit = function (e) {
                 e.preventDefault();
                 saveTestimonial();
             };
         }
 
-        // 添加客户评价
         function addTestimonial() {
             const modal = document.getElementById('testimonialModal');
             const modalTitle = document.getElementById('modalTitle');
             const form = document.getElementById('testimonialForm');
 
-            // 重置表单
             form.reset();
             document.getElementById('testimonialId').value = '';
             document.getElementById('testimonialActive').checked = true;
-
-            // 设置默认头像
-            const defaultAvatar = 'images/testimonials-person-1-96x96.jpg';
-            document.getElementById('testimonialAvatar').value = defaultAvatar;
-
-            // 显示默认头像预览
+            if (testimonialQuill) {
+                testimonialQuill.setContents([]);
+            }
             const preview = document.getElementById('testimonialAvatarPreview');
-            preview.src = '../' + defaultAvatar;
-            preview.style.display = 'block';
+            preview.src = '';
+            preview.style.display = 'none';
+            document.getElementById('testimonialAvatar').value = '';
 
             modalTitle.textContent = '添加客户评价';
-
             modal.style.display = 'block';
-
-            // 延迟初始化CKEditor，确保模态框已显示
-            setTimeout(initCKEditor, 100);
         }
 
-        // 编辑客户评价
-        function editTestimonial(id) {
+        async function editTestimonial(id) {
             const modal = document.getElementById('testimonialModal');
             const modalTitle = document.getElementById('modalTitle');
-            const testimonials = getTestimonials();
-            const testimonial = testimonials.find(t => t.id === id);
+            
+            try {
+                const testimonial = await window.API.Testimonials.get(id);
+                if (!testimonial) {
+                    showMessage('未找到该客户评价', 'error');
+                    return;
+                }
 
-            if (testimonial) {
-                // 填充表单
                 document.getElementById('testimonialId').value = testimonial.id;
                 document.getElementById('testimonialName').value = testimonial.name;
                 document.getElementById('testimonialPosition').value = testimonial.position;
-                document.getElementById('testimonialContent').value = testimonial.content;
-                document.getElementById('testimonialAvatar').value = testimonial.avatar;
-                document.getElementById('testimonialSortOrder').value = testimonial.sort_order;
+                
+                if (testimonialQuill) {
+                    testimonialQuill.root.innerHTML = testimonial.content || '';
+                }
+                document.getElementById('testimonialAvatar').value = testimonial.image || '';
+                document.getElementById('testimonialSortOrder').value = testimonial.sortOrder ?? 0;
 
-                // 显示头像预览
-                if (testimonial.avatar) {
+                if (testimonial.image) {
                     const preview = document.getElementById('testimonialAvatarPreview');
-                    preview.src = '../' + testimonial.avatar;
+                    preview.src = testimonial.image.startsWith('http') || testimonial.image.startsWith('/') ? testimonial.image : `../${testimonial.image}`;
                     preview.style.display = 'block';
                 } else {
                     document.getElementById('testimonialAvatarPreview').style.display = 'none';
                 }
 
-                if (testimonial.is_active) {
+                if (testimonial.isActive) {
                     document.getElementById('testimonialActive').checked = true;
                 } else {
                     document.getElementById('testimonialInactive').checked = true;
@@ -479,37 +437,27 @@
                 modalTitle.textContent = '编辑客户评价';
                 modal.style.display = 'block';
 
-                // 延迟初始化CKEditor，确保模态框已显示
-                setTimeout(() => {
-                    initCKEditor();
-                    // 设置CKEditor内容
-                    CKEDITOR.instances.testimonialContent.setData(testimonial.content);
-                }, 100);
+            } catch (error) {
+                console.error('加载客户评价详情失败:', error);
+                if (error.message && (error.message.includes('认证失败') || error.message.includes('登录已过期') || error.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
+                showMessage('加载客户评价详情失败', 'error');
             }
         }
 
-        // 保存客户评价
-        function saveTestimonial() {
+        async function saveTestimonial() {
             const id = document.getElementById('testimonialId').value;
-            const name = document.getElementById('testimonialName').value;
-            const position = document.getElementById('testimonialPosition').value;
-
-            // 先尝试从CKEditor获取内容，如果失败则从textarea获取
-            let content;
-            try {
-                if (CKEDITOR && CKEDITOR.instances && CKEDITOR.instances.testimonialContent) {
-                    content = CKEDITOR.instances.testimonialContent.getData();
-                } else {
-                    // 如果CKEditor未初始化，直接从textarea获取
-                    content = document.getElementById('testimonialContent').value;
-                }
-            } catch (e) {
-                // 发生错误时，从textarea获取
-                content = document.getElementById('testimonialContent').value;
-            }
-
-            const avatar = document.getElementById('testimonialAvatar').value;
-            const sortOrder = parseInt(document.getElementById('testimonialSortOrder').value) || 0;
+            const name = document.getElementById('testimonialName').value.trim();
+            const position = document.getElementById('testimonialPosition').value.trim();
+            let content = testimonialQuill ? testimonialQuill.root.innerHTML.trim() : '';
+            let image = document.getElementById('testimonialAvatar').value.trim();
+            const sortOrder = parseInt(document.getElementById('testimonialSortOrder').value || '0', 10);
             const isActive = document.getElementById('testimonialActive').checked ? 1 : 0;
 
             if (!name || !position || !content) {
@@ -517,75 +465,82 @@
                 return;
             }
 
-            const testimonials = getTestimonials();
-
-            if (id) {
-                // 编辑现有客户评价
-                const testimonialIndex = testimonials.findIndex(t => t.id == id);
-                if (testimonialIndex !== -1) {
-                    testimonials[testimonialIndex] = {
-                        ...testimonials[testimonialIndex],
-                        name,
-                        position,
-                        content,
-                        avatar,
-                        sort_order: sortOrder,
-                        is_active: isActive
-                    };
-                    showMessage('客户评价编辑成功', 'success');
+            // 如果有新的文件被选择，则执行上传
+            const avatarFile = document.getElementById('testimonialAvatarFile').files[0];
+            if (avatarFile) {
+                try {
+                    const uploadResponse = await window.API.Upload.uploadSingle(avatarFile);
+                    image = uploadResponse.filePath; // 更新为上传后的文件路径
+                    showMessage('头像上传成功', 'success');
+                } catch (uploadError) {
+                    console.error('头像上传失败:', uploadError);
+                    showMessage(`头像上传失败: ${uploadError.message}`, 'error');
+                    return;
                 }
-            } else {
-                // 添加新客户评价
-                const newTestimonial = {
-                    id: Date.now(),
-                    name,
-                    position,
-                    content,
-                    avatar,
-                    sort_order: sortOrder,
-                    is_active: isActive
-                };
-                testimonials.push(newTestimonial);
-                showMessage('客户评价添加成功', 'success');
             }
 
-            saveTestimonials(testimonials);
-            renderTestimonials();
-            closeModal();
-        }
+            const payload = { name, position, content, image, sortOrder, isActive };
 
-        // 关闭客户评价模态框
-        function closeModal() {
-            document.getElementById('testimonialModal').style.display = 'none';
+            try {
+                if (id) {
+                    await window.API.Testimonials.update(id, payload);
+                    showMessage('客户评价编辑成功', 'success');
+                } else {
+                    await window.API.Testimonials.create(payload);
+                    showMessage('客户评价添加成功', 'success');
+                }
+                await loadTestimonials();
+                closeModal();
+            } catch (error) {
+                console.error('保存客户评价失败:', error);
+                if (error.message && (error.message.includes('认证失败') || error.message.includes('登录已过期') || error.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
+                showMessage('保存失败，请稍后重试', 'error');
+            }
         }
-
-        // 关闭删除确认模态框
-        function closeDeleteModal() {
-            document.getElementById('deleteModal').style.display = 'none';
-        }
-
-        // 删除客户评价
-        let testimonialToDelete = null;
 
         function deleteTestimonial(id) {
             testimonialToDelete = id;
             document.getElementById('deleteModal').style.display = 'block';
         }
 
-        // 确认删除
-        function confirmDelete() {
-            if (testimonialToDelete) {
-                const testimonials = getTestimonials();
-                const updatedTestimonials = testimonials.filter(t => t.id !== testimonialToDelete);
-                saveTestimonials(updatedTestimonials);
-                renderTestimonials();
+        async function confirmDelete() {
+            if (!testimonialToDelete) return;
+            try {
+                await window.API.Testimonials.delete(testimonialToDelete);
                 showMessage('客户评价删除成功', 'success');
-                closeDeleteModal();
                 testimonialToDelete = null;
+                closeDeleteModal();
+                await loadTestimonials();
+            } catch (error) {
+                console.error('删除失败:', error);
+                if (error.message && (error.message.includes('认证失败') || error.message.includes('登录已过期') || error.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
+                showMessage('删除失败，请稍后重试', 'error');
+                closeDeleteModal();
             }
         }
 
-        // 显示消息提示
+        function closeModal() {
+            document.getElementById('testimonialModal').style.display = 'none';
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+
         function showMessage(text, type) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
@@ -593,7 +548,6 @@
 
             document.body.appendChild(messageDiv);
 
-            // 3秒后移除
             setTimeout(() => {
                 messageDiv.remove();
             }, 3000);

@@ -34,12 +34,13 @@ router.get('/:id', async (req, res) => {
 // 创建服务项目
 router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { title, icon, description, content, sortOrder, isActive } = req.body;
+        const { title, icon, description, content, sortOrder, isActive, image } = req.body;
         const service = await Service.create({
             title,
             icon,
             description,
             content,
+            image,
             sortOrder,
             isActive
         });
@@ -53,7 +54,7 @@ router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
 // 更新服务项目
 router.put('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { title, icon, description, content, sortOrder, isActive } = req.body;
+        const { title, icon, description, content, sortOrder, isActive, image } = req.body;
         const service = await Service.findByPk(req.params.id);
         if (!service) {
             return res.status(404).json({ message: '服务项目不存在' });
@@ -63,6 +64,7 @@ router.put('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
             icon,
             description,
             content,
+            image,
             sortOrder,
             isActive
         });

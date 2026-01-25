@@ -29,10 +29,18 @@ async function apiRequest(endpoint, options = {}) {
             data = await response.json();
         } else {
             const text = await response.text();
+            if (!response.ok && response.status === 401) {
+                handleAuthExpired();
+                throw new Error('登录已过期，请重新登录');
+            }
             throw new Error(`服务器返回非JSON格式: ${text.substring(0, 100)}`);
         }
         
         if (!response.ok) {
+            if (response.status === 401) {
+                handleAuthExpired();
+                throw new Error(data.message || '登录已过期，请重新登录');
+            }
             throw new Error(data.message || `请求失败 (${response.status})`);
         }
         
@@ -49,6 +57,13 @@ async function apiRequest(endpoint, options = {}) {
         }
         throw error;
     }
+}
+
+function handleAuthExpired() {
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+    // 确保跳转到后台登录页
+    window.location.href = '/html/admin/index.html';
 }
 
 // 网站信息API
@@ -143,6 +158,85 @@ const NavigationAPI = {
     delete: (id) => apiRequest(`/navigation/${id}`, { method: 'DELETE' })
 };
 
+// 首页特色模块API
+const HomeFeaturesAPI = {
+    getAll: () => apiRequest('/homeFeatures'), // 前端获取激活的特色模块
+    getAllAdmin: () => apiRequest('/homeFeatures/admin'), // 后台获取所有特色模块
+    get: (id) => apiRequest(`/homeFeatures/${id}`),
+    create: (data) => apiRequest('/homeFeatures', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id, data) => apiRequest(`/homeFeatures/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id) => apiRequest(`/homeFeatures/${id}`, { method: 'DELETE' })
+};
+
+// 文件上传API
+const UploadAPI = {
+    // 单文件上传
+    uploadSingle: async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const token = localStorage.getItem('adminToken');
+        if (!token) {
+            throw new Error('未登录，请先登录');
+        }
+        
+        // 注意：FormData上传时不要设置Content-Type，让浏览器自动设置
+        const headers = {
+            'Authorization': `Bearer ${token}`
+        };
+        
+        try {
+            const response = await fetch(`${API_BASE_URL}/upload/single`, {
+                method: 'POST',
+                headers: headers,
+                body: formData
+            });
+            
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        handleAuthExpired();
+                        throw new Error(data.message || '登录已过期，请重新登录');
+                    }
+                    throw new Error(data.message || `上传失败 (${response.status})`);
+                }
+                
+                return data;
+        } catch (error) {
+            console.error('上传请求错误:', error);
+            throw error;
+        }
+    },
+    
+    // 多文件上传
+    uploadMultiple: async (files) => {
+        const formData = new FormData();
+        Array.from(files).forEach(file => {
+            formData.append('files', file);
+        });
+        
+        const token = localStorage.getItem('adminToken');
+        const headers = {};
+        if (token) {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+        
+        const response = await fetch(`${API_BASE_URL}/upload/multiple`, {
+            method: 'POST',
+            headers: headers,
+            body: formData
+        });
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || '上传失败');
+        }
+        
+        return await response.json();
+    }
+};
+
 // 导出API对象
 window.API = {
     WebsiteInfo: WebsiteInfoAPI,
@@ -154,7 +248,7 @@ window.API = {
     About: AboutAPI,
     Team: TeamAPI,
     Contacts: ContactsAPI,
-    Navigation: NavigationAPI
+    Navigation: NavigationAPI,
+    HomeFeatures: HomeFeaturesAPI, // 注册新的首页特色模块API
+    Upload: UploadAPI
 };
-
-

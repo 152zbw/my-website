@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>个人简介管理 - 后台管理系统</title>
     <script src="../js/api.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:#f5f7fa;color:#333;line-height:1.6;}
@@ -63,6 +65,8 @@
                 <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
                 <li><a href="about-me.html" class="active"><i class="fas fa-user"></i>个人简介</a></li>
                 <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="pricing.html"><i class="fas fa-dollar-sign"></i>价格表</a></li>
+                <li><a href="home-features.html"><i class="fas fa-star"></i>首页特色模块</a></li>
                 <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
                 <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
             </ul>
@@ -85,7 +89,7 @@
 
             <div class="main-content">
                 <div class="card">
-                    <h3 class="content-title">个人资料</h3>
+                    <h3 class="content-title">个人资料（与前台“个人简历”页面对应）</h3>
                     <form id="profileForm">
                         <div class="form-group">
                             <label class="form-label" for="name">姓名</label>
@@ -96,17 +100,111 @@
                             <input id="position" class="form-input" required placeholder="职位">
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="avatar">头像 URL</label>
-                            <input id="avatar" class="form-input" placeholder="images/team-1-370x368.jpg">
+                            <label class="form-label">头像/形象照（用于前台个人页左侧大图）</label>
+                            <input type="hidden" id="avatar">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <button type="button" class="btn btn-secondary btn-sm" onclick="triggerAvatarUpload()">选择文件</button>
+                                <span id="avatarName" style="color:#555;">未选择文件</span>
+                            </div>
+                            <input type="file" id="avatarFileInput" accept="image/*" style="display:none;">
+                            <div id="avatarPreview" style="margin-top:10px;display:none;">
+                                <img id="avatarPreviewImg" src="" alt="预览" style="max-width:200px;border:1px solid #ddd;border-radius:4px;">
+                            </div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="bio">个人描述</label>
-                            <textarea id="bio" class="form-textarea" rows="6" placeholder="个人介绍" required></textarea>
+                            <label class="form-label" for="bio">个人简介</label>
+                            <div id="bio-editor-container" style="height: 200px;"></div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="skills">技能（用逗号分隔）</label>
-                            <input id="skills" class="form-input" placeholder="咨询, 数据分析, 市场调研">
+                            <label class="form-label">技能与熟练度（对应前台进度条，0-100）</label>
+                            <div style="display:grid;grid-template-columns:1fr 120px;gap:10px;margin-bottom:8px;">
+                                <input id="skill1" class="form-input" placeholder="技能1，如：咨询服务">
+                                <input id="skill1Value" type="number" min="0" max="100" class="form-input" placeholder="90">
+                                <input id="skill2" class="form-input" placeholder="技能2，如：数据分析">
+                                <input id="skill2Value" type="number" min="0" max="100" class="form-input" placeholder="80">
+                                <input id="skill3" class="form-input" placeholder="技能3，如：市场调研">
+                                <input id="skill3Value" type="number" min="0" max="100" class="form-input" placeholder="95">
+                            </div>
+                            <small style="color:#666;">留空的技能不会在前台显示；数值请填 0-100。</small>
                         </div>
+
+                        <div class="form-group">
+                            <label class="form-label">辛笠的项目（用于前台“辛笠的项目”板块）</label>
+                            <small style="color:#666;display:block;margin-bottom:10px;">建议先配置 3 个项目；标题/描述必填，图片可上传或填链接（如 /uploads/xxx.jpg 或 images/xxx.jpg）。</small>
+
+                            <div style="border:1px solid #eee;border-radius:6px;padding:12px;margin-bottom:12px;">
+                                <div style="font-weight:600;color:#354879;margin-bottom:8px;">项目 1</div>
+                                <div class="form-group">
+                                    <label class="form-label" for="project1Title">标题</label>
+                                    <input id="project1Title" class="form-input" placeholder="如：企业管理">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="project1Desc">描述</label>
+                                    <textarea id="project1Desc" class="form-textarea" rows="3" placeholder="直接输入文字即可，无需写HTML代码"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">图片</label>
+                                    <input type="hidden" id="project1Image">
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerProjectUpload(1)">选择文件</button>
+                                        <span id="project1ImageName" style="color:#555;">未选择文件</span>
+                                    </div>
+                                    <input type="file" id="project1FileInput" accept="image/*" style="display:none;">
+                                    <div id="project1Preview" style="margin-top:10px;display:none;">
+                                        <img id="project1PreviewImg" src="" alt="预览" style="max-width:240px;border:1px solid #ddd;border-radius:4px;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="border:1px solid #eee;border-radius:6px;padding:12px;margin-bottom:12px;">
+                                <div style="font-weight:600;color:#354879;margin-bottom:8px;">项目 2</div>
+                                <div class="form-group">
+                                    <label class="form-label" for="project2Title">标题</label>
+                                    <input id="project2Title" class="form-input" placeholder="如：人力资源规划">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="project2Desc">描述</label>
+                                    <textarea id="project2Desc" class="form-textarea" rows="3" placeholder="直接输入文字即可，无需写HTML代码"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">图片</label>
+                                    <input type="hidden" id="project2Image">
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerProjectUpload(2)">选择文件</button>
+                                        <span id="project2ImageName" style="color:#555;">未选择文件</span>
+                                    </div>
+                                    <input type="file" id="project2FileInput" accept="image/*" style="display:none;">
+                                    <div id="project2Preview" style="margin-top:10px;display:none;">
+                                        <img id="project2PreviewImg" src="" alt="预览" style="max-width:240px;border:1px solid #ddd;border-radius:4px;">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="border:1px solid #eee;border-radius:6px;padding:12px;margin-bottom:0;">
+                                <div style="font-weight:600;color:#354879;margin-bottom:8px;">项目 3</div>
+                                <div class="form-group">
+                                    <label class="form-label" for="project3Title">标题</label>
+                                    <input id="project3Title" class="form-input" placeholder="如：税务与会计">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="project3Desc">描述</label>
+                                    <textarea id="project3Desc" class="form-textarea" rows="3" placeholder="直接输入文字即可，无需写HTML代码"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">图片</label>
+                                    <input type="hidden" id="project3Image">
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerProjectUpload(3)">选择文件</button>
+                                        <span id="project3ImageName" style="color:#555;">未选择文件</span>
+                                    </div>
+                                    <input type="file" id="project3FileInput" accept="image/*" style="display:none;">
+                                    <div id="project3Preview" style="margin-top:10px;display:none;">
+                                        <img id="project3PreviewImg" src="" alt="预览" style="max-width:240px;border:1px solid #ddd;border-radius:4px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-actions">
                             <button type="button" class="btn btn-secondary" onclick="loadData()">重置</button>
                             <button type="submit" class="btn btn-primary">保存</button>
@@ -118,55 +216,271 @@
     </div>
 
     <script>
-        const PROFILE_KEY = 'about_me_profile_v2';
-        document.addEventListener('DOMContentLoaded',()=>{
+        let currentId = null; // about 表中的记录ID（取第一条）
+        let bioQuill = null; // Declare bioQuill globally
+
+        document.addEventListener('DOMContentLoaded', () => {
             const user = localStorage.getItem('adminUser');
             const token = localStorage.getItem('adminToken');
-            if(!user||!token){ window.location.href='index.html'; return; }
+            if (!user || !token) { window.location.href = 'index.html'; return; }
             initMenuToggle();
+            bindForm();
             loadData();
-            document.getElementById('profileForm').addEventListener('submit', onSave);
+
+            // Initialize Quill editor for bio content
+            bioQuill = new Quill('#bio-editor-container', {
+                theme: 'snow',
+                placeholder: '输入个人简介...',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        ['blockquote', 'code-block'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        [{ 'script': 'sub' }, { 'script': 'super' }],
+                        [{ 'indent': '-1' }, { 'indent': '+1' }],
+                        [{ 'direction': 'rtl' }],
+                        [{ 'size': ['small', false, 'large', 'huge'] }],
+                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                        [{ 'color': [] }, { 'background': [] }],
+                        [{ 'font': [] }],
+                        [{ 'align': [] }],
+                        ['link', 'image', 'video'],
+                        ['clean']
+                    ]
+                }
+            });
         });
-        function initMenuToggle(){
-            document.getElementById('menuToggle').addEventListener('click',()=>{
+
+        function initMenuToggle() {
+            document.getElementById('menuToggle').addEventListener('click', () => {
                 document.getElementById('sidebar').classList.toggle('open');
             });
         }
-        function logout(){
-            if(confirm('确定要退出登录吗？')){
+
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
                 localStorage.removeItem('adminUser');
                 localStorage.removeItem('adminToken');
-                window.location.href='index.html';
+                window.location.href = 'index.html';
             }
         }
-        function getData(){ const d=localStorage.getItem(PROFILE_KEY); if(!d) return null; try{return JSON.parse(d);}catch(e){return null;} }
-        function loadData(){
-            const data = getData() || {name:'内森·波特',position:'商业顾问',avatar:'images/team-1-370x368.jpg',bio:'波特先生于1995年创立公司，专注咨询。',skills:'咨询, 数据分析, 市场调研'};
-            document.getElementById('name').value=data.name||'';
-            document.getElementById('position').value=data.position||'';
-            document.getElementById('avatar').value=data.avatar||'';
-            document.getElementById('bio').value=data.bio||'';
-            document.getElementById('skills').value=data.skills||'';
+
+        function bindForm() {
+            document.getElementById('profileForm').addEventListener('submit', onSave);
+            document.getElementById('avatarFileInput').addEventListener('change', onAvatarChange);
+            document.getElementById('project1FileInput').addEventListener('change', (e) => onProjectImageChange(1, e));
+            document.getElementById('project2FileInput').addEventListener('change', (e) => onProjectImageChange(2, e));
+            document.getElementById('project3FileInput').addEventListener('change', (e) => onProjectImageChange(3, e));
         }
-        function onSave(e){
-            e.preventDefault();
-            const payload={
-                name:document.getElementById('name').value.trim(),
-                position:document.getElementById('position').value.trim(),
-                avatar:document.getElementById('avatar').value.trim(),
-                bio:document.getElementById('bio').value.trim(),
-                skills:document.getElementById('skills').value.trim()
+
+        function defaultData() {
+            return {
+                name: '辛笠',
+                position: '笠偲咨询首席专家',
+                avatar: 'images/team-12.png',
+                bio: '辛笠先生于2016年创立了我们的公司，愿景是帮助公司取得更大成就。',
+                skills: [
+                    { label: '咨询服务', value: 90 },
+                    { label: '数据分析', value: 65 },
+                    { label: '市场调研', value: 100 }
+                ],
+                projects: [
+                    { title: '企业管理', description: '辛笠为公司提供工具和策略来改善运营。', image: 'images/gallery-masonry-1-370x256.jpg' },
+                    { title: '人力资源规划', description: '我们的人力资源规划服务管理他们的人员。', image: 'images/gallery-masonry-2-370x464.jpg' },
+                    { title: '税务与会计', description: '税务和会计服务构成了商业管理服务的财务核心。', image: 'images/gallery-masonry-3-370x256.jpg' }
+                ]
             };
-            if(!payload.name||!payload.position||!payload.bio){showMessage('请填写必填项','error');return;}
-            localStorage.setItem(PROFILE_KEY, JSON.stringify(payload));
-            showMessage('保存成功','success');
         }
-        function showMessage(text,type){
-            const div=document.createElement('div');
-            div.className=`message ${type}`;
-            div.textContent=text;
+
+        function populateForm(data) {
+            document.getElementById('name').value = data.name || '';
+            document.getElementById('position').value = data.position || '';
+            document.getElementById('avatar').value = data.avatar || '';
+            // Set Quill editor content
+            if (bioQuill) {
+                bioQuill.root.innerHTML = data.bio || '';
+            }
+            const skills = Array.isArray(data.skills) ? data.skills : [];
+            document.getElementById('skill1').value = skills[0]?.label || '';
+            document.getElementById('skill1Value').value = skills[0]?.value ?? '';
+            document.getElementById('skill2').value = skills[1]?.label || '';
+            document.getElementById('skill2Value').value = skills[1]?.value ?? '';
+            document.getElementById('skill3').value = skills[2]?.label || '';
+            document.getElementById('skill3Value').value = skills[2]?.value ?? '';
+            setAvatarPreview(data.avatar);
+
+            const projects = Array.isArray(data.projects) ? data.projects : [];
+            fillProject(1, projects[0]);
+            fillProject(2, projects[1]);
+            fillProject(3, projects[2]);
+        }
+
+        function fillProject(index, project) {
+            document.getElementById(`project${index}Title`).value = project?.title || '';
+            document.getElementById(`project${index}Desc`).value = project?.description || '';
+            document.getElementById(`project${index}Image`).value = project?.image || '';
+            setProjectPreview(index, project?.image || '');
+        }
+
+        async function loadData() {
+            try {
+                const list = await window.API.About.getAll();
+                const item = (list && list.length) ? list[0] : null;
+                currentId = item ? item.id : null;
+                const parsed = item && item.content ? safeParse(item.content) : null;
+                populateForm(parsed || defaultData());
+            } catch (err) {
+                console.error('加载失败', err);
+                populateForm(defaultData());
+            }
+        }
+
+        function safeParse(str) {
+            try { return JSON.parse(str); } catch (e) { return null; }
+        }
+
+        function collectSkills() {
+            const res = [];
+            const s1 = document.getElementById('skill1').value.trim();
+            const v1 = document.getElementById('skill1Value').value;
+            if (s1) res.push({ label: s1, value: Number(v1 || 0) });
+            const s2 = document.getElementById('skill2').value.trim();
+            const v2 = document.getElementById('skill2Value').value;
+            if (s2) res.push({ label: s2, value: Number(v2 || 0) });
+            const s3 = document.getElementById('skill3').value.trim();
+            const v3 = document.getElementById('skill3Value').value;
+            if (s3) res.push({ label: s3, value: Number(v3 || 0) });
+            return res;
+        }
+
+        function collectProjects() {
+            const res = [];
+            for (const idx of [1, 2, 3]) {
+                const title = document.getElementById(`project${idx}Title`).value.trim();
+                const description = document.getElementById(`project${idx}Desc`).value.trim();
+                const image = document.getElementById(`project${idx}Image`).value.trim();
+                if (title || description || image) {
+                    res.push({ title, description, image });
+                }
+            }
+            return res;
+        }
+
+        async function onSave(e) {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('name').value.trim(),
+                position: document.getElementById('position').value.trim(),
+                avatar: document.getElementById('avatar').value.trim(),
+                bio: bioQuill ? bioQuill.root.innerHTML.trim() : '',
+                skills: collectSkills(),
+                projects: collectProjects()
+            };
+            if (!payload.name || !payload.position || !payload.bio) {
+                showMessage('请填写必填项', 'error');
+                return;
+            }
+            const body = {
+                title: payload.name,
+                image: payload.avatar,
+                content: JSON.stringify(payload)
+            };
+            try {
+                if (currentId) {
+                    await window.API.About.update(currentId, body);
+                } else {
+                    const created = await window.API.About.create(body);
+                    currentId = created?.about?.id || null;
+                }
+                showMessage('保存成功', 'success');
+            } catch (err) {
+                console.error('保存失败', err);
+                showMessage(err?.message || '保存失败，请稍后重试', 'error');
+            }
+        }
+
+        function triggerAvatarUpload() {
+            document.getElementById('avatarFileInput').click();
+        }
+
+        async function onAvatarChange(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const nameSpan = document.getElementById('avatarName');
+            nameSpan.textContent = '上传中...';
+            try {
+                const res = await window.API.Upload.uploadSingle(file);
+                const filePath = res?.file?.path || '';
+                document.getElementById('avatar').value = filePath;
+                setAvatarPreview(filePath, file.name);
+                showMessage('头像上传成功', 'success');
+            } catch (err) {
+                console.error('头像上传失败', err);
+                setAvatarPreview('');
+                showMessage(err?.message || '头像上传失败', 'error');
+            } finally {
+                e.target.value = '';
+            }
+        }
+
+        function setAvatarPreview(path, displayName) {
+            const wrap = document.getElementById('avatarPreview');
+            const img = document.getElementById('avatarPreviewImg');
+            const nameSpan = document.getElementById('avatarName');
+            if (path) {
+                img.src = path;
+                wrap.style.display = 'block';
+                nameSpan.textContent = displayName || path.split('/').pop();
+            } else {
+                wrap.style.display = 'none';
+                nameSpan.textContent = '未选择文件';
+            }
+        }
+
+        function triggerProjectUpload(index) {
+            document.getElementById(`project${index}FileInput`).click();
+        }
+
+        async function onProjectImageChange(index, e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const nameSpan = document.getElementById(`project${index}ImageName`);
+            nameSpan.textContent = '上传中...';
+            try {
+                const res = await window.API.Upload.uploadSingle(file);
+                const filePath = res?.file?.path || '';
+                document.getElementById(`project${index}Image`).value = filePath;
+                setProjectPreview(index, filePath, file.name);
+                showMessage(`项目${index}图片上传成功`, 'success');
+            } catch (err) {
+                console.error(`项目${index}图片上传失败`, err);
+                setProjectPreview(index, '');
+                showMessage(err?.message || `项目${index}图片上传失败`, 'error');
+            } finally {
+                e.target.value = '';
+            }
+        }
+
+        function setProjectPreview(index, path, displayName) {
+            const wrap = document.getElementById(`project${index}Preview`);
+            const img = document.getElementById(`project${index}PreviewImg`);
+            const nameSpan = document.getElementById(`project${index}ImageName`);
+            if (path) {
+                img.src = path;
+                wrap.style.display = 'block';
+                nameSpan.textContent = displayName || path.split('/').pop();
+            } else {
+                wrap.style.display = 'none';
+                nameSpan.textContent = '未选择文件';
+            }
+        }
+
+        function showMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.textContent = text;
             document.body.appendChild(div);
-            setTimeout(()=>div.remove(),3000);
+            setTimeout(() => div.remove(), 3000);
         }
     </script>
 </body>

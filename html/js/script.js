@@ -104,6 +104,14 @@
 		}
 	});
 
+	// Fallback：防止预加载长时间不消失，最多等待 3 秒就强制显示页面
+	setTimeout(function () {
+		if (plugins.preloader && plugins.preloader.length && !plugins.preloader.hasClass('loaded')) {
+			plugins.preloader.addClass('loaded');
+			windowReady = true;
+		}
+	}, 3000);
+
 	// Initialize scripts that require a finished document
 	$(function () {
 		isNoviBuilder = window.xMode;

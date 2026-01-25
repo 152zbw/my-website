@@ -13,6 +13,9 @@ const aboutRoutes = require('./about');
 const teamRoutes = require('./team');
 const contactRoutes = require('./contacts');
 const navigationRoutes = require('./navigation');
+const uploadRoutes = require('./upload');
+const pricingPlansRoutes = require('./pricingPlans'); // 引入新的价格计划路由
+const homeFeaturesRoutes = require('./homeFeatures'); // 引入新的首页特色模块路由
 
 // 注册路由
 router.use('/auth', authRoutes);
@@ -26,5 +29,8 @@ router.use('/about', aboutRoutes);
 router.use('/team', teamRoutes);
 router.use('/contacts', contactRoutes);
 router.use('/navigation', navigationRoutes);
+router.use('/upload', uploadRoutes);
+router.use('/pricingPlans', pricingPlansRoutes); // 注册新的价格计划路由
+router.use('/homeFeatures', homeFeaturesRoutes); // 注册新的首页特色模块路由
 
 module.exports = router;

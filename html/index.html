@@ -15,6 +15,57 @@
   <link rel="stylesheet" href="css/bootstrap.css">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* 统一“我们的服务”图片显示比例 */
+    .service-card-img {
+      width: 100%;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 8px;
+      display: block;
+    }
+
+    /* Added for Home Features icons to ensure proper display with custom classes */
+    .box-minimal-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      line-height: 1;
+      margin-bottom: 20px;
+      color: #354879;
+    }
+    
+    /* 通用 Linearicons 图标样式 - 支持所有图标 */
+    .box-minimal-icon[class*="linearicons-"]:before {
+      font-family: 'Linearicons' !important;
+      font-style: normal;
+      font-weight: normal;
+      speak: none;
+      display: inline-block;
+      text-decoration: inherit;
+      width: 1em;
+      text-align: center;
+      font-variant: normal;
+      text-transform: none;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    /* 具体图标的 Unicode 字符 - 使用 fonts.css 中定义的字符 */
+    .box-minimal-icon.linearicons-pie-chart:before { content: "\eaf8"; }
+    .box-minimal-icon.linearicons-briefcase:before { content: "\eb3a"; }
+    .box-minimal-icon.linearicons-credit-card:before { content: "\ea59"; }
+    .box-minimal-icon.linearicons-star:before { content: "\e98d"; }
+    .box-minimal-icon.linearicons-folder:before { content: "\e9ba"; }
+    .box-minimal-icon.linearicons-flag:before { content: "\e990"; }
+    .box-minimal-icon.linearicons-lamp:before { content: "\eabc"; }
+    .box-minimal-icon.linearicons-users:before { content: "\ea22"; }
+    .box-minimal-icon.linearicons-chart:before { content: "\eafa"; }
+    .box-minimal-icon.linearicons-rocket:before { content: "\eb37"; }
+
+  </style>
   <!--[if lt IE 10]>
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
     <script src="js/html5shiv.min.js"></script>
@@ -188,7 +239,7 @@
     <!-- FScreen-->
     <section class="section section-halfscreen bg-image" id="heroSection" style="background-image: url(images/header-bg.jpg);">
       <div class="section-halfscreen-inner">
-        <div class="section-halfscreen-image wow fadeIn" id="heroImage" style="background-image: url(images/screens-3-960x752.png);">
+        <div class="section-halfscreen-image wow fadeIn" id="heroImage" style="background-image: url(images/screens-1-960x752.jpg);">
         </div>
         <div class="container">
           <div class="row">
@@ -201,7 +252,7 @@
                 </div>
                 <div class="wow-outer p">
                   <p class="custom-article wow fadeInDown" data-wow-delay=".2s" id="heroDescription">我们公司提供各类专业咨询和规划服务，帮助全球中小企业实现可持续发展。</p>
-                </div><a class="button button-primary button-winona wow FadeIn" id="heroButton" href="#">了解更多</a>
+                </div><a class="button button-primary button-winona wow FadeIn" id="heroButton" href="contacts.html">了解更多</a>
               </div>
             </div>
           </div>
@@ -212,37 +263,8 @@
     <!-- Small Features-->
     <section class="section section-lg bg-gray-100">
       <div class="container">
-        <div class="row row-30">
-          <div class="col-sm-6 col-lg-4 wow-outer">
-            <!-- Box Minimal-->
-            <article class="box-minimal">
-              <div class="box-minimal-icon linearicons-pie-chart wow fadeIn"></div>
-              <div class="box-minimal-main wow-outer">
-                <h4 class="box-minimal-title wow slideInDown">数据分析</h4>
-                <p class="wow fadeInUpSmall">我们通过专业的数据分析服务，帮助您为企业设定正确的发展方向，打造成功的商业模式。</p>
-              </div>
-            </article>
-          </div>
-          <div class="col-sm-6 col-lg-4 wow-outer">
-            <!-- Box Minimal-->
-            <article class="box-minimal">
-              <div class="box-minimal-icon linearicons-briefcase wow fadeIn" data-wow-delay=".1s"></div>
-              <div class="box-minimal-main wow-outer">
-                <h4 class="box-minimal-title wow slideInDown" data-wow-delay=".1s">企业管理</h4>
-                <p class="wow fadeInUpSmall" data-wow-delay=".1s">我们提供的企业管理服务，帮助企业高管更好地管理关键业务流程，提升运营效率。</p>
-              </div>
-            </article>
-          </div>
-          <div class="col-sm-6 col-lg-4 wow-outer">
-            <!-- Box Minimal-->
-            <article class="box-minimal">
-              <div class="box-minimal-icon linearicons-credit-card wow fadeIn" data-wow-delay=".2s"></div>
-              <div class="box-minimal-main wow-outer">
-                <h4 class="box-minimal-title wow slideInDown" data-wow-delay=".2s">人力咨询</h4>
-                <p class="wow fadeInUpSmall" data-wow-delay=".2s">我们的专家提供多样化的财务解决方案，确保为您的企业带来更高的利润回报。</p>
-              </div>
-            </article>
-          </div>
+        <div class="row row-30" id="homeFeaturesContainer">
+          <!-- Hardcoded features were here -->
         </div>
       </div>
     </section>
@@ -639,18 +661,96 @@
     #projectsContainer {
       display: flex !important;
       flex-wrap: wrap !important;
+      margin-left: -10px !important;
+      margin-right: -10px !important;
     }
 
-    /* 每个案例占33.333%宽度 */
-    #projectsContainer>div {
+    /* 每个案例占33.333%宽度，统一高度 */
+    #projectsContainer > div {
       width: 33.333% !important;
       padding: 0 10px !important;
+      margin-bottom: 20px !important;
+      display: flex !important;
+      flex-direction: column !important;
     }
 
-    /* 确保图片正常显示 */
-    .thumbnail-classic-image {
-      max-width: 100% !important;
-      height: auto !important;
+    /* 统一卡片容器高度 */
+    #projectsContainer .thumbnail-classic {
+      height: 100% !important;
+      display: flex !important;
+      flex-direction: column !important;
+      overflow: hidden !important;
+    }
+
+    /* 统一链接容器 */
+    #projectsContainer .thumbnail-classic > a {
+      display: flex !important;
+      flex-direction: column !important;
+      height: 100% !important;
+      text-decoration: none !important;
+    }
+
+    /* 统一图片尺寸 - 固定高度，使用 object-fit 确保填充 */
+    #projectsContainer .thumbnail-classic-image {
+      width: 100% !important;
+      height: 256px !important;
+      object-fit: cover !important;
+      object-position: center !important;
+      display: block !important;
+      flex-shrink: 0 !important;
+    }
+
+    /* 统一文字区域高度 */
+    #projectsContainer .thumbnail-classic-caption {
+      flex: 1 !important;
+      display: flex !important;
+      flex-direction: column !important;
+      justify-content: center !important;
+      min-height: 80px !important;
+      padding: 15px !important;
+      background: rgba(53, 72, 121, 0.9) !important;
+    }
+
+    /* 统一标题样式 */
+    #projectsContainer .thumbnail-classic-title {
+      font-size: 18px !important;
+      line-height: 1.4 !important;
+      margin: 0 0 8px 0 !important;
+      color: #fff !important;
+      font-weight: 600 !important;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 2 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+      min-height: 50px !important;
+    }
+
+    /* 统一分类文字样式 */
+    #projectsContainer .thumbnail-classic-text {
+      font-size: 14px !important;
+      line-height: 1.3 !important;
+      margin: 0 !important;
+      color: rgba(255, 255, 255, 0.8) !important;
+      display: -webkit-box !important;
+      -webkit-line-clamp: 1 !important;
+      -webkit-box-orient: vertical !important;
+      overflow: hidden !important;
+      text-overflow: ellipsis !important;
+    }
+
+    /* 响应式设计 - 平板设备 */
+    @media (max-width: 991.98px) {
+      #projectsContainer > div {
+        width: 50% !important;
+      }
+    }
+
+    /* 响应式设计 - 手机设备 */
+    @media (max-width: 575.98px) {
+      #projectsContainer > div {
+        width: 100% !important;
+      }
     }
   </style>
 
@@ -674,6 +774,8 @@
       await renderBlogs();
       console.log('博客渲染完成，开始渲染客户评价');
       await renderTestimonials();
+      // 新增：渲染首页特色模块
+      await renderHomeFeatures();
       console.log('所有动态内容渲染完成');
     });
 
@@ -721,11 +823,17 @@
             `;
           }
           if (heroDescription && info.heroDescription) {
-            heroDescription.textContent = info.heroDescription;
+            heroDescription.innerHTML = info.heroDescription;
           }
           if (heroButton) {
             heroButton.textContent = info.heroButtonText || '了解更多';
-            heroButton.href = info.heroButtonLink || '#';
+            // 默认跳转到“联系我们”页面，后台可通过 heroButtonLink 覆盖
+            const link = info.heroButtonLink;
+            if (!link || link === '#') {
+              heroButton.href = 'contacts.html';
+            } else {
+              heroButton.href = link;
+            }
           }
           // 更新统计数字
           if (typeof info.statAwards === 'number') {
@@ -739,7 +847,7 @@
           if (typeof info.statExperience === 'number') {
             const el = document.querySelector('[data-counter-type="experience"] .counter');
             if (el) el.textContent = info.statExperience;
-          }
+      }
           if (typeof info.statConsultants === 'number') {
             const el = document.querySelector('[data-counter-type="consultants"] .counter');
             if (el) el.textContent = info.statConsultants;
@@ -763,13 +871,16 @@
           const displayServices = services.slice(0, 3);
 
         displayServices.forEach((service, index) => {
+          // 优先使用后台图片，其次使用本地缩略图占位
+          const imageUrl = service.image || `images/service-thumbnail-${(index % 4) + 1}-270x300.jpg`;
           const serviceHTML = `
             <div class="col-sm-6 col-lg-4 wow-outer">
-              <!-- Box Creative-->
               <article class="box-creative wow slideInDown" data-wow-delay=".${index * 0.05}s">
-                <div class="box-creative-icon linearicons-power"></div>
-                  <h4 class="box-creative-title"><a href="single-service.html?id=${service.id}">${service.title || ''}</a></h4>
-                  <p>${service.description || ''}</p>
+                <div class="image-preview" style="margin-bottom: 16px; border-radius: 8px; overflow: hidden;">
+                  <img src="${imageUrl}" alt="${service.title || ''}" class="service-card-img">
+                </div>
+                <h4 class="box-creative-title"><a href="single-service.html?id=${service.id}">${service.title || ''}</a></h4>
+                <p>${service.description || ''}</p>
               </article>
             </div>
           `;
@@ -905,7 +1016,7 @@
                     <path d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5L7.539,10.206z"></path>
                           </svg>
                           <div class="quote-light-text">
-                    <p>${testimonial.content || ''}</p>
+                    <div class="testimonial-content-html">${testimonial.content || ''}</div>
                           </div>
                   <div class="quote-light-footer">
                     <img class="quote-light-image" src="images/logo-majestic-104x64.png" alt="公司logo" width="104" height="64" />
@@ -966,6 +1077,39 @@
       } catch (error) {
         console.error('加载客户评价失败:', error);
         testimonialsContainer.innerHTML = '<p>加载客户评价失败，请稍后重试</p>';
+      }
+    }
+
+    // 渲染首页特色模块 - 从API获取
+    async function renderHomeFeatures() {
+      const homeFeaturesContainer = document.getElementById('homeFeaturesContainer');
+      if (!homeFeaturesContainer) return;
+
+      try {
+        const features = await window.API.HomeFeatures.getAll();
+        if (features && features.length > 0) {
+          homeFeaturesContainer.innerHTML = '';
+          features.forEach((feature, index) => {
+            const featureHTML = `
+              <div class="col-sm-6 col-lg-4 wow-outer">
+                <!-- Box Minimal-->
+                <article class="box-minimal">
+                  <div class="box-minimal-icon ${feature.icon || ''} wow fadeIn" data-wow-delay=".${index * 0.05}s"></div>
+                  <div class="box-minimal-main wow-outer">
+                    <h4 class="box-minimal-title wow slideInDown" data-wow-delay=".${index * 0.05}s">${feature.title || ''}</h4>
+                    <div class="wow fadeInUpSmall" data-wow-delay=".${index * 0.05}s">${feature.description || ''}</div>
+                  </div>
+                </article>
+              </div>
+            `;
+            homeFeaturesContainer.insertAdjacentHTML('beforeend', featureHTML);
+          });
+        } else {
+          homeFeaturesContainer.innerHTML = '<p class="text-center">暂无首页特色模块</p>';
+        }
+      } catch (error) {
+        console.error('加载首页特色模块失败:', error);
+        homeFeaturesContainer.innerHTML = '<p class="text-center">加载首页特色模块失败，请稍后重试</p>';
       }
     }
   </script>

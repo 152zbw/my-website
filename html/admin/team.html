@@ -5,6 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>团队成员管理 - 后台管理系统</title>
     <script src="../js/api.js"></script>
+    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:#f5f7fa;color:#333;line-height:1.6;}
@@ -55,10 +57,54 @@
         .form-label{display:block;margin-bottom:5px;font-weight:600;color:#354879;}
         .form-input,.form-textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;}
         .form-textarea{resize:vertical;min-height:80px;}
+        #member-bio-editor-container {
+            height: 150px; /* Quill editor height */
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
         .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:20px;}
         .message{padding:15px;border-radius:4px;position:fixed;top:80px;right:20px;z-index:1002;min-width:250px;box-shadow:0 2px 10px rgba(0,0,0,0.1);}
         .message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
         .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
+        /* 文件上传样式 */
+        .file-upload-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .file-upload-group .form-input {
+            flex: 1;
+        }
+        .upload-label {
+            display: inline-block;
+            padding: 10px 16px;
+            background-color: #354879;
+            color: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            white-space: nowrap;
+        }
+        .upload-label:hover {
+            background-color: #28334f;
+        }
+        .image-preview {
+            margin-top: 10px;
+            max-width: 200px;
+            max-height: 150px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .image-preview img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
         @media(max-width:768px){.sidebar{transform:translateX(-100%);} .sidebar.open{transform:translateX(0);} .content{margin-left:0;} .content-header{flex-direction:column;align-items:flex-start;} .btn{margin-top:10px;}}
     </style>
 </head>
@@ -78,6 +124,8 @@
                 <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
                 <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
                 <li><a href="team.html" class="active"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="pricing.html"><i class="fas fa-dollar-sign"></i>价格表</a></li>
+                <li><a href="home-features.html"><i class="fas fa-star"></i>首页特色模块</a></li>
                 <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
                 <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
             </ul>
@@ -135,8 +183,15 @@
                     <input id="memberPosition" class="form-input" required>
                 </div>
                 <div class="form-group">
-                    <label class="form-label" for="memberAvatar">头像 URL</label>
-                    <input id="memberAvatar" class="form-input" placeholder="images/team-1-270x273.jpg">
+                    <label class="form-label" for="memberAvatar">头像</label>
+                    <div class="file-upload-group">
+                        <input type="text" id="memberAvatar" class="form-input" placeholder="例如：images/team-1.jpg 或 /uploads/xxx.png">
+                        <label for="memberAvatarFile" class="upload-label">选择文件</label>
+                        <input type="file" id="memberAvatarFile" accept="image/*" style="display:none;">
+                    </div>
+                    <div class="image-preview" id="memberAvatarPreview" style="margin-top:10px;display:none;">
+                        <img id="memberAvatarPreviewImg" src="" alt="预览">
+                    </div>
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="memberSort">排序</label>
@@ -151,7 +206,7 @@
                 </div>
                 <div class="form-group">
                     <label class="form-label" for="memberBio">简介</label>
-                    <textarea id="memberBio" class="form-textarea" rows="5" placeholder="成员简介"></textarea>
+                    <div id="member-bio-editor-container"></div>
                 </div>
                 <div class="form-actions">
                     <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
@@ -177,19 +232,110 @@
 
     <script>
         let deleteId = null;
+        let memberAvatarInput = null;
+        let memberAvatarPreviewImg = null;
+        let memberAvatarNameSpan = null;
+        let memberBioQuill;
 
         document.addEventListener('DOMContentLoaded', async () => {
             const user = localStorage.getItem('adminUser');
             const token = localStorage.getItem('adminToken');
             if (!user || !token) { window.location.href = 'index.html'; return; }
             initMenuToggle();
+            initUpload();
+            initQuillEditor(); // 初始化Quill编辑器
             await loadTeam();
             document.getElementById('teamForm').addEventListener('submit', onSave);
         });
 
+        function initUpload() {
+            const fileInput = document.getElementById('memberAvatarFile');
+            memberAvatarInput = document.getElementById('memberAvatar');
+            memberAvatarPreviewImg = document.getElementById('memberAvatarPreviewImg');
+            memberAvatarNameSpan = document.querySelector('label[for="memberAvatarFile"]');
+
+            if (!fileInput || !memberAvatarInput || !memberAvatarPreviewImg || !memberAvatarNameSpan) return;
+
+            // Manual input for image URL
+            memberAvatarInput.addEventListener('input', () => updateImagePreview(memberAvatarInput.value.trim()));
+
+            // File input for upload
+            fileInput.addEventListener('change', async function () {
+                const file = fileInput.files[0];
+                if (!file) return;
+                try {
+                    showMessage('正在上传图片，请稍候...', 'success');
+                    const result = await window.API.Upload.uploadSingle(file);
+                    const filePath = result?.file?.path || result?.path || '';
+                    if (!filePath) {
+                        throw new Error('上传响应中未返回文件路径');
+                    }
+                    memberAvatarInput.value = filePath;
+                    updateImagePreview(filePath);
+                    showMessage('上传成功', 'success');
+                } catch (err) {
+                    console.error('上传图片失败:', err);
+                    // 检查是否是认证问题
+                    if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('未登录'))) {
+                        if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                            // 清除认证信息并跳转到登录页
+                            localStorage.removeItem('adminToken');
+                            localStorage.removeItem('adminUser');
+                            window.location.href = 'index.html';
+                        }
+                        return;
+                    }
+                    showMessage(err.message || '上传失败，请稍后重试', 'error');
+                } finally {
+                    fileInput.value = ''; // Clear file input
+                }
+            });
+        }
+
+        function updateImagePreview(url) {
+            const previewDiv = document.getElementById('memberAvatarPreview');
+            if (!previewDiv || !memberAvatarPreviewImg) return;
+
+            if (url) {
+                memberAvatarPreviewImg.src = url;
+                previewDiv.style.display = 'block';
+                // Optionally update the name span if we want to show the file name from URL
+                // memberAvatarNameSpan.textContent = url.split('/').pop();
+            } else {
+                memberAvatarPreviewImg.src = '';
+                previewDiv.style.display = 'none';
+                // memberAvatarNameSpan.textContent = '未选择文件';
+            }
+        }
+
         function initMenuToggle(){document.getElementById('menuToggle').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');});}
         
-        function logout(){if(confirm('确定要退出登录吗？')){localStorage.removeItem('adminUser');localStorage.removeItem('adminToken');window.location.href='index.html';}}
+        function logout(){if(confirm('确定要退出登录吗？')){
+            localStorage.removeItem('adminUser');
+            localStorage.removeItem('adminToken');
+            window.location.href='index.html';
+        }}
+
+        function initQuillEditor() {
+            memberBioQuill = new Quill('#member-bio-editor-container', {
+                theme: 'snow',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline', 'strike'],
+                        [{'list': 'ordered'}, {'list': 'bullet'}],
+                        [{'script': 'sub'}, {'script': 'super'}],
+                        [{'indent': '-1'}, {'indent': '+1'}],
+                        [{'direction': 'rtl'}],
+                        [{'size': ['small', false, 'large', 'huge']}],
+                        [{'header': [1, 2, 3, 4, 5, 6, false]}],
+                        [{'color': []}, {'background': []}],
+                        [{'font': []}],
+                        [{'align': []}],
+                        ['clean']
+                    ]
+                }
+            });
+        }
 
         async function loadTeam(){
             const tbody = document.getElementById('teamTableBody');
@@ -200,6 +346,16 @@
                 render(list || []);
             } catch (err) {
                 console.error('加载团队成员失败', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 const errorMsg = err.message || '加载失败，请稍后重试';
                 tbody.innerHTML = `<tr><td colspan="7" style="color:red;">${errorMsg}<br><small>请检查：1. 后端服务器是否运行 2. 是否已运行 node init-db.js 初始化数据库</small></td></tr>`;
                 showMessage('加载失败：' + errorMsg, 'error');
@@ -213,17 +369,17 @@
             list.sort((a,b)=>(a.sortOrder||0)-(b.sortOrder||0));
             list.forEach(i=>{
                 tbody.insertAdjacentHTML('beforeend',`
-                    <tr>
-                        <td>${i.id}</td>
-                        <td>${i.name||''}</td>
-                        <td>${i.position||''}</td>
+            <tr>
+                <td>${i.id}</td>
+                <td>${i.name||''}</td>
+                <td>${i.position||''}</td>
                         <td>${i.image?`<img src="${i.image}" class="avatar-img" alt="${i.name}">`:'-'}</td>
                         <td>${i.sortOrder||0}</td>
-                        <td>${i.isActive?'激活':'禁用'}</td>
-                        <td>
-                            <button class="btn btn-primary btn-sm" onclick="editItem(${i.id})">编辑</button>
-                            <button class="btn btn-danger btn-sm" onclick="removeItem(${i.id})">删除</button>
-                        </td>
+                <td>${i.isActive?'激活':'禁用'}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm" onclick="editItem(${i.id})">编辑</button>
+                    <button class="btn btn-danger btn-sm" onclick="removeItem(${i.id})">删除</button>
+                </td>
                     </tr>
                 `);
             });
@@ -235,6 +391,8 @@
             document.querySelector('input[name="memberStatus"][value="1"]').checked=true;
             document.getElementById('modalTitle').textContent='添加成员';
             document.getElementById('teamModal').style.display='block';
+            updateImagePreview(''); // Clear image preview
+            memberBioQuill.setContents([]); // 清空Quill编辑器内容
         }
 
         function closeModal(){document.getElementById('teamModal').style.display='none';}
@@ -247,7 +405,7 @@
             const image = document.getElementById('memberAvatar').value.trim();
             const sortOrder = parseInt(document.getElementById('memberSort').value||'0',10);
             const isActive = document.querySelector('input[name="memberStatus"]:checked').value==='1' ? 1 : 0;
-            const bio = document.getElementById('memberBio').value.trim();
+            const bio = memberBioQuill.root.innerHTML.trim(); // 从Quill编辑器获取内容
             if(!name||!position){showMessage('请填写姓名和职位','error');return;}
             try {
                 const payload = { name, position, image, bio, sortOrder, isActive };
@@ -262,6 +420,16 @@
                 closeModal();
             } catch (err) {
                 console.error('保存失败', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 showMessage(err.message || '保存失败','error');
             }
         }
@@ -274,13 +442,25 @@
                 document.getElementById('memberName').value=item.name||'';
                 document.getElementById('memberPosition').value=item.position||'';
                 document.getElementById('memberAvatar').value=item.image||'';
+                updateImagePreview(item.image || ''); // Update image preview
                 document.getElementById('memberSort').value=item.sortOrder||0;
-                document.getElementById('memberBio').value=item.bio||'';
+                // document.getElementById('memberBio').value=item.bio||''; // 旧textarea
+                memberBioQuill.root.innerHTML = item.bio||''; // 设置Quill编辑器内容
                 document.querySelector(`input[name="memberStatus"][value="${item.isActive?1:0}"]`).checked=true;
                 document.getElementById('modalTitle').textContent='编辑成员';
                 document.getElementById('teamModal').style.display='block';
             } catch (err) {
                 console.error('加载成员详情失败', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 showMessage('加载成员详情失败','error');
             }
         }
@@ -298,6 +478,16 @@
                 closeDeleteModal();
             } catch (err) {
                 console.error('删除失败', err);
+                // 检查是否是认证问题
+                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
+                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
+                        // 清除认证信息并跳转到登录页
+                        localStorage.removeItem('adminToken');
+                        localStorage.removeItem('adminUser');
+                        window.location.href = 'index.html';
+                    }
+                    return;
+                }
                 showMessage(err.message || '删除失败','error');
                 closeDeleteModal();
             }

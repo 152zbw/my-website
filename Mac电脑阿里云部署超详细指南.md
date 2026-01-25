@@ -19,8 +19,9 @@
 6. [第五步：配置和启动项目](#第五步配置和启动项目)
 7. [第六步：配置防火墙和安全组](#第六步配置防火墙和安全组)
 8. [第七步：测试访问](#第七步测试访问)
-9. [常见问题解决](#常见问题解决)
-10. [日常维护](#日常维护)
+9. [第十步：配置域名（替换现有网站）](#第十步配置域名替换现有网站)
+10. [常见问题解决](#常见问题解决)
+11. [日常维护](#日常维护)
 
 ---
 
@@ -426,6 +427,33 @@ Are you sure you want to continue connecting (yes/no/[fingerprint])?
 ```
 root@47.xxx.xxx.xxx's password:
 ```
+
+⚠️ **重要提示：关于终端断开**
+
+**问题：关闭终端或断开连接会有什么影响？**
+
+1. **SSH 连接断开后：**
+   - 如果你在终端中运行了命令（如 `node app.js`），这些命令会**停止运行**
+   - 服务器上的进程会**被终止**
+   - 但服务器本身**不会关闭**（服务器还在运行）
+
+2. **重新连接后：**
+   - 需要**重新运行之前的命令**
+   - 如果之前启动了网站服务器，需要**重新启动**
+   - 文件和数据**不会丢失**（都在服务器上）
+
+3. **如何让程序在断开连接后继续运行？**
+   - 使用 **PM2**（本指南会教你怎么用）
+   - PM2 可以让程序在后台运行，即使断开连接也不会停止
+   - 详细说明见"第五步：配置和启动项目"部分
+
+**简单说：**
+- ✅ 关闭终端**不会影响服务器**
+- ❌ 关闭终端**会停止你正在运行的命令**
+- ✅ 重新连接后**需要重新运行命令**
+- ✅ 使用 PM2 **可以让程序持续运行**
+
+**现在继续连接：**
 
 **操作：**
 1. 输入你之前设置的服务器密码
@@ -1139,7 +1167,7 @@ git commit -m "Initial commit"
 
 ```bash
 git branch -M main
-git remote add origin https://github.com/你的用户名/仓库名.git
+git remote add origin https://github.com/152zbw/my-website.git
 git push -u origin main
 ```
 
@@ -1186,10 +1214,14 @@ cd /root
 
 ##### 4.2.2 克隆项目
 
+⚠️ **重要**：如果遇到 GitHub 连接超时错误（`Failed to connect to github.com`），请使用下面的"方法二：使用 Gitee 镜像"或"方法三：使用 FTP 上传"！
+
+**方法一：使用 GitHub（如果网络正常）**
+
 输入以下命令（替换为你的GitHub仓库地址）：
 
 ```bash
-git clone https://github.com/你的用户名/仓库名.git
+git clone https://github.com/152zbw/my-website.git
 ```
 
 例如：
@@ -1202,6 +1234,56 @@ git clone https://github.com/zhangsan/my-website.git
 **说明：**
 - 这会把 GitHub 上的代码下载到服务器
 - 可能需要 1-2 分钟
+
+**如果出现错误：** `Failed to connect to github.com` 或 `连接超时`
+
+**方法二：使用 Gitee 镜像（推荐，解决网络问题）**
+
+如果 GitHub 连接失败，可以先把代码同步到 Gitee，然后从 Gitee 克隆：
+
+**步骤1：在 Gitee 导入 GitHub 仓库**
+
+1. 访问 https://gitee.com
+2. 注册/登录账号
+3. 点击右上角 "+" → "导入仓库"
+4. 输入你的 GitHub 仓库地址：`https://github.com/152zbw/my-website`
+5. 点击"导入"
+6. 等待导入完成（1-2分钟）
+
+**步骤2：从 Gitee 克隆**
+
+在服务器终端输入：
+
+```bash
+git clone https://gitee.com/你的Gitee用户名/my-website.git
+```
+
+例如：
+```bash
+git clone https://gitee.com/zhangsan/my-website.git
+```
+
+**方法三：使用 FTP 上传（最简单，推荐新手）**
+
+如果 Git 都失败，直接使用 FTP 工具上传文件（见下面的"方法二：使用 FTP 工具"部分）。
+
+**方法四：手动下载 ZIP 包（备用方案）**
+
+如果所有方法都失败：
+
+1. **在 Mac 浏览器中访问 GitHub**
+   - 打开：`https://github.com/152zbw/my-website`
+   - 点击绿色的 "Code" 按钮
+   - 选择 "Download ZIP"
+   - 下载到 Mac 本地
+
+2. **解压 ZIP 文件**
+   - 在 Mac 上解压下载的 ZIP 文件
+
+3. **使用 FTP 上传**
+   - 使用 FileZilla 或其他 FTP 工具
+   - 把解压后的文件夹上传到服务器的 `/root` 目录
+   - 详细步骤见下面的"方法二：使用 FTP 工具"部分
 
 ##### 4.2.3 进入项目目录
 
@@ -1318,7 +1400,40 @@ npm install
 
 ### 5.3 创建环境变量文件
 
-#### 5.3.1 打开编辑器
+#### 5.3.1 安装文本编辑器（如果需要）
+
+⚠️ **如果提示 `nano: 未找到命令`，先安装 nano：**
+
+```bash
+yum install -y nano
+```
+
+然后按 `回车键`，等待安装完成。
+
+**或者使用 vi 编辑器（系统自带，无需安装）：**
+
+如果不想安装 nano，可以直接使用 `vi`（系统自带）：
+
+```bash
+vi .env
+```
+
+**vi 使用方法（简单版）：**
+1. 按 `i` 键进入编辑模式
+2. 输入内容
+3. 按 `Esc` 键退出编辑模式
+4. 输入 `:wq` 然后按 `回车键` 保存并退出
+5. 如果不想保存，输入 `:q!` 然后按 `回车键`
+
+**推荐：安装 nano（更简单）**
+
+```bash
+yum install -y nano
+```
+
+#### 5.3.2 打开编辑器
+
+**使用 nano（推荐）：**
 
 输入：
 
@@ -1331,28 +1446,85 @@ nano .env
 **说明：**
 - `nano` 是一个简单的文本编辑器
 - 会打开一个编辑窗口
+- 如果提示"未找到命令"，先执行上面的安装命令
 
-#### 5.3.2 输入配置内容
+**使用 vi（如果 nano 安装失败）：**
+
+输入：
+
+```bash
+vi .env
+```
+
+然后按 `回车键`，再按 `i` 键进入编辑模式。
+
+#### 5.3.3 输入配置内容
 
 在编辑器中，输入以下内容（一行一行输入）：
 
 ```env
 PORT=3000
 NODE_ENV=production
-JWT_SECRET=你的随机密钥至少32个字符建议用强密码
+JWT_SECRET=7cbaa2dfa55d1b7b43b9fd776f3325be57ef98da96c02b2e694a54caaf193ee2
 JWT_EXPIRES_IN=24h
 DB_DIALECT=sqlite
 ```
 
 **生成随机密钥：**
 
-打开另一个终端窗口（保持 nano 打开），输入：
+⚠️ **重要**：在输入配置内容之前，先生成随机密钥！
 
-```bash
-node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
-```
+**方法一：先保存 nano，生成密钥，再编辑（推荐，最简单）**
 
-复制输出的字符串，替换 `你的随机密钥至少32个字符建议用强密码`。
+1. **先保存并退出 nano**（如果 nano 已经打开）：
+   - 按 `Control + X`
+   - 按 `Y`
+   - 按 `回车键`
+
+2. **生成随机密钥**（在同一个终端中）：
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+   然后按 `回车键`。
+
+3. **复制输出的字符串**（一串很长的字母和数字）
+
+4. **重新打开 nano 编辑**：
+   ```bash
+   nano .env
+   ```
+
+5. **输入配置内容**，把 `你的随机密钥至少32个字符建议用强密码` 替换成刚才复制的字符串
+
+**方法二：新开一个终端窗口（如果方法一不方便）**
+
+1. **在 Mac 上打开一个新的终端窗口**：
+   - 按 `Command + T`（在终端中新建标签页）
+   - 或者点击终端菜单 → "新建窗口"
+
+2. **在新终端中连接服务器**：
+   ```bash
+   ssh root@你的服务器IP
+   ```
+   输入密码连接
+
+3. **生成随机密钥**（在新终端中）：
+   ```bash
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+   ```
+   然后按 `回车键`。
+
+4. **复制输出的字符串**
+
+5. **回到原来的终端**（nano 还在打开），粘贴密钥
+
+**方法三：手动输入一个强密码（最简单，但不够随机）**
+
+如果不想生成随机密钥，也可以手动输入一个强密码（至少32个字符）：
+- 例如：`MyWebsiteSecretKey2024!@#$%^&*()_+`
+- 建议包含：大写字母、小写字母、数字、特殊字符
+
+**推荐使用方法一**（最简单，不需要开新终端）
 
 **完整示例：**
 ```env
@@ -1363,7 +1535,9 @@ JWT_EXPIRES_IN=24h
 DB_DIALECT=sqlite
 ```
 
-#### 5.3.3 保存文件
+#### 5.3.4 保存文件
+
+**如果使用 nano：**
 
 在 nano 编辑器中：
 
@@ -1373,6 +1547,19 @@ DB_DIALECT=sqlite
 
 **说明：**
 - 底部有提示：`^X Exit` 表示按 `Control + X` 退出
+- 保存成功后，你会回到命令行
+
+**如果使用 vi：**
+
+在 vi 编辑器中：
+
+1. 按 `Esc` 键（确保退出编辑模式）
+2. 输入 `:wq`（冒号 + w + q）
+3. 按 `回车键` 保存并退出
+
+**说明：**
+- `:wq` 表示 write（写入）和 quit（退出）
+- 如果不想保存，输入 `:q!` 然后按 `回车键`
 - 保存成功后，你会回到命令行
 
 ### 5.4 初始化数据库
@@ -1456,9 +1643,19 @@ DB_DIALECT=sqlite pm2 start app.js --name my-website
 
 **预期输出：**
 ```
+[PM2] Starting /root/my-website/app.js in fork_mode (1 instance)
+[PM2] Done.
+```
+
+或者：
+```
 [PM2] Starting in fork_mode...
 [PM2] Successfully started
 ```
+
+✅ **看到 `[PM2] Done.` 或 `Successfully started` 表示启动成功！**
+
+⚠️ **注意**：启动成功不代表程序运行正常，需要进一步检查（见下面的"查看状态"）。
 
 ### 6.2 查看状态
 
@@ -1491,17 +1688,43 @@ pm2 startup
 
 然后按 `回车键`。
 
-**预期输出：**
+**预期输出（两种情况）：**
+
+**情况1：需要手动执行命令（旧版本 PM2）**
+
 ```
 [PM2] Init System found: systemd
 [PM2] To setup the Startup Script, copy/paste the following command:
 sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u root --hp /root
 ```
 
+如果看到这个，需要：
+1. 复制上面输出的命令（以 `sudo env PATH=...` 开头的）
+2. 粘贴到终端，按 `回车键`
+3. 输入服务器密码（如果需要）
+
+**情况2：自动配置成功（新版本 PM2，你看到的就是这个）**
+
+```
+[PM2] Init System found: systemd
+Platform systemd
+...
+[PM2] Writing init configuration in /etc/systemd/system/pm2-root.service
+[PM2] Making script booting at startup...
+[PM2] [-] Executing: systemctl enable pm2-root...
+Created symlink /etc/systemd/system/multi-user.target.wants/pm2-root.service → /etc/systemd/system/pm2-root.service.
+[PM2] [v] Command successfully executed.
++---------------------------------------+
+[PM2] Freeze a process list on reboot via:
+$ pm2 save
+```
+
+✅ **如果看到 `Command successfully executed.` 和 `pm2 save` 提示，说明配置成功！**
+
 **说明：**
-- 会输出一行命令，**复制这行命令**
-- 然后输入这行命令（直接复制粘贴）
-- 例如：`sudo env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u root --hp /root`
+- 这会创建 systemd 服务文件，让 PM2 在服务器重启后自动启动
+- 看到 `Command successfully executed.` 表示配置成功
+- 接下来需要执行 `pm2 save` 保存当前运行的进程列表
 
 **保存进程列表：**
 
@@ -1526,6 +1749,13 @@ pm2 save
 ⚠️ **注意**：这一步在**服务器终端**中操作！
 
 ⚠️ **重要**：Alibaba Cloud Linux 使用 `firewalld`，不是 `ufw`！如果你看到 `ufw` 命令，那是 Ubuntu 的，不要用！
+
+💡 **提示**：防火墙配置是系统级别的命令，**不需要在项目目录中执行**，可以在任何目录执行（比如 `/root` 或 `/root/my-website` 都可以）。
+
+**当前目录示例：**
+- ✅ 可以：`[root@iZm5e0a4bgf0lm1cjqyomwZ my-website]#`（在项目目录）
+- ✅ 可以：`[root@iZm5e0a4bgf0lm1cjqyomwZ ~]#`（在 /root 目录）
+- ✅ 可以：任何目录都可以
 
 #### 7.1.1 检查防火墙状态
 
@@ -1568,6 +1798,29 @@ systemctl enable firewalld
 
 #### 7.1.3 开放 3000 端口
 
+⚠️ **如果看到防火墙错误日志：**
+
+如果你在查看日志时看到 `WARNING: COMMAND_FAILED` 或 `ERROR: Invalid option` 等错误：
+
+1. **先退出日志查看界面：**
+   - 按 `q` 键退出（如果是在 less/more 中）
+   - 或者按 `Control + C` 退出
+
+2. **检查防火墙状态：**
+   ```bash
+   systemctl status firewalld
+   ```
+   如果显示 `active (running)`，说明防火墙正在运行，可以继续。
+
+3. **如果防火墙有问题，重启它：**
+   ```bash
+   systemctl restart firewalld
+   ```
+
+4. **然后继续执行下面的命令**
+
+**开放 3000 端口：**
+
 输入：
 
 ```bash
@@ -1575,6 +1828,17 @@ firewall-cmd --permanent --add-port=3000/tcp
 ```
 
 然后按 `回车键`。
+
+**预期输出：**
+```
+success
+```
+
+**如果出现错误：**
+
+- 如果提示 `FirewallD is not running`：先执行 `systemctl start firewalld`
+- 如果提示权限不足：确保你是 root 用户
+- 如果提示端口已存在：说明端口已经开放，可以跳过这一步
 
 **说明：**
 - `--permanent`：永久生效（即使重启也有效）
@@ -1695,10 +1959,22 @@ lsof -i :3000
 ```
 
 **说明：**
-- 如果看到输出，说明 3000 端口已被占用
-- 如果没有任何输出，说明 3000 端口可用
+- ✅ **如果看到类似这样的输出：**
+  ```
+  tcp6       0      0 :::3000                 :::*                    LISTEN      531743/node
+  ```
+  **这是正常的！** 说明你的网站**正在运行**，Node.js 正在监听 3000 端口。这是**好事**，不是错误！
+  
+- ❌ **如果看到错误信息：** `EADDRINUSE: address already in use`（在启动网站时）
+  这才是"端口被占用"的错误，需要修改端口或停止占用端口的进程
+  
+- 如果没有任何输出，说明 3000 端口可用（网站可能没有运行）
 
-### 8.2 如果端口被占用，修改你的网站端口
+### 8.2 如果端口被占用（错误情况），修改你的网站端口
+
+⚠️ **注意**：只有在**启动网站时出现错误** `EADDRINUSE: address already in use` 才需要修改端口。
+
+如果你只是检查端口状态，看到 `LISTEN` 和 `node` 进程，那是**正常的**，说明网站正在运行！
 
 #### 8.2.1 选择一个新端口
 
@@ -1835,6 +2111,370 @@ free -h
    - 如果能正常添加，说明一切正常！✅
 
 ⚠️ **重要提醒**：登录后台后，**立即修改默认密码**！默认密码 `admin123` 不安全！
+
+---
+
+## 第十步：配置域名（替换现有网站）
+
+如果你想要使用域名访问网站，或者替换公司现有的网站，需要完成以下步骤。
+
+### 10.1 准备工作
+
+**需要的信息：**
+- 你的域名（例如：`www.example.com`）
+- 域名管理权限（可以修改 DNS 解析）
+- 服务器公网 IP 地址
+
+**重要说明：**
+- 如果域名已经在使用（指向其他服务器），配置完成后会替换现有网站
+- 建议在非工作时间进行配置，避免影响现有网站
+- 配置前建议先备份现有网站（如果有）
+
+### 10.2 配置域名解析（DNS）
+
+#### 10.2.1 登录域名管理平台
+
+1. **找到你的域名服务商**
+   - 阿里云域名：https://dc.console.aliyun.com
+   - 腾讯云域名：https://console.cloud.tencent.com/domain
+   - 其他服务商：登录对应的管理平台
+
+2. **进入域名解析管理**
+   - 找到你的域名
+   - 点击"解析"或"DNS 解析"
+
+#### 10.2.2 添加/修改 A 记录
+
+1. **添加 A 记录（如果还没有）**
+   - 点击"添加记录"
+   - **记录类型**：选择 `A`
+   - **主机记录**：
+     - `@` 表示主域名（如 `example.com`）
+     - `www` 表示 `www.example.com`
+     - 建议同时添加 `@` 和 `www`
+   - **记录值**：填写你的服务器**公网 IP 地址**
+   - **TTL**：保持默认（600 或 10 分钟）
+
+2. **修改现有 A 记录（如果要替换现有网站）**
+   - 找到现有的 A 记录
+   - 点击"修改"
+   - 把**记录值**改成你的服务器公网 IP
+   - 保存
+
+**示例配置：**
+```
+记录类型：A
+主机记录：@
+记录值：47.108.123.45（你的服务器IP）
+TTL：600
+
+记录类型：A
+主机记录：www
+记录值：47.108.123.45（你的服务器IP）
+TTL：600
+```
+
+3. **等待生效**
+   - DNS 解析通常需要 5-30 分钟生效
+   - 可以先用 `ping 你的域名` 测试是否生效
+
+### 10.3 安装 Nginx（推荐方式）
+
+使用 Nginx 作为反向代理，可以：
+- 使用标准端口（80/443）
+- 配置 HTTPS（SSL 证书）
+- 同时运行多个网站
+- 更好的性能和安全性
+
+#### 10.3.1 安装 Nginx
+
+在服务器终端输入：
+
+```bash
+yum install -y nginx
+```
+
+然后按 `回车键`，等待安装完成。
+
+#### 10.3.2 启动 Nginx
+
+```bash
+systemctl start nginx
+systemctl enable nginx
+```
+
+#### 10.3.3 检查 Nginx 状态
+
+```bash
+systemctl status nginx
+```
+
+如果看到 `active (running)`，说明启动成功。
+
+### 10.4 配置 Nginx 反向代理
+
+#### 10.4.1 创建配置文件
+
+在服务器终端输入：
+
+```bash
+nano /etc/nginx/conf.d/my-website.conf
+```
+
+然后按 `回车键`。
+
+#### 10.4.2 输入配置内容
+
+在编辑器中输入以下内容（**替换 `your-domain.com` 为你的实际域名**）：
+
+```nginx
+server {
+    listen 80;
+    server_name your-domain.com www.your-domain.com;
+
+    # 重定向到 HTTPS（如果配置了 SSL）
+    # return 301 https://$server_name$request_uri;
+
+    # 反向代理到 Node.js 应用
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+```
+
+**说明：**
+- `server_name`：替换为你的域名（如 `example.com www.example.com`）
+- `proxy_pass http://localhost:3000`：指向你的 Node.js 应用端口
+- 如果网站使用其他端口（如 3001），修改这里的端口号
+
+#### 10.4.3 保存文件
+
+**如果使用 nano：**
+- 按 `Control + X`
+- 按 `Y`
+- 按 `回车键`
+
+**如果使用 vi：**
+- 按 `Esc`
+- 输入 `:wq`
+- 按 `回车键`
+
+#### 10.4.4 测试配置
+
+```bash
+nginx -t
+```
+
+如果显示 `syntax is ok` 和 `test is successful`，说明配置正确。
+
+#### 10.4.5 重新加载 Nginx
+
+```bash
+systemctl reload nginx
+```
+
+### 10.5 配置防火墙（开放 80 和 443 端口）
+
+#### 10.5.1 开放 80 端口（HTTP）
+
+```bash
+firewall-cmd --permanent --add-service=http
+firewall-cmd --reload
+```
+
+#### 10.5.2 开放 443 端口（HTTPS，如果配置 SSL）
+
+```bash
+firewall-cmd --permanent --add-service=https
+firewall-cmd --reload
+```
+
+#### 10.5.3 验证端口
+
+```bash
+firewall-cmd --list-services
+```
+
+应该能看到 `http` 和 `https`。
+
+### 10.6 配置阿里云安全组（开放 80 和 443 端口）
+
+#### 10.6.1 登录阿里云控制台
+
+1. 访问：https://ecs.console.aliyun.com
+2. 找到你的服务器实例
+3. 点击"安全组"
+
+#### 10.6.2 添加规则
+
+**添加 HTTP（80 端口）规则：**
+- **规则方向**：入方向
+- **授权策略**：允许
+- **协议类型**：TCP
+- **端口范围**：80/80
+- **授权对象**：0.0.0.0/0
+- 点击"保存"
+
+**添加 HTTPS（443 端口）规则：**
+- **规则方向**：入方向
+- **授权策略**：允许
+- **协议类型**：TCP
+- **端口范围**：443/443
+- **授权对象**：0.0.0.0/0
+- 点击"保存"
+
+### 10.7 测试域名访问
+
+#### 10.7.1 等待 DNS 生效
+
+DNS 解析通常需要 5-30 分钟生效。可以测试：
+
+```bash
+ping your-domain.com
+```
+
+如果显示你的服务器 IP，说明 DNS 已生效。
+
+#### 10.7.2 在浏览器中访问
+
+在浏览器中输入：
+
+```
+http://your-domain.com
+```
+
+或
+
+```
+http://www.your-domain.com
+```
+
+如果能看到网站，说明配置成功！
+
+### 10.8 配置 HTTPS（SSL 证书，推荐）
+
+为了网站安全，建议配置 HTTPS。
+
+#### 10.8.1 安装 Certbot（Let's Encrypt 免费证书）
+
+```bash
+yum install -y certbot python3-certbot-nginx
+```
+
+#### 10.8.2 获取 SSL 证书
+
+```bash
+certbot --nginx -d your-domain.com -d www.your-domain.com
+```
+
+**说明：**
+- 替换 `your-domain.com` 为你的实际域名
+- 按提示输入邮箱地址（用于证书到期提醒）
+- 选择是否重定向 HTTP 到 HTTPS（推荐选择 2，自动重定向）
+
+#### 10.8.3 自动续期
+
+Let's Encrypt 证书有效期 90 天，设置自动续期：
+
+```bash
+certbot renew --dry-run
+```
+
+系统会自动续期，无需手动操作。
+
+#### 10.8.4 测试 HTTPS
+
+在浏览器中访问：
+
+```
+https://your-domain.com
+```
+
+如果看到绿色锁图标，说明 HTTPS 配置成功！
+
+### 10.9 替换现有网站（重要步骤）
+
+如果你要替换公司现有的网站：
+
+#### 10.9.1 准备工作
+
+1. **备份现有网站**
+   - 如果有重要数据，先备份
+   - 记录现有网站的配置信息
+
+2. **确认新网站已正常运行**
+   - 使用 IP 访问测试：`http://你的IP:3000`
+   - 确保所有功能正常
+
+#### 10.9.2 修改 DNS 解析
+
+1. 登录域名管理平台
+2. 找到现有的 A 记录
+3. 修改记录值为新服务器的 IP
+4. 保存
+
+#### 10.9.3 等待生效并测试
+
+1. 等待 5-30 分钟（DNS 生效时间）
+2. 在浏览器中访问域名
+3. 确认新网站正常显示
+
+#### 10.9.4 如果出现问题
+
+如果新网站无法访问：
+
+1. **检查 Nginx 配置**
+   ```bash
+   nginx -t
+   systemctl status nginx
+   ```
+
+2. **检查 Node.js 应用**
+   ```bash
+   pm2 status
+   pm2 logs my-website
+   ```
+
+3. **检查防火墙和安全组**
+   - 确认 80 和 443 端口已开放
+
+4. **查看 Nginx 日志**
+   ```bash
+   tail -f /var/log/nginx/error.log
+   ```
+
+### 10.10 常见问题
+
+#### ❌ 问题1：域名无法访问
+
+**解决方法：**
+1. 检查 DNS 解析是否生效：`ping your-domain.com`
+2. 检查 Nginx 是否运行：`systemctl status nginx`
+3. 检查防火墙和安全组是否开放 80/443 端口
+4. 查看 Nginx 错误日志：`tail -f /var/log/nginx/error.log`
+
+#### ❌ 问题2：502 Bad Gateway
+
+**解决方法：**
+1. 检查 Node.js 应用是否运行：`pm2 status`
+2. 检查端口是否正确（应该是 3000 或你配置的端口）
+3. 检查 Nginx 配置中的 `proxy_pass` 端口是否正确
+
+#### ❌ 问题3：SSL 证书申请失败
+
+**解决方法：**
+1. 确认域名 DNS 已生效（指向你的服务器）
+2. 确认 80 端口已开放（Let's Encrypt 需要验证）
+3. 确认域名没有被其他服务占用
+4. 等待一段时间后重试
 
 ---
 
@@ -1994,6 +2634,183 @@ export https_proxy=http://代理地址:端口
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.0/install.sh | bash
 ```
 
+### ❌ 问题9：Git clone 失败（GitHub 连接超时）
+
+**错误信息：** `Failed to connect to github.com port 443: 连接超时` 或 `RPC 失败`
+
+**解决方法（按顺序尝试）：**
+
+**方法1：使用 Gitee 镜像（推荐）**
+
+1. **在 Gitee 导入 GitHub 仓库**
+   - 访问 https://gitee.com
+   - 注册/登录账号
+   - 点击右上角 "+" → "导入仓库"
+   - 输入你的 GitHub 仓库地址
+   - 点击"导入"，等待完成
+
+2. **从 Gitee 克隆**
+   ```bash
+   git clone https://gitee.com/你的Gitee用户名/仓库名.git
+   ```
+
+**方法2：使用 FTP 上传（最简单）**
+
+如果 Git 都失败，直接使用 FTP 工具上传文件：
+- 在 Mac 上下载 FileZilla
+- 连接服务器
+- 把项目文件夹拖到服务器
+- 详细步骤见文档"方法二：使用 FTP 工具"部分
+
+**方法3：手动下载 ZIP 包**
+
+1. 在 Mac 浏览器访问 GitHub 仓库
+2. 点击 "Code" → "Download ZIP"
+3. 解压 ZIP 文件
+4. 使用 FTP 工具上传到服务器
+
+**方法4：配置代理（如果你有代理）**
+
+```bash
+# 设置代理
+export http_proxy=http://代理地址:端口
+export https_proxy=http://代理地址:端口
+
+# 然后重新尝试 git clone
+git clone https://github.com/你的用户名/仓库名.git
+```
+
+### ❌ 问题10：关闭终端后程序停止运行
+
+**问题描述：** 关闭 Mac 终端或断开 SSH 连接后，网站无法访问
+
+**原因：**
+- SSH 连接断开后，在终端中直接运行的命令（如 `node app.js`）会停止
+- 这是正常现象，不是错误
+
+**解决方法：使用 PM2（推荐）**
+
+PM2 可以让程序在后台运行，即使断开连接也不会停止：
+
+```bash
+# 1. 安装 PM2（如果还没安装）
+npm install -g pm2
+
+# 2. 使用 PM2 启动网站
+cd /root/仓库名
+pm2 start app.js --name my-website
+
+# 3. 设置开机自启
+pm2 startup
+pm2 save
+
+# 4. 查看运行状态
+pm2 list
+
+# 5. 查看日志
+pm2 logs my-website
+```
+
+**详细步骤：** 见文档"第五步：配置和启动项目"中的 PM2 部分
+
+**临时解决方法（不推荐）：**
+
+如果暂时不想用 PM2，可以使用 `nohup`：
+
+```bash
+nohup node app.js > output.log 2>&1 &
+```
+
+但推荐使用 PM2，因为它更方便管理。
+
+### ❌ 问题12：防火墙错误（COMMAND_FAILED 或 Invalid option）
+
+**错误信息：** `WARNING: COMMAND_FAILED` 或 `ERROR: Invalid option`
+
+**解决方法：**
+
+这些警告通常不影响功能，但如果你想修复：
+
+**方法1：重启防火墙（推荐）**
+
+```bash
+# 重启防火墙
+systemctl restart firewalld
+
+# 检查状态
+systemctl status firewalld
+```
+
+**方法2：清除并重新配置**
+
+```bash
+# 停止防火墙
+systemctl stop firewalld
+
+# 重新加载配置
+firewall-cmd --reload
+
+# 启动防火墙
+systemctl start firewalld
+```
+
+**方法3：如果错误不影响使用，可以忽略**
+
+如果防火墙状态是 `active (running)`，并且可以正常添加端口规则，这些警告可以暂时忽略。
+
+**验证防火墙是否正常工作：**
+
+```bash
+# 检查状态
+systemctl status firewalld
+
+# 尝试添加端口（测试）
+firewall-cmd --permanent --add-port=3000/tcp
+firewall-cmd --reload
+firewall-cmd --list-ports
+```
+
+如果能看到 `3000/tcp`，说明防火墙正常工作。
+
+### ❌ 问题11：nano 未找到命令
+
+**错误信息：** `nano: 未找到命令` 或 `command not found: nano`
+
+**解决方法：**
+
+**方法1：安装 nano（推荐）**
+
+```bash
+yum install -y nano
+```
+
+安装完成后，就可以使用 `nano` 命令了。
+
+**方法2：使用 vi 编辑器（系统自带）**
+
+如果不想安装 nano，可以直接使用 `vi`（系统自带，无需安装）：
+
+```bash
+vi .env
+```
+
+**vi 使用方法：**
+
+1. **进入编辑模式：** 按 `i` 键
+2. **输入内容：** 正常输入文本
+3. **退出编辑模式：** 按 `Esc` 键
+4. **保存并退出：** 输入 `:wq` 然后按 `回车键`
+5. **不保存退出：** 输入 `:q!` 然后按 `回车键`
+
+**vi 常用命令：**
+- `i` - 进入编辑模式（在光标前插入）
+- `Esc` - 退出编辑模式
+- `:wq` - 保存并退出
+- `:q!` - 不保存退出
+- `:w` - 只保存不退出
+
+**推荐：** 安装 nano，因为它对新手更友好。
+
 ### ❌ 问题2：数据库错误
 
 **错误信息：** `数据库连接失败`
@@ -2013,9 +2830,19 @@ DB_DIALECT=sqlite node init-db.js
 chmod 644 data/database.sqlite
 ```
 
-### ❌ 问题3：端口被占用
+### ❌ 问题3：端口被占用（启动时错误）
 
-**错误信息：** `EADDRINUSE: address already in use`
+⚠️ **重要区分：**
+
+**正常情况（不是错误）：**
+- 检查端口时看到：`tcp6 ... :::3000 ... LISTEN ... node`
+- 这表示网站**正在运行**，是**正常现象** ✅
+
+**错误情况（需要解决）：**
+- 启动网站时出现：`EADDRINUSE: address already in use`
+- 这表示端口被**其他程序占用**，需要解决 ❌
+
+**错误信息：** `EADDRINUSE: address already in use`（在启动网站时）
 
 **解决方法：**
 
@@ -2055,11 +2882,14 @@ pm2 restart my-website --update-env --node-args="--max-old-space-size=2048"
 - [ ] 检查网站是否正常运行：`pm2 status`
 - [ ] 查看错误日志：`pm2 logs my-website`
 - [ ] 备份数据库（见下方）
+- [ ] 检查服务器资源使用：`df -h` 和 `free -h`
 
 #### 每月
 - [ ] 更新系统软件：`yum update -y`（Alibaba Cloud Linux）
 - [ ] 更新项目依赖：`cd /root/仓库名 && npm update`
 - [ ] 检查服务器资源使用情况
+- [ ] 检查 SSL 证书有效期（如果使用了 HTTPS）：`certbot certificates`
+- [ ] 清理旧的日志文件：`pm2 flush`
 
 ### 💾 备份数据库
 
@@ -2075,23 +2905,278 @@ cp data/database.sqlite data/database.sqlite.backup.$(date +%Y%m%d)
 cp data/database.sqlite /root/backup/database.sqlite.backup.$(date +%Y%m%d)
 ```
 
-### 🔄 更新代码
+### 🔄 更新代码和功能（重要！）
 
-如果你修改了代码：
+当你修改了代码或添加了新功能后，需要更新服务器上的代码。以下是详细步骤：
+
+#### 方法一：使用 Git（推荐，如果代码在 Git 仓库中）
+
+**步骤1：连接到服务器**
+
+在 Mac 终端中：
+
+```bash
+ssh root@你的服务器IP
+```
+
+输入密码连接。
+
+**步骤2：进入项目目录**
+
+```bash
+cd /root/my-website
+```
+
+（替换 `my-website` 为你的实际项目目录名）
+
+**步骤3：拉取最新代码**
+
+```bash
+git pull
+```
+
+**说明：**
+- 如果代码在 GitHub/Gitee 上，这会下载最新代码
+- 如果有冲突，需要先解决冲突
+- 如果提示需要输入账号密码，可能需要配置 SSH 密钥
+
+**步骤4：安装新的依赖（如果有）**
+
+```bash
+npm install
+```
+
+**说明：**
+- 如果 `package.json` 有变化，需要安装新依赖
+- 如果只是修改了代码，可以跳过这一步
+
+**步骤5：检查数据库迁移（如果有）**
+
+如果代码中有数据库结构变化：
+
+```bash
+DB_DIALECT=sqlite node init-db.js
+```
+
+**注意：** 这会重新初始化数据库，**会清空现有数据**！如果只是添加字段，可能需要手动处理。
+
+**步骤6：重启应用**
+
+```bash
+pm2 restart my-website
+```
+
+**步骤7：检查运行状态**
+
+```bash
+pm2 status
+pm2 logs my-website
+```
+
+**预期结果：**
+- `pm2 status` 显示 `online`
+- `pm2 logs` 没有错误信息
+
+**步骤8：测试网站**
+
+在浏览器中访问网站，测试新功能是否正常。
+
+**⚠️ 更新前检查清单：**
+
+- [ ] 在本地测试过新代码，确认没有错误
+- [ ] 备份了数据库（重要！）
+- [ ] 记录了当前运行的版本（如果需要回滚）
+- [ ] 确认服务器有足够的空间和资源
+
+**⚠️ 更新后检查清单：**
+
+- [ ] PM2 状态是 `online`
+- [ ] 网站可以正常访问
+- [ ] 新功能正常工作
+- [ ] 没有错误日志
+- [ ] 数据库数据完整（如果涉及数据库修改）
+
+**🔄 回滚方法（如果更新后出现问题）：**
+
+如果更新后网站出现问题，可以回滚到之前的版本：
+
+```bash
+# 1. 停止应用
+pm2 stop my-website
+
+# 2. 恢复代码（如果使用 Git）
+cd /root/my-website
+git log  # 查看提交历史
+git checkout 之前的提交ID  # 回滚到之前的版本
+
+# 或者恢复备份
+# 如果之前有备份，恢复备份文件
+
+# 3. 恢复数据库（如果有备份）
+cp data/database.sqlite.backup.日期 data/database.sqlite
+
+# 4. 重启应用
+pm2 restart my-website
+
+# 5. 检查状态
+pm2 status
+pm2 logs my-website
+```
+
+#### 方法二：使用 FTP 上传（如果不用 Git）
+
+**步骤1：在 Mac 上修改代码**
+
+在你的 Mac 上修改代码，测试无误。
+
+**步骤2：使用 FTP 工具上传**
+
+1. 打开 FileZilla（或其他 FTP 工具）
+2. 连接到服务器
+3. 找到项目目录（如 `/root/my-website`）
+4. **只上传修改的文件**（不要上传整个项目）
+   - 或者上传整个项目（会覆盖所有文件）
+
+**步骤3：在服务器上操作**
+
+连接到服务器终端：
 
 ```bash
 # 进入项目目录
-cd /root/仓库名
+cd /root/my-website
 
-# 如果使用 Git
-git pull
-
-# 安装新的依赖（如果有）
+# 安装新依赖（如果有）
 npm install
 
 # 重启应用
 pm2 restart my-website
+
+# 检查状态
+pm2 status
+pm2 logs my-website
 ```
+
+**步骤4：测试网站**
+
+在浏览器中测试新功能。
+
+#### 方法三：直接在服务器上修改（不推荐，仅紧急情况）
+
+**步骤1：连接到服务器**
+
+```bash
+ssh root@你的服务器IP
+```
+
+**步骤2：编辑文件**
+
+```bash
+cd /root/my-website
+nano 要修改的文件路径
+```
+
+**步骤3：保存并重启**
+
+```bash
+pm2 restart my-website
+```
+
+**注意：** 这种方法不推荐，因为：
+- 服务器上的修改容易丢失
+- 没有版本控制
+- 难以回滚
+
+### 📝 不同类型的更新
+
+#### 1. 只修改了代码（没有新增依赖）
+
+**最简单的情况，只需要：**
+
+```bash
+cd /root/my-website
+git pull  # 或上传新文件
+pm2 restart my-website
+```
+
+#### 2. 添加了新的 npm 包（package.json 有变化）
+
+**需要安装新依赖：**
+
+```bash
+cd /root/my-website
+git pull
+npm install  # 安装新依赖
+pm2 restart my-website
+```
+
+#### 3. 修改了数据库结构
+
+**需要谨慎处理：**
+
+```bash
+# 1. 先备份数据库
+cp data/database.sqlite data/database.sqlite.backup.$(date +%Y%m%d)
+
+# 2. 更新代码
+cd /root/my-website
+git pull
+
+# 3. 运行数据库迁移（如果有迁移脚本）
+# 或者重新初始化（会清空数据！）
+DB_DIALECT=sqlite node init-db.js
+
+# 4. 重启应用
+pm2 restart my-website
+```
+
+**⚠️ 注意：** 重新初始化数据库会清空所有数据！如果有重要数据，需要：
+- 先导出数据
+- 或者手动修改数据库结构
+- 或者使用数据库迁移工具
+
+#### 4. 修改了环境变量（.env 文件）
+
+**需要更新 .env 并重启：**
+
+```bash
+cd /root/my-website
+nano .env  # 修改环境变量
+pm2 restart my-website  # 重启以加载新配置
+```
+
+#### 5. 修改了 Nginx 配置（如果使用了域名）
+
+**需要重新加载 Nginx：**
+
+```bash
+# 修改配置文件
+nano /etc/nginx/conf.d/my-website.conf
+
+# 测试配置
+nginx -t
+
+# 重新加载（不中断服务）
+systemctl reload nginx
+```
+
+### 🔄 快速更新命令（一键更新）
+
+如果你熟悉流程，可以使用这个快速命令：
+
+```bash
+cd /root/my-website && \
+git pull && \
+npm install && \
+pm2 restart my-website && \
+pm2 logs my-website --lines 50
+```
+
+这会：
+1. 进入项目目录
+2. 拉取最新代码
+3. 安装新依赖
+4. 重启应用
+5. 显示最近 50 行日志
 
 ---
 

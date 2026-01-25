@@ -16,6 +16,10 @@ const Service = sequelize.define('Service', {
         type: DataTypes.STRING(50),
         comment: '服务图标'
     },
+    image: {
+        type: DataTypes.STRING(255),
+        comment: '服务图片路径'
+    },
     description: {
         type: DataTypes.TEXT,
         comment: '服务描述'

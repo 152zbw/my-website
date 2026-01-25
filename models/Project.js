@@ -32,6 +32,16 @@ const Project = sequelize.define('Project', {
         type: DataTypes.STRING(100),
         comment: '客户名称'
     },
+    services: {
+        type: DataTypes.JSON,
+        allowNull: true,
+        comment: '服务内容 (JSON数组)'
+    },
+    duration: {
+        type: DataTypes.STRING(50),
+        allowNull: true,
+        comment: '项目周期'
+    },
     sortOrder: {
         type: DataTypes.INTEGER,
         field: 'sort_order',
