@@ -77,6 +77,12 @@ const WebsiteInfo = sequelize.define('WebsiteInfo', {
         defaultValue: 12,
         comment: '国际奖项数量'
     },
+    statCases: {
+        type: DataTypes.INTEGER,
+        field: 'stat_cases',
+        defaultValue: 200,
+        comment: '成功案例数量'
+    },
     statSatisfaction: {
         type: DataTypes.INTEGER,
         field: 'stat_satisfaction',
@@ -94,6 +100,12 @@ const WebsiteInfo = sequelize.define('WebsiteInfo', {
         field: 'stat_consultants',
         defaultValue: 54,
         comment: '专业顾问数量'
+    },
+    statClients: {
+        type: DataTypes.INTEGER,
+        field: 'stat_clients',
+        defaultValue: 150,
+        comment: '满意客户数量'
     },
     updatedAt: {
         type: DataTypes.DATE,

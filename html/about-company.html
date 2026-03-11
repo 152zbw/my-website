@@ -10,7 +10,7 @@
   <meta charset="utf-8">
   <link rel="icon" href="images/favicon.ico" type="image/x-icon">
   <!-- Stylesheets-->
-  <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700">
+  <!-- 移除外网字体依赖，避免加载慢（使用系统字体即可） -->
   <link rel="stylesheet" href="css/bootstrap.css">
   <link rel="stylesheet" href="css/fonts.css">
   <link rel="stylesheet" href="css/style.css">
@@ -66,7 +66,50 @@
       box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
       transition: all 0.3s ease;
       border: 1px solid #e9ecef;
+      height: 320px; /* 统一卡片高度 */
+      overflow: hidden; /* 防止内容把卡片撑高 */
+      display: flex;
+      flex-direction: column;
     }
+
+    /* 让“首页特色模块”(linearicons-*) 图标在本页也能显示 */
+    .box-minimal-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      line-height: 1;
+      margin-bottom: 0;
+      color: #3498db;
+    }
+
+    .box-minimal-icon[class*="linearicons-"]:before {
+      font-family: 'Linearicons' !important;
+      font-style: normal;
+      font-weight: normal;
+      speak: none;
+      display: inline-block;
+      text-decoration: inherit;
+      width: 1em;
+      text-align: center;
+      font-variant: normal;
+      text-transform: none;
+      line-height: 1;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    /* 常用 Linearicons 字形映射（与首页特色模块下拉一致） */
+    .box-minimal-icon.linearicons-pie-chart:before { content: "\eaf8"; }
+    .box-minimal-icon.linearicons-briefcase:before { content: "\eb3a"; }
+    .box-minimal-icon.linearicons-credit-card:before { content: "\ea59"; }
+    .box-minimal-icon.linearicons-star:before { content: "\e98d"; }
+    .box-minimal-icon.linearicons-folder:before { content: "\e9ba"; }
+    .box-minimal-icon.linearicons-flag:before { content: "\e990"; }
+    .box-minimal-icon.linearicons-lamp:before { content: "\eabc"; }
+    .box-minimal-icon.linearicons-users:before { content: "\ea22"; }
+    .box-minimal-icon.linearicons-chart:before { content: "\eafa"; }
+    .box-minimal-icon.linearicons-rocket:before { content: "\eb37"; }
 
     .box-icon:hover {
       transform: translateY(-8px);
@@ -85,6 +128,26 @@
       font-weight: 600;
       margin-bottom: 10px;
       color: #2c3e50;
+      flex: 0 0 auto;
+    }
+
+    /* 核心优势描述：字多时卡片内滚动 */
+    .box-icon-text {
+      flex: 1 1 auto;
+      overflow-y: auto;
+      padding-right: 6px; /* 给滚动条留点空间 */
+    }
+
+    /* 滚动条美化（不影响功能） */
+    .box-icon-text::-webkit-scrollbar {
+      width: 6px;
+    }
+    .box-icon-text::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.15);
+      border-radius: 6px;
+    }
+    .box-icon-text::-webkit-scrollbar-track {
+      background: transparent;
     }
 
     /* 美化服务范围 */
@@ -768,15 +831,33 @@
     // 页面加载时从API加载公司简介数据
     document.addEventListener('DOMContentLoaded', function () {
       loadAboutCompanyInfo();
-      initializeCounters();
-      initializeCarousel();
     });
 
     // 从API加载公司简介数据
     async function loadAboutCompanyInfo() {
       try {
-        const response = await window.API.AboutCompany.getAll();
-        const data = response && response.length > 0 ? response[0] : null; // 取第一条数据
+        // 并行拉取各模块数据（都可在后台对应页面编辑）
+        // - 公司简介：后台「公司简介」
+        // - 统计数据：后台「网站信息」里的统计字段
+        // - 核心优势：后台「首页特色模块」
+        // - 服务范围：后台「服务项目」
+        // - 团队：后台「团队成员」
+        // - 客户评价：后台「客户评价」
+        const [
+          aboutCompany,
+          websiteInfo,
+          homeFeatures,
+          services,
+          team,
+          testimonials
+        ] = await Promise.all([
+          window.API?.AboutCompany?.get?.().catch(() => null),
+          window.API?.WebsiteInfo?.get?.().catch(() => null),
+          window.API?.HomeFeatures?.getAll?.().catch(() => []),
+          window.API?.Services?.getAll?.().catch(() => []),
+          window.API?.Team?.getAll?.().catch(() => []),
+          window.API?.Testimonials?.getAll?.().catch(() => [])
+        ]);
 
         const container = document.getElementById('aboutCompanyContent');
         const companyTitleElem = document.getElementById('companyTitle');
@@ -784,24 +865,19 @@
         const companyImageElem = document.getElementById('companyImage');
         const breadcrumbsTitle = document.querySelector('.breadcrumbs-custom-title');
 
-        if (data) {
+        if (aboutCompany) {
           // 更新页面标题
-          document.title = (data.title || '公司简介') + ' - 咨询公司官网';
+          document.title = (aboutCompany.title || '公司简介') + ' - 咨询公司官网';
 
           // 更新面包屑导航标题
           if (breadcrumbsTitle) {
-            breadcrumbsTitle.textContent = data.title || '公司简介';
+            breadcrumbsTitle.textContent = aboutCompany.title || '公司简介';
           }
 
           // 渲染公司简介内容
-          if (companyTitleElem) companyTitleElem.textContent = data.title || '公司简介';
-          if (companyContentElem) companyContentElem.innerHTML = data.content || ''; // 使用 innerHTML
-          if (companyImageElem) companyImageElem.src = data.image || 'images/services-1-570x368.jpg';
-
-          // 如果有需要，可以从API加载并渲染统计数据、核心优势、服务范围、团队、客户评价
-          // 这里为了简化，暂时保留硬编码或从API获取其他模块的逻辑
-          // 例如，如果statistics也通过API管理，则需要调用相应的API
-
+          if (companyTitleElem) companyTitleElem.textContent = aboutCompany.title || '公司简介';
+          if (companyContentElem) companyContentElem.innerHTML = aboutCompany.content || ''; // 使用 innerHTML
+          if (companyImageElem) companyImageElem.src = aboutCompany.image || 'images/services-1-570x368.jpg';
         } else {
           // 如果API没有返回数据，使用默认的硬编码内容
           if (breadcrumbsTitle) {
@@ -832,46 +908,69 @@
           if (companyImageElem) companyImageElem.src = 'images/services-1-570x368.jpg';
         }
 
-        // 硬编码部分，如果未来需要从API获取，需要修改这部分逻辑
-        const defaultStatistics = [
-          { value: 12, caption: '年行业经验' },
-          { value: 200, caption: '成功案例' },
-          { value: 50, caption: '专业顾问' },
-          { value: 150, caption: '满意客户' }
-        ];
-        loadStatistics(defaultStatistics);
+        // 统计数据：来自网站信息（WebsiteInfo）
+        const statistics = buildStatisticsFromWebsiteInfo(websiteInfo);
+        loadStatistics(statistics);
 
-        const defaultCoreAdvantages = [
-          { title: '专业团队', icon: 'mdi mdi-brain', description: '拥有行业顶尖顾问，平均10年以上经验' },
-          { title: '创新思维', icon: 'mdi mdi-flag', description: '结合最新行业趋势，提供创新解决方案' },
-          { title: '结果导向', icon: 'mdi mdi-check-circle', description: '以客户成功为目标，确保项目交付质量' },
-          { title: '客户至上', icon: 'mdi mdi-account-multiple', description: '深入了解客户需求，提供个性化服务' }
-        ];
-        loadCoreAdvantages(defaultCoreAdvantages);
+        // 核心优势：复用「首页特色模块」（只取激活）
+        const advantages = Array.isArray(homeFeatures)
+          ? homeFeatures
+              .filter(x => (x?.isActive ?? x?.is_active ?? 1) ? true : false)
+              .sort((a, b) => (a?.sortOrder ?? a?.sort_order ?? 0) - (b?.sortOrder ?? b?.sort_order ?? 0))
+              .slice(0, 8)
+              .map(x => ({
+                title: x?.title || '',
+                icon: normalizeMdiIcon(x?.icon),
+                description: x?.description || ''
+              }))
+          : [];
+        loadCoreAdvantages(advantages.length ? advantages : getDefaultCoreAdvantages());
 
-        const defaultServices = [
-          { title: '战略规划', icon: 'mdi mdi-chart-line', description: '为企业制定长期发展战略，明确发展方向和目标，助力企业实现可持续增长。' },
-          { title: '市场分析', icon: 'mdi mdi-magnify', description: '深入分析市场趋势、竞争对手和客户需求，为企业提供精准的市场洞察和决策支持。' },
-          { title: '管理咨询', icon: 'mdi mdi-cog', description: '优化企业管理流程，提升运营效率，帮助企业建立科学的管理体系。' },
-          { title: '财务优化', icon: 'mdi mdi-cash', description: '优化企业财务结构，降低运营成本，提高资金使用效率，增强企业盈利能力。' },
-          { title: '数字化转型', icon: 'mdi mdi-monitor', description: '帮助企业实现数字化转型，利用新技术提升竞争力，适应数字经济时代的发展需求。' },
-          { title: '组织发展', icon: 'mdi mdi-account-group', description: '优化企业组织架构，提升团队凝聚力和执行力，为企业发展提供组织保障。' }
-        ];
-        loadServices(defaultServices);
+        // 服务范围：来自「服务项目」（只取激活）
+        const servicesList = Array.isArray(services)
+          ? services
+              .filter(x => (x?.isActive ?? x?.is_active ?? 1) ? true : false)
+              .sort((a, b) => (a?.sortOrder ?? a?.sort_order ?? 0) - (b?.sortOrder ?? b?.sort_order ?? 0))
+              .slice(0, 12)
+              .map(x => ({
+                title: x?.title || '',
+                icon: normalizeMdiIcon(x?.icon) || 'mdi mdi-briefcase-outline',
+                description: x?.description || x?.excerpt || ''
+              }))
+          : [];
+        loadServices(servicesList.length ? servicesList : getDefaultServices());
 
-        const defaultTeam = [
-          { name: '张总', position: '创始人 & 首席顾问', image: 'images/team-1-370x368.jpg' },
-          { name: '李经理', position: '战略咨询总监', image: 'images/team-2-370x368.jpg' },
-          { name: '王总监', position: '市场分析专家', image: 'images/team-3-370x368.jpg' }
-        ];
-        loadTeam(defaultTeam);
+        // 团队：来自「团队成员」（只取激活）
+        const teamList = Array.isArray(team)
+          ? team
+              .filter(x => (x?.isActive ?? x?.is_active ?? 1) ? true : false)
+              .sort((a, b) => (a?.sortOrder ?? a?.sort_order ?? 0) - (b?.sortOrder ?? b?.sort_order ?? 0))
+              .slice(0, 6)
+              .map(x => ({
+                name: x?.name || '',
+                position: x?.position || x?.title || '',
+                image: x?.image || x?.avatar || 'images/team-1-370x368.jpg'
+              }))
+          : [];
+        loadTeam(teamList.length ? teamList : getDefaultTeam());
 
-        const defaultTestimonials = [
-          { quote: '感谢咨询公司的专业服务，他们为我们制定的战略规划帮助我们实现了业务的快速增长。团队专业、敬业，值得信赖！', author: '刘总', company: '某科技公司 CEO', image: 'images/testimonials-person-1-96x96.jpg' },
-          { quote: '通过咨询公司的市场分析服务，我们对市场有了更深入的了解，找到了新的业务增长点。非常满意他们的服务！', author: '陈总', company: '某制造企业 总经理', image: 'images/testimonials-person-2-96x96.jpg' },
-          { quote: '咨询公司的管理咨询服务帮助我们优化了内部流程，提高了运营效率，降低了成本。效果显著！', author: '赵总', company: '某金融机构 高管', image: 'images/testimonials-person-3-96x96.jpg' }
-        ];
-        loadTestimonials(defaultTestimonials);
+        // 客户评价：来自「客户评价」（只取激活）
+        const testimonialsList = Array.isArray(testimonials)
+          ? testimonials
+              .filter(x => (x?.isActive ?? x?.is_active ?? 1) ? true : false)
+              .sort((a, b) => (a?.sortOrder ?? a?.sort_order ?? 0) - (b?.sortOrder ?? b?.sort_order ?? 0))
+              .slice(0, 10)
+              .map(x => ({
+                quote: x?.content || x?.quote || x?.text || '',
+                author: x?.author || x?.name || '',
+                company: x?.company || x?.position || '',
+                image: x?.image || x?.avatar || 'images/testimonials-person-1-96x96.jpg'
+              }))
+          : [];
+        loadTestimonials(testimonialsList.length ? testimonialsList : getDefaultTestimonials());
+
+        initializeCounters();
+        initializeCarousel();
 
       } catch (error) {
         console.error('Error loading about company info:', error);
@@ -908,47 +1007,78 @@
         `;
         if (companyImageElem) companyImageElem.src = 'images/services-1-570x368.jpg';
 
-        // 同样硬编码其他部分
-        const defaultStatistics = [
-          { value: 12, caption: '年行业经验' },
-          { value: 200, caption: '成功案例' },
-          { value: 50, caption: '专业顾问' },
-          { value: 150, caption: '满意客户' }
-        ];
-        loadStatistics(defaultStatistics);
-
-        const defaultCoreAdvantages = [
-          { title: '专业团队', icon: 'mdi mdi-brain', description: '拥有行业顶尖顾问，平均10年以上经验' },
-          { title: '创新思维', icon: 'mdi mdi-flag', description: '结合最新行业趋势，提供创新解决方案' },
-          { title: '结果导向', icon: 'mdi mdi-check-circle', description: '以客户成功为目标，确保项目交付质量' },
-          { title: '客户至上', icon: 'mdi mdi-account-multiple', description: '深入了解客户需求，提供个性化服务' }
-        ];
-        loadCoreAdvantages(defaultCoreAdvantages);
-
-        const defaultServices = [
-          { title: '战略规划', icon: 'mdi mdi-chart-line', description: '为企业制定长期发展战略，明确发展方向和目标，助力企业实现可持续增长。' },
-          { title: '市场分析', icon: 'mdi mdi-magnify', description: '深入分析市场趋势、竞争对手和客户需求，为企业提供精准的市场洞察和决策支持。' },
-          { title: '管理咨询', icon: 'mdi mdi-cog', description: '优化企业管理流程，提升运营效率，帮助企业建立科学的管理体系。' },
-          { title: '财务优化', icon: 'mdi mdi-cash', description: '优化企业财务结构，降低运营成本，提高资金使用效率，增强企业盈利能力。' },
-          { title: '数字化转型', icon: 'mdi mdi-monitor', description: '帮助企业实现数字化转型，利用新技术提升竞争力，适应数字经济时代的发展需求。' },
-          { title: '组织发展', icon: 'mdi mdi-account-group', description: '优化企业组织架构，提升团队凝聚力和执行力，为企业发展提供组织保障。' }
-        ];
-        loadServices(defaultServices);
-
-        const defaultTeam = [
-          { name: '张总', position: '创始人 & 首席顾问', image: 'images/team-1-370x368.jpg' },
-          { name: '李经理', position: '战略咨询总监', image: 'images/team-2-370x368.jpg' },
-          { name: '王总监', position: '市场分析专家', image: 'images/team-3-370x368.jpg' }
-        ];
-        loadTeam(defaultTeam);
-
-        const defaultTestimonials = [
-          { quote: '感谢咨询公司的专业服务，他们为我们制定的战略规划帮助我们实现了业务的快速增长。团队专业、敬业，值得信赖！', author: '刘总', company: '某科技公司 CEO', image: 'images/testimonials-person-1-96x96.jpg' },
-          { quote: '通过咨询公司的市场分析服务，我们对市场有了更深入的了解，找到了新的业务增长点。非常满意他们的服务！', author: '陈总', company: '某制造企业 总经理', image: 'images/testimonials-person-2-96x96.jpg' },
-          { quote: '咨询公司的管理咨询服务帮助我们优化了内部流程，提高了运营效率，降低了成本。效果显著！', author: '赵总', company: '某金融机构 高管', image: 'images/testimonials-person-3-96x96.jpg' }
-        ];
-        loadTestimonials(defaultTestimonials);
+        loadStatistics(buildStatisticsFromWebsiteInfo(null));
+        loadCoreAdvantages(getDefaultCoreAdvantages());
+        loadServices(getDefaultServices());
+        loadTeam(getDefaultTeam());
+        loadTestimonials(getDefaultTestimonials());
+        initializeCounters();
+        initializeCarousel();
       }
+    }
+
+    function buildStatisticsFromWebsiteInfo(info) {
+      const experience = info?.statExperience ?? info?.stat_experience;
+      const cases = info?.statCases ?? info?.stat_cases ?? info?.statAwards ?? info?.stat_awards;
+      const consultants = info?.statConsultants ?? info?.stat_consultants;
+      const clients = info?.statClients ?? info?.stat_clients ?? info?.statSatisfaction ?? info?.stat_satisfaction;
+
+      // 兼容你现在页面里的四个统计项文案
+      return [
+        { value: typeof experience === 'number' ? experience : 12, caption: '年行业经验' },
+        { value: typeof cases === 'number' ? cases : 200, caption: '成功案例' },
+        { value: typeof consultants === 'number' ? consultants : 50, caption: '专业顾问' },
+        { value: typeof clients === 'number' ? clients : 150, caption: '满意客户' }
+      ];
+    }
+
+    function normalizeMdiIcon(icon) {
+      if (!icon) return '';
+      // 允许后台填写：mdi mdi-xxx / mdi-xxx / 纯文本 emoji
+      const s = String(icon).trim();
+      if (s.includes('mdi')) {
+        if (s.startsWith('mdi ')) return s;
+        if (s.startsWith('mdi-')) return `mdi ${s}`;
+        return s;
+      }
+      // 非 mdi 时不强制，交给样式处理（可能是 emoji）
+      return s;
+    }
+
+    function getDefaultCoreAdvantages() {
+      return [
+        { title: '专业团队', icon: 'mdi mdi-brain', description: '拥有行业顶尖顾问，平均10年以上经验' },
+        { title: '创新思维', icon: 'mdi mdi-flag', description: '结合最新行业趋势，提供创新解决方案' },
+        { title: '结果导向', icon: 'mdi mdi-check-circle', description: '以客户成功为目标，确保项目交付质量' },
+        { title: '客户至上', icon: 'mdi mdi-account-multiple', description: '深入了解客户需求，提供个性化服务' }
+      ];
+    }
+
+    function getDefaultServices() {
+      return [
+        { title: '战略规划', icon: 'mdi mdi-chart-line', description: '为企业制定长期发展战略，明确发展方向和目标，助力企业实现可持续增长。' },
+        { title: '市场分析', icon: 'mdi mdi-magnify', description: '深入分析市场趋势、竞争对手和客户需求，为企业提供精准的市场洞察和决策支持。' },
+        { title: '管理咨询', icon: 'mdi mdi-cog', description: '优化企业管理流程，提升运营效率，帮助企业建立科学的管理体系。' },
+        { title: '财务优化', icon: 'mdi mdi-cash', description: '优化企业财务结构，降低运营成本，提高资金使用效率，增强企业盈利能力。' },
+        { title: '数字化转型', icon: 'mdi mdi-monitor', description: '帮助企业实现数字化转型，利用新技术提升竞争力，适应数字经济时代的发展需求。' },
+        { title: '组织发展', icon: 'mdi mdi-account-group', description: '优化企业组织架构，提升团队凝聚力和执行力，为企业发展提供组织保障。' }
+      ];
+    }
+
+    function getDefaultTeam() {
+      return [
+        { name: '张总', position: '创始人 & 首席顾问', image: 'images/team-1-370x368.jpg' },
+        { name: '李经理', position: '战略咨询总监', image: 'images/team-2-370x368.jpg' },
+        { name: '王总监', position: '市场分析专家', image: 'images/team-3-370x368.jpg' }
+      ];
+    }
+
+    function getDefaultTestimonials() {
+      return [
+        { quote: '感谢咨询公司的专业服务，他们为我们制定的战略规划帮助我们实现了业务的快速增长。团队专业、敬业，值得信赖！', author: '刘总', company: '某科技公司 CEO', image: 'images/testimonials-person-1-96x96.jpg' },
+        { quote: '通过咨询公司的市场分析服务，我们对市场有了更深入的了解，找到了新的业务增长点。非常满意他们的服务！', author: '陈总', company: '某制造企业 总经理', image: 'images/testimonials-person-2-96x96.jpg' },
+        { quote: '咨询公司的管理咨询服务帮助我们优化了内部流程，提高了运营效率，降低了成本。效果显著！', author: '赵总', company: '某金融机构 高管', image: 'images/testimonials-person-3-96x96.jpg' }
+      ];
     }
 
     // 加载统计数据
@@ -958,7 +1088,7 @@
         container.innerHTML = statistics.map((stat, index) => `
           <div class="col-sm-6 col-lg-3">
             <div class="counter-wrap wow fadeInUp" data-wow-delay=".${index + 1}s">
-              <div class="counter counter-primary">${stat.value}${stat.caption.includes('客户') ? '+' : ''}</div>
+              <div class="counter counter-primary">${stat.value ?? 0}</div>
               <div class="counter-caption">${stat.caption}</div>
             </div>
           </div>
@@ -968,13 +1098,13 @@
 
     // 加载核心优势
     function loadCoreAdvantages(advantages) {
-      const container = document.querySelector('.section.bg-gray-100:nth-of-type(1) .container .row.row-30');
+      const container = document.getElementById('coreAdvantagesContainer');
       if (container) {
         container.innerHTML = advantages.map((advantage, index) => `
           <div class="col-md-6 col-lg-3">
             <div class="box-icon wow fadeInUp" data-wow-delay=".${index + 1}s">
               <div class="box-icon-inner">
-                <div class="box-icon-icon"><i class="icon ${advantage.icon}"></i></div>
+                <div class="box-icon-icon">${renderIconHtml(advantage.icon)}</div>
                 <h5 class="box-icon-title">${advantage.title}</h5>
                 <p class="box-icon-text">${advantage.description}</p>
               </div>
@@ -992,7 +1122,7 @@
           <div class="col-md-6 col-lg-4">
             <div class="feature wow fadeInUp" data-wow-delay=".${index + 1}s">
               <div class="feature-header">
-                <div class="feature-icon"><i class="icon ${service.icon}"></i></div>
+                <div class="feature-icon">${renderIconHtml(service.icon)}</div>
                 <h5 class="feature-title">${service.title}</h5>
               </div>
               <p class="feature-text">${service.description}</p>
@@ -1000,6 +1130,29 @@
           </div>
         `).join('');
       }
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function renderIconHtml(icon) {
+      if (!icon) return '';
+      const s = String(icon).trim();
+      // class-based icons
+      if (s.startsWith('linearicons-')) {
+        return `<span class="box-minimal-icon ${escapeHtml(s)}"></span>`;
+      }
+      if (s.startsWith('mdi') || s.startsWith('fa') || s.includes('mdi ') || s.includes('fa ')) {
+        return `<i class="icon ${escapeHtml(s)}"></i>`;
+      }
+      // emoji/plain text icons
+      return `<span style="font-size:32px;line-height:1;">${escapeHtml(s)}</span>`;
     }
 
     // 加载团队介绍
@@ -1050,7 +1203,9 @@
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             const counter = entry.target;
-            const target = +counter.textContent;
+            const raw = (counter.textContent || '').trim();
+            // 兼容 "99+", "150+", "200+" 这类显示文本
+            const target = Number.parseInt(raw.replace(/[^\d]/g, ''), 10);
             const duration = 2000;
             const step = target / (duration / 16);
             let current = 0;

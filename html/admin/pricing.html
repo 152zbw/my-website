@@ -6,10 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>价格表管理 - 后台管理系统</title>
     <script src="../js/api.js"></script>
-    <!-- Quill.js CSS -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <!-- Quill.js JS -->
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <!-- 本地 Quill（避免外网CDN加载慢/卡住） -->
+    <link href="../css/quill.snow.css" rel="stylesheet">
+    <script src="../js/quill.js"></script>
     <style>
         /* 全局样式 */
         * {
@@ -427,7 +426,7 @@
                 <li><a href="news.html"><i class="fas fa-newspaper"></i>博客/新闻</a></li>
                 <li><a href="testimonials.html"><i class="fas fa-comments"></i>客户评价</a></li>
                 <li><a href="partners.html"><i class="fas fa-handshake"></i>合作伙伴</a></li>
-                <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
+                <li><a href="about-company.html"><i class="fas fa-info-circle"></i>公司简介</a></li>
                 <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
                 <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
                 <li><a href="pricing.html" class="active"><i class="fas fa-dollar-sign"></i>价格表</a></li>

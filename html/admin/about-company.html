@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>关于我们（公司）- 后台管理系统</title>
+    <title>公司简介 - 后台管理系统</title>
     <script src="../js/api.js"></script>
-    <!-- Quill.js CSS -->
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <!-- Quill.js JS -->
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <!-- 本地 Quill（完整富文本编辑器，离线，不走外网） -->
+    <link href="../vendor/quill/quill.snow.css" rel="stylesheet">
+    <script src="../vendor/quill/quill.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box;}
         body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:#f5f7fa;color:#333;line-height:1.6;}
@@ -39,6 +38,13 @@
         .form-label{display:block;margin-bottom:5px;font-weight:600;color:#354879;}
         .form-input,.form-textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;}
         .form-textarea{resize:vertical;min-height:120px;}
+        #summary-editor-container {
+            height: 140px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
         #content-editor-container {
             height: 200px; /* Quill editor height */
             border: 1px solid #ddd;
@@ -71,9 +77,10 @@
                 <li><a href="news.html"><i class="fas fa-newspaper"></i>博客/新闻</a></li>
                 <li><a href="testimonials.html"><i class="fas fa-comments"></i>客户评价</a></li>
                 <li><a href="partners.html"><i class="fas fa-handshake"></i>合作伙伴</a></li>
-                <li><a href="about-company.html" class="active"><i class="fas fa-info-circle"></i>关于我们</a></li>
+                <li><a href="about-company.html" class="active"><i class="fas fa-info-circle"></i>公司简介</a></li>
                 <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
                 <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="careers.html"><i class="fas fa-user-tie"></i>招贤纳士</a></li>
                 <li><a href="pricing.html"><i class="fas fa-dollar-sign"></i>价格表</a></li>
                 <li><a href="home-features.html"><i class="fas fa-star"></i>首页特色模块</a></li>
                 <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
@@ -85,7 +92,7 @@
             <header class="top-nav">
                 <div class="top-nav-left">
                     <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-                    <h2 class="page-title">关于我们（公司）</h2>
+                    <h2 class="page-title">公司简介</h2>
                 </div>
                 <div class="top-nav-right">
                     <div class="user-info">
@@ -98,7 +105,7 @@
 
             <div class="main-content">
                 <div class="card">
-                    <h3 class="content-title">公司介绍内容</h3>
+                    <h3 class="content-title">公司简介内容</h3>
                     <form id="aboutForm">
                         <div class="form-group">
                             <label class="form-label" for="title">标题</label>
@@ -106,15 +113,23 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="summary">摘要</label>
-                            <textarea id="summary" class="form-textarea" placeholder="一句话概述" required></textarea>
+                            <div id="summary-editor-container"></div>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="content">详细内容 (支持 HTML)</label>
                             <div id="content-editor-container"></div>
                         </div>
                         <div class="form-group">
-                            <label class="form-label" for="image">封面图 URL</label>
-                            <input id="image" class="form-input" placeholder="images/about-us.jpg">
+                            <label class="form-label">封面图（可上传）</label>
+                            <input type="hidden" id="image">
+                            <div style="display:flex;align-items:center;gap:10px;">
+                                <button type="button" class="btn btn-secondary" style="padding:8px 14px;" onclick="triggerCoverUpload()">选择图片</button>
+                                <span id="coverImageName" style="color:#555;">未选择文件</span>
+                            </div>
+                            <input type="file" id="coverImageFileInput" accept="image/*" style="display:none;">
+                            <div id="coverImagePreview" style="margin-top:10px;display:none;">
+                                <img id="coverImagePreviewImg" src="" alt="封面预览" style="max-width:260px;border:1px solid #ddd;border-radius:6px;">
+                            </div>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="sortOrder">排序</label>
@@ -139,6 +154,7 @@
 
     <script>
         let companyContentQuill;
+        let companySummaryQuill;
 
         document.addEventListener('DOMContentLoaded', async () => {
             const user = localStorage.getItem('adminUser');
@@ -146,6 +162,7 @@
             if (!user || !token) { window.location.href = 'index.html'; return; }
             initMenuToggle();
             initQuillEditor(); // 初始化Quill编辑器
+            initCoverUpload(); // 初始化封面上传
             await loadData(); // 使用await确保数据加载后再设置Quill内容
             document.getElementById('aboutForm').addEventListener('submit', onSave);
         });
@@ -164,6 +181,18 @@
         }
 
         function initQuillEditor() {
+            companySummaryQuill = new Quill('#summary-editor-container', {
+                theme: 'snow',
+                placeholder: '一句话概述（可加粗/换行/链接等）...',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        ['link'],
+                        ['clean']
+                    ]
+                }
+            });
             companyContentQuill = new Quill('#content-editor-container', {
                 theme: 'snow',
                 modules: {
@@ -178,29 +207,130 @@
                         [{'color': []}, {'background': []}],
                         [{'font': []}],
                         [{'align': []}],
+                        ['link', 'image'],
                         ['clean']
                     ]
                 }
             });
+
+            // 富文本插入图片：点击工具栏“图片”→ 选择文件 → 上传 → 自动插入
+            const toolbar = companyContentQuill.getModule('toolbar');
+            if (toolbar) {
+                toolbar.addHandler('image', () => pickAndInsertImage(companyContentQuill));
+            }
+        }
+
+        function initCoverUpload() {
+            const input = document.getElementById('coverImageFileInput');
+            if (!input) return;
+            input.addEventListener('change', async (e) => {
+                const file = e.target.files && e.target.files[0];
+                if (!file) return;
+                const nameSpan = document.getElementById('coverImageName');
+                if (nameSpan) nameSpan.textContent = '上传中...';
+                try {
+                    const res = await window.API.Upload.uploadSingle(file);
+                    const filePath = res?.file?.path || '';
+                    document.getElementById('image').value = filePath;
+                    setCoverPreview(filePath, file.name);
+                    showMessage('封面上传成功', 'success');
+                } catch (err) {
+                    console.error('封面上传失败', err);
+                    if (nameSpan) nameSpan.textContent = '未选择文件';
+                    setCoverPreview('', '');
+                    showMessage(err?.message || '封面上传失败', 'error');
+                } finally {
+                    e.target.value = '';
+                }
+            });
+        }
+
+        function triggerCoverUpload() {
+            const input = document.getElementById('coverImageFileInput');
+            if (input) input.click();
+        }
+
+        function setCoverPreview(path, displayName) {
+            const wrap = document.getElementById('coverImagePreview');
+            const img = document.getElementById('coverImagePreviewImg');
+            const nameSpan = document.getElementById('coverImageName');
+            if (path) {
+                img.src = path;
+                wrap.style.display = 'block';
+                nameSpan.textContent = displayName || path.split('/').pop();
+            } else {
+                wrap.style.display = 'none';
+                nameSpan.textContent = '未选择文件';
+            }
+        }
+
+        async function pickAndInsertImage(quill) {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.style.display = 'none';
+            document.body.appendChild(input);
+
+            input.addEventListener('change', async () => {
+                const file = input.files && input.files[0];
+                input.remove();
+                if (!file) return;
+                try {
+                    const res = await window.API.Upload.uploadSingle(file);
+                    const url = res?.file?.path || '';
+                    if (!url) throw new Error('上传成功但未返回图片路径');
+                    const range = quill.getSelection(true);
+                    const index = range ? range.index : quill.getLength();
+                    quill.insertEmbed(index, 'image', url, 'user');
+                    quill.setSelection(index + 1, 0, 'silent');
+                } catch (err) {
+                    console.error('插入图片失败', err);
+                    showMessage(err?.message || '插入图片失败', 'error');
+                }
+            });
+
+            input.click();
         }
 
         async function loadData(){
             try {
                 const data = await window.API.AboutCompany.get(); // 假设存在AboutCompany API
                 if (!data) {
-                    // 如果API没有数据，使用默认值或清空
-                    document.getElementById('title').value = '';
-                    document.getElementById('summary').value = '';
-                    companyContentQuill.setContents([]);
-                    document.getElementById('image').value = '';
+                    // 如果API没有数据，使用与前台相同的默认内容，方便首次编辑
+                    document.getElementById('title').value = '公司简介';
+                    companySummaryQuill.root.innerHTML = `<p>我们是一家专业的咨询公司，为客户提供高质量的商业咨询服务。</p>`;
+                    companyContentQuill.root.innerHTML = `
+                        <p>我们是一家专业的咨询公司，致力于为客户提供高质量的商业咨询服务。我们拥有一支经验丰富、专业过硬的团队，能够为客户提供全方位的解决方案。</p>
+                        <p>成立于2012年，我们已经为超过150家企业提供了专业的咨询服务，涵盖了多个行业和领域。我们始终坚持以客户为中心，以结果为导向，为客户创造最大的价值。</p>
+                        <p>我们的服务范围包括：</p>
+                        <div class="row">
+                          <div class="col-md-6">
+                            <ul class="list-unstyled mt-3">
+                              <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>战略规划</li>
+                              <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>市场分析</li>
+                              <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>管理咨询</li>
+                            </ul>
+                          </div>
+                          <div class="col-md-6">
+                            <ul class="list-unstyled mt-3">
+                              <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>财务优化</li>
+                              <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>数字化转型</li>
+                              <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>组织发展</li>
+                            </ul>
+                          </div>
+                        </div>
+                    `;
+                    document.getElementById('image').value = 'images/services-1-570x368.jpg';
+                    setCoverPreview('images/services-1-570x368.jpg');
                     document.getElementById('sortOrder').value = 0;
                     document.querySelector('input[name="status"][value="1"]').checked = true;
                     return;
                 }
                 document.getElementById('title').value = data.title||'';
-                document.getElementById('summary').value = data.summary||'';
+                companySummaryQuill.root.innerHTML = data.summary || '';
                 companyContentQuill.root.innerHTML = data.content||''; // 设置Quill编辑器内容
                 document.getElementById('image').value = data.image||'';
+                setCoverPreview(data.image || '');
                 document.getElementById('sortOrder').value = data.sortOrder ?? 0;
                 document.querySelector(`input[name="status"][value="${data.isActive?1:0}"]`).checked=true;
             } catch (err) {
@@ -222,13 +352,15 @@
             e.preventDefault();
             const payload = {
                 title: document.getElementById('title').value.trim(),
-                summary: document.getElementById('summary').value.trim(),
+                summary: companySummaryQuill.root.innerHTML.trim(),
                 content: companyContentQuill.root.innerHTML.trim(), // 从Quill编辑器获取内容
                 image: document.getElementById('image').value.trim(),
                 sortOrder: parseInt(document.getElementById('sortOrder').value||'0',10),
                 isActive: document.querySelector('input[name="status"]:checked').value==='1' ? 1 : 0
             };
-            if(!payload.title || !payload.summary || !payload.content){
+            const summaryText = companySummaryQuill.getText ? companySummaryQuill.getText().trim() : '';
+            const contentText = companyContentQuill.getText ? companyContentQuill.getText().trim() : '';
+            if(!payload.title || !summaryText || !contentText){
                 showMessage('请完整填写必填项','error');return;
             }
             try {

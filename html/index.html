@@ -65,6 +65,12 @@
     .box-minimal-icon.linearicons-chart:before { content: "\eafa"; }
     .box-minimal-icon.linearicons-rocket:before { content: "\eb37"; }
 
+    /* 隐藏预加载器，实现快速加载 */
+    .preloader {
+      display: none !important;
+      visibility: hidden !important;
+      opacity: 0 !important;
+    }
   </style>
   <!--[if lt IE 10]>
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
@@ -149,9 +155,9 @@
                         { id: 8, name: '案例详情', url: 'single-project.html', group: '4', parentId: 4, order: 2, status: 1 },
                         { id: 9, name: '博客列表', url: 'sidebar-blog.html', group: '3', parentId: 3, order: 1, status: 1 },
                         { id: 10, name: '博客详情', url: 'single-blog-post.html', group: '3', parentId: 3, order: 2, status: 1 },
-                        { id: 11, name: '公司简介', url: 'about-company.html', group: '5', parentId: 5, order: 1, status: 1 },
-                        { id: 12, name: '个人简介', url: 'about-me.html', group: '5', parentId: 5, order: 2, status: 1 },
-                        { id: 13, name: '团队成员', url: 'team.html', group: '5', parentId: 5, order: 3, status: 1 },
+                        { id: 11, name: '公司简介', url: 'about-company.html', group: '5', parentId: 5, order: 2, status: 1 },
+                        { id: 12, name: '个人简介', url: 'about-me.html', group: '5', parentId: 5, order: 3, status: 1 },
+                        { id: 13, name: '关于我们', url: 'about.html', group: '5', parentId: 5, order: 1, status: 1 },
                         { id: 14, name: '招贤纳士', url: 'careers.html', group: '5', parentId: 5, order: 4, status: 1 },
                         { id: 15, name: '服务项目', url: 'services.html', group: '2', parentId: 2, order: 1, status: 1 },
                         { id: 16, name: '服务详情', url: 'single-service.html', group: '2', parentId: 2, order: 2, status: 1 }
@@ -631,7 +637,8 @@
       </div>
     </footer>
   </div>
-  <div class="preloader">
+  <!-- 预加载器已移除，实现快速加载 -->
+  <!-- <div class="preloader">
     <div class="preloader-logo"><img src="images/ce-logo.png" alt="CE International Group Co.,LTD" width="169"
         height="24" />
     </div>
@@ -640,7 +647,7 @@
         <div class="loadingProgressG" id="loadingProgressG_1"></div>
       </div>
     </div>
-  </div>
+  </div> -->
   <!-- Global Mailform Output-->
   <div class="snackbars" id="form-output-global"></div>
   <!-- 成功案例显示样式 -->
@@ -759,6 +766,15 @@
 
   <!-- 动态内容渲染脚本 -->
   <script>
+    // 立即隐藏预加载器，实现快速加载
+    (function() {
+      const preloader = document.querySelector('.preloader');
+      if (preloader) {
+        preloader.style.display = 'none';
+        preloader.classList.add('loaded');
+      }
+    })();
+
     // 页面加载时渲染所有动态内容
     document.addEventListener('DOMContentLoaded', async function () {
       console.log('DOMContentLoaded事件触发，开始渲染动态内容');

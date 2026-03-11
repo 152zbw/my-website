@@ -6,8 +6,8 @@
     <title>博客/新闻管理 - 后台管理系统</title>
     <!-- 只使用本地资源，避免外网CDN加载过慢 -->
     <script src="../js/api.js"></script>
-    <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
-    <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script>
+    <link href="../css/quill.snow.css" rel="stylesheet">
+    <script src="../js/quill.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f5f7fa; color: #333; line-height: 1.6; }
@@ -83,9 +83,10 @@
                 <li><a href="news.html" class="active"><i class="fas fa-newspaper"></i>博客/新闻</a></li>
                 <li><a href="testimonials.html"><i class="fas fa-comments"></i>客户评价</a></li>
                 <li><a href="partners.html"><i class="fas fa-handshake"></i>合作伙伴</a></li>
-                <li><a href="about-company.html"><i class="fas fa-info-circle"></i>关于我们</a></li>
+                <li><a href="about-company.html"><i class="fas fa-info-circle"></i>公司简介</a></li>
                 <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
                 <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
+                <li><a href="careers.html"><i class="fas fa-user-tie"></i>招贤纳士</a></li>
                 <li><a href="pricing.html"><i class="fas fa-dollar-sign"></i>价格表</a></li>
                 <li><a href="home-features.html"><i class="fas fa-star"></i>首页特色模块</a></li>
                 <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
@@ -146,6 +147,50 @@
                 <div class="form-group">
                     <label for="newsAuthor" class="form-label">作者</label>
                     <input type="text" id="newsAuthor" class="form-input">
+                </div>
+                <div class="form-group">
+                    <label for="newsAuthorTitle" class="form-label">作者头衔/职位（前台展示）</label>
+                    <input type="text" id="newsAuthorTitle" class="form-input" placeholder="例如：营销人员，博主">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">作者头像（前台展示，可选）</label>
+                    <input type="hidden" id="newsAuthorImage">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerAuthorImageUpload()">选择文件</button>
+                        <span id="newsAuthorImageName" style="color:#555;">未选择文件</span>
+                    </div>
+                    <input type="file" id="newsAuthorImageFileInput" accept="image/*" style="display:none;">
+                    <div id="newsAuthorImagePreview" style="margin-top:10px;display:none;">
+                        <img id="newsAuthorImagePreviewImg" src="" alt="作者头像预览" style="max-width:120px;max-height:120px;border:1px solid #ddd;border-radius:50%;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="newsAuthorBio" class="form-label">作者简介（前台展示，可选）</label>
+                    <textarea id="newsAuthorBio" class="form-textarea" placeholder="作者简介..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="commentName" class="form-label">评论展示 - 姓名（可选）</label>
+                    <input type="text" id="commentName" class="form-input" placeholder="例如：阿尔伯特·韦伯">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">评论展示 - 头像（可选）</label>
+                    <input type="hidden" id="commentAvatar">
+                    <div style="display:flex;align-items:center;gap:10px;">
+                        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerCommentAvatarUpload()">选择文件</button>
+                        <span id="commentAvatarName" style="color:#555;">未选择文件</span>
+                    </div>
+                    <input type="file" id="commentAvatarFileInput" accept="image/*" style="display:none;">
+                    <div id="commentAvatarPreview" style="margin-top:10px;display:none;">
+                        <img id="commentAvatarPreviewImg" src="" alt="评论头像预览" style="max-width:120px;max-height:120px;border-radius:50%;border:1px solid #ddd;">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="commentContent" class="form-label">评论展示 - 内容（可选）</label>
+                    <textarea id="commentContent" class="form-textarea" placeholder="例如：感谢这篇精彩而鼓舞人心的文章..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="commentTime" class="form-label">评论展示 - 时间文本（可选）</label>
+                    <input type="text" id="commentTime" class="form-input" placeholder="例如：2024年5月9日 上午9:06">
                 </div>
                 <div class="form-group">
                     <label class="form-label">封面图片（可选，点击上传即可）</label>
@@ -307,6 +352,8 @@
                 newsQuill.setContents([]);
             }
             resetNewsImagePreview();
+            resetAuthorImagePreview();
+            resetCommentAvatarPreview();
         }
 
         async function editItem(id) {
@@ -317,6 +364,15 @@
                 document.getElementById('newsId').value = item.id;
                 document.getElementById('newsTitle').value = item.title || '';
                 document.getElementById('newsAuthor').value = item.author || '';
+                document.getElementById('newsAuthorTitle').value = item.authorTitle || item.author_title || '';
+                document.getElementById('newsAuthorBio').value = item.authorBio || item.author_bio || '';
+                document.getElementById('newsAuthorImage').value = item.authorImage || item.author_image || '';
+                setAuthorImagePreview(item.authorImage || item.author_image || '');
+                document.getElementById('commentName').value = item.commentName || item.comment_name || '';
+                document.getElementById('commentContent').value = item.commentContent || item.comment_content || '';
+                document.getElementById('commentTime').value = item.commentTime || item.comment_time || '';
+                document.getElementById('commentAvatar').value = item.commentAvatar || item.comment_avatar || '';
+                setCommentAvatarPreview(item.commentAvatar || item.comment_avatar || '');
                 document.getElementById('newsImage').value = item.image || '';
                 setNewsImagePreview(item.image);
                 document.getElementById('newsExcerpt').value = item.excerpt || '';
@@ -342,6 +398,13 @@
             const payload = {
                         title,
                 author: document.getElementById('newsAuthor').value.trim(),
+                authorTitle: document.getElementById('newsAuthorTitle').value.trim(),
+                authorImage: document.getElementById('newsAuthorImage').value.trim(),
+                authorBio: document.getElementById('newsAuthorBio').value.trim(),
+                commentName: document.getElementById('commentName').value.trim(),
+                commentAvatar: document.getElementById('commentAvatar').value.trim(),
+                commentContent: document.getElementById('commentContent').value.trim(),
+                commentTime: document.getElementById('commentTime').value.trim(),
                 image: document.getElementById('newsImage').value.trim(),
                 excerpt: document.getElementById('newsExcerpt').value.trim(),
                 content: newsQuill ? newsQuill.root.innerHTML.trim() : '',
@@ -382,6 +445,14 @@
             document.getElementById('newsImageFileInput').click();
         }
 
+        function triggerAuthorImageUpload() {
+            document.getElementById('newsAuthorImageFileInput').click();
+        }
+
+        function triggerCommentAvatarUpload() {
+            document.getElementById('commentAvatarFileInput').click();
+        }
+
         document.getElementById('newsImageFileInput').addEventListener('change', async (e) => {
             const file = e.target.files && e.target.files[0];
             if (!file) return;
@@ -404,6 +475,50 @@
             }
         });
 
+        document.getElementById('newsAuthorImageFileInput').addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const nameSpan = document.getElementById('newsAuthorImageName');
+            nameSpan.textContent = '上传中...';
+            try {
+                const res = await window.API.Upload.uploadSingle(file);
+                const filePath = res?.file?.path || '';
+                document.getElementById('newsAuthorImage').value = filePath;
+                nameSpan.textContent = file.name;
+                setAuthorImagePreview(filePath);
+                showMessage('头像上传成功', 'success');
+            } catch (err) {
+                console.error('头像上传失败', err);
+                nameSpan.textContent = '未选择文件';
+                setAuthorImagePreview('');
+                showMessage(err?.message || '头像上传失败', 'error');
+            } finally {
+                e.target.value = '';
+            }
+        });
+
+        document.getElementById('commentAvatarFileInput').addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const nameSpan = document.getElementById('commentAvatarName');
+            nameSpan.textContent = '上传中...';
+            try {
+                const res = await window.API.Upload.uploadSingle(file);
+                const filePath = res?.file?.path || '';
+                document.getElementById('commentAvatar').value = filePath;
+                nameSpan.textContent = file.name;
+                setCommentAvatarPreview(filePath);
+                showMessage('评论头像上传成功', 'success');
+            } catch (err) {
+                console.error('评论头像上传失败', err);
+                nameSpan.textContent = '未选择文件';
+                setCommentAvatarPreview('');
+                showMessage(err?.message || '评论头像上传失败', 'error');
+            } finally {
+                e.target.value = '';
+            }
+        });
+
         function setNewsImagePreview(path) {
             const wrap = document.getElementById('newsImagePreview');
             const img = document.getElementById('newsImagePreviewImg');
@@ -420,6 +535,43 @@
         function resetNewsImagePreview() {
             document.getElementById('newsImage').value = '';
             setNewsImagePreview('');
+        }
+
+        function setCommentAvatarPreview(path) {
+            const wrap = document.getElementById('commentAvatarPreview');
+            const img = document.getElementById('commentAvatarPreviewImg');
+            const nameSpan = document.getElementById('commentAvatarName');
+            if (path) {
+                img.src = path;
+                wrap.style.display = 'block';
+                if (nameSpan) nameSpan.textContent = path.split('/').pop();
+            } else {
+                wrap.style.display = 'none';
+                if (nameSpan) nameSpan.textContent = '未选择文件';
+            }
+        }
+
+        function resetCommentAvatarPreview() {
+            document.getElementById('commentAvatar').value = '';
+            setCommentAvatarPreview('');
+        }
+        function setAuthorImagePreview(path) {
+            const wrap = document.getElementById('newsAuthorImagePreview');
+            const img = document.getElementById('newsAuthorImagePreviewImg');
+            const nameSpan = document.getElementById('newsAuthorImageName');
+            if (path) {
+                img.src = path;
+                wrap.style.display = 'block';
+                if (nameSpan) nameSpan.textContent = path.split('/').pop();
+            } else {
+                wrap.style.display = 'none';
+                if (nameSpan) nameSpan.textContent = '未选择文件';
+            }
+        }
+
+        function resetAuthorImagePreview() {
+            document.getElementById('newsAuthorImage').value = '';
+            setAuthorImagePreview('');
         }
 
         function showMessage(text, type) {

@@ -70,32 +70,11 @@
                       <!-- RD Navbar Megamenu-->
                       <ul class="rd-menu rd-navbar-megamenu">
                         <li class="rd-megamenu-item">
-                          <div class="banner" style="background-image: url(images/megamenu-banner-1-570x368.jpg);"><a
-                              class='button button-sm button-primary button-winona' href='#'>了解更多</a>
-                          </div>
-                        </li>
-                        <li class="rd-megamenu-item">
                           <ul class="rd-megamenu-list">
-                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
-                                href="about-company.html">公司简介</a></li>
-                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
-                                href="about-me.html">个人简历</a></li>
-                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link" href="team.html">团队成员</a>
-                            </li>
-                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
-                                href="grid-gallery.html">案例展示</a></li>
-                          </ul>
-                        </li>
-                        <li class="rd-megamenu-item">
-                          <ul class="rd-megamenu-list">
-                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
-                                href="careers.html">招贤纳士</a></li>
-                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
-                                href="services.html">服务项目</a></li>
-                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
-                                href="single-service.html">服务详情</a></li>
-                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
-                                href="privacy-policy.html">隐私政策</a></li>
+                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link" href="about.html">关于我们</a></li>
+                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link" href="about-company.html">公司简介</a></li>
+                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link" href="about-me.html">个人简介</a></li>
+                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link" href="careers.html">招贤纳士</a></li>
                           </ul>
                         </li>
                       </ul>
@@ -297,23 +276,29 @@
               </form>
             </div>
           </div>
-          <div class="col-lg-4">
-            <!-- Profile Thin-->
-            <article class="profile-thin">
-              <div class="profile-thin-aside"><img class="profile-thin-image" src="images/profile-thin-1-168x168.jpg"
-                  alt="" width="168" height="168" /><a class="profile-thin-contact-button" href="mailto:#"><span
-                    class="icon mdi mdi-email-outline"></span><span class="icon mdi mdi-email-outline"></span></a>
+          <div class="col-lg-4" id="authorCardContainer" style="display: none;">
+            <!-- Profile Thin - 作者信息卡片，仅在博客有作者信息时显示 -->
+            <article class="profile-thin" id="authorCard">
+              <div class="profile-thin-aside">
+                <img class="profile-thin-image" id="authorImage" src="images/profile-thin-1-168x168.jpg"
+                  alt="" width="168" height="168" />
+                <a class="profile-thin-contact-button" id="authorEmail" href="mailto:#" style="display: none;">
+                  <span class="icon mdi mdi-email-outline"></span>
+                  <span class="icon mdi mdi-email-outline"></span>
+                </a>
               </div>
               <div class="profile-thin-main">
-                <p class="profile-thin-title">特蕾莎·巴恩斯</p>
-                <p class="profile-thin-subtitle">营销人员，博主 </p>
-                <p>我是一名专业博主，对网络空间发生的一切都感兴趣。我尽我最大的努力使这个网站成为一个更好的访问场所。</p>
-                <div class="group group-xs group-middle"><a class="icon icon-sm icon-creative mdi mdi-facebook"
-                    href="#"></a><a class="icon icon-sm icon-creative mdi mdi-twitter" href="#"></a><a
-                    class="icon icon-sm icon-creative mdi mdi-instagram" href="#"></a><a
-                    class="icon icon-sm icon-creative mdi mdi-google" href="#"></a><a
-                    class="icon icon-sm icon-creative mdi mdi-linkedin" href="#"></a></div><a
-                  class="button button-sm button-primary-outline button-winona" href="#">查看完整资料</a>
+                <p class="profile-thin-title" id="authorName">作者</p>
+                <p class="profile-thin-subtitle" id="authorPosition">博主</p>
+                <p id="authorBio">我是一名专业博主，对网络空间发生的一切都感兴趣。</p>
+                <div class="group group-xs group-middle" id="authorSocial" style="display: none;">
+                  <a class="icon icon-sm icon-creative mdi mdi-facebook" href="#"></a>
+                  <a class="icon icon-sm icon-creative mdi mdi-twitter" href="#"></a>
+                  <a class="icon icon-sm icon-creative mdi mdi-instagram" href="#"></a>
+                  <a class="icon icon-sm icon-creative mdi mdi-google" href="#"></a>
+                  <a class="icon icon-sm icon-creative mdi mdi-linkedin" href="#"></a>
+                </div>
+                <a class="button button-sm button-primary-outline button-winona" href="#" id="authorProfileLink" style="display: none;">查看完整资料</a>
               </div>
             </article>
           </div>
@@ -454,6 +439,12 @@
 
           // 更新博客内容
           updateBlogContent(blog);
+          
+          // 更新作者信息（如果有）
+          updateAuthorInfo(blog);
+
+          // 更新示例评论（如果有配置）
+          updateCommentDisplay(blog);
         } else {
           // 如果找不到博客，显示404或错误信息
           document.getElementById('blogTitle').textContent = '博客不存在';
@@ -503,70 +494,100 @@
               </li>
             </ul>
           </article>
-          <div class="section-sm">
+          <div class="section-sm" id="commentsSection" style="display:none;">
             <h3>评论</h3>
-            <!-- 静态评论示例，如果需要动态加载评论，则需要额外的API和渲染逻辑 -->
-            <div class="comment-classic-group">
-              <article class="comment-classic">
-                <figure class="comment-classic-figure"><img class="comment-classic-image" src="images/comment-1-48x48.jpg" alt="" width="48" height="48" />
-                </figure>
-                <div class="comment-classic-main">
-                  <p class="comment-classic-name">阿尔伯特·韦伯</p>
-                  <div class="comment-classic-text">
-                    <p>感谢这篇精彩而鼓舞人心的文章。它帮助我理解了关于${blog.title || ''}的重要信息。我期待在你的博客中阅读更多这样的文章。</p>
-                  </div>
-                  <ul class="comment-classic-meta">
-                    <li>
-                      <time datetime="2024">2024年5月9日 上午9:06</time>
-                    </li>
-                    <li><a class="comment-classic-reply" href="#" aria-label="回复"></a></li>
-                  </ul>
-                </div>
-              </article>
-            </div>
+            <div class="comment-classic-group" id="commentsList"></div>
           </div>
-          <div class="section-sm section-bottom-0">
+          <div class="section-sm section-bottom-0" id="commentFormSection" style="display:none;">
             <h3>发表评论</h3>
-            <form class="rd-form rd-mailform" data-form-output="form-output-global" data-form-type="contact" method="post" action="bat/rd-mailform.php">
-              <div class="row row-10">
-                <div class="col-md-6">
-                  <div class="form-wrap">
-                    <label class="form-label-outside" for="comment-first-name">姓</label>
-                    <input class="form-input" id="comment-first-name" type="text" name="name" data-constraints="@Required">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-wrap">
-                    <label class="form-label-outside" for="comment-last-name">名</label>
-                    <input class="form-input" id="comment-last-name" type="text" name="name" data-constraints="@Required">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-wrap">
-                    <label class="form-label-outside" for="comment-email">电子邮箱</label>
-                    <input class="form-input" id="comment-email" type="email" name="email" data-constraints="@Email @Required">
-                  </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="form-wrap">
-                    <label class="form-label-outside" for="comment-phone">电话</label>
-                    <input class="form-input" id="comment-phone" type="text" name="phone" data-constraints="@PhoneNumber">
-                  </div>
-                </div>
-                <div class="col-12">
-                  <div class="form-wrap">
-                    <label class="form-label-outside" for="comment-message">留言内容</label>
-                    <textarea class="form-input" id="comment-message" name="message" data-constraints="@Required"></textarea>
-                  </div>
-                </div>
-              </div>
-              <button class="button button-primary button-winona" type="submit">提交</button>
-            </form>
+            <p style="margin:0;color:#777;">当前站点暂未开放在线评论功能。</p>
           </div>
         `;
 
         blogContentContainer.innerHTML = blogHTML;
       }
+    }
+
+    // 更新作者信息
+    function updateAuthorInfo(blog) {
+      const authorContainer = document.getElementById('authorCardContainer');
+      if (!authorContainer) return;
+
+      const authorName = (blog.author || '').trim();
+      const authorTitle = (blog.authorTitle || blog.author_title || '').trim();
+      const authorBio = (blog.authorBio || blog.author_bio || '').trim();
+      const authorImage = (blog.authorImage || blog.author_image || '').trim();
+
+      // 只要任一作者字段有值，就显示作者卡片；否则隐藏
+      if (!authorName && !authorTitle && !authorBio && !authorImage) {
+        authorContainer.style.display = 'none';
+        return;
+      }
+
+      const authorNameEl = document.getElementById('authorName');
+      const authorPositionEl = document.getElementById('authorPosition');
+      const authorBioEl = document.getElementById('authorBio');
+      const authorImageEl = document.getElementById('authorImage');
+
+      if (authorNameEl) authorNameEl.textContent = authorName || '作者';
+      if (authorPositionEl) authorPositionEl.textContent = authorTitle || blog.category || '博主';
+      if (authorBioEl) authorBioEl.textContent = authorBio || '';
+      if (authorImageEl && authorImage) authorImageEl.src = authorImage;
+
+      authorContainer.style.display = 'block';
+    }
+
+    // 使用后台 News 表中的“评论展示”字段，生成一条示例评论
+    function updateCommentDisplay(blog) {
+      const commentsSection = document.getElementById('commentsSection');
+      const commentsList = document.getElementById('commentsList');
+      const commentFormSection = document.getElementById('commentFormSection');
+
+      if (!commentsSection || !commentsList) return;
+
+      const name = (blog.commentName || blog.comment_name || '').trim();
+      const content = (blog.commentContent || blog.comment_content || '').trim();
+      const avatar = (blog.commentAvatar || blog.comment_avatar || '').trim();
+      const timeText = (blog.commentTime || blog.comment_time || '').trim();
+
+      // 如果一个字段都没填，就隐藏整块
+      if (!name && !content && !avatar && !timeText) {
+        commentsSection.style.display = 'none';
+        if (commentFormSection) commentFormSection.style.display = 'none';
+        return;
+      }
+
+      commentsSection.style.display = 'block';
+      if (commentFormSection) commentFormSection.style.display = 'none';
+
+      const safeName = escapeHTML(name || '读者');
+      const safeContent = escapeHTML(content || '');
+      const safeTime = escapeHTML(timeText || '');
+      const avatarSrc = avatar || 'images/comment-1-48x48.jpg';
+
+      commentsList.innerHTML = `
+        <article class="comment-classic">
+          <figure class="comment-classic-figure">
+            <img class="comment-classic-image" src="${avatarSrc}" alt="" width="48" height="48" />
+          </figure>
+          <div class="comment-classic-main">
+            <p class="comment-classic-name">${safeName}</p>
+            <div class="comment-classic-text"><p>${safeContent}</p></div>
+            <ul class="comment-classic-meta">
+              <li>${safeTime ? `<time>${safeTime}</time>` : ''}</li>
+            </ul>
+          </div>
+        </article>
+      `;
+    }
+
+    function escapeHTML(str) {
+      return String(str || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
     }
   </script>
 </body>

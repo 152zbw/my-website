@@ -34,13 +34,20 @@ router.get('/:id', async (req, res) => {
 // 创建新闻
 router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { title, image, excerpt, content, author, sortOrder, isActive } = req.body;
+        const { title, image, excerpt, content, author, authorTitle, authorImage, authorBio, commentName, commentAvatar, commentContent, commentTime, sortOrder, isActive } = req.body;
         const news = await News.create({
             title,
             image,
             excerpt,
             content,
             author,
+            authorTitle,
+            authorImage,
+            authorBio,
+            commentName,
+            commentAvatar,
+            commentContent,
+            commentTime,
             sortOrder,
             isActive
         });
@@ -54,7 +61,7 @@ router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
 // 更新新闻
 router.put('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { title, image, excerpt, content, author, sortOrder, isActive } = req.body;
+        const { title, image, excerpt, content, author, authorTitle, authorImage, authorBio, commentName, commentAvatar, commentContent, commentTime, sortOrder, isActive } = req.body;
         const news = await News.findByPk(req.params.id);
         if (!news) {
             return res.status(404).json({ message: '新闻不存在' });
@@ -65,6 +72,13 @@ router.put('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
             excerpt,
             content,
             author,
+            authorTitle,
+            authorImage,
+            authorBio,
+            commentName,
+            commentAvatar,
+            commentContent,
+            commentTime,
             sortOrder,
             isActive
         });

@@ -8,6 +8,7 @@ yarn-error.log*
 .env
 .env.local
 .env.production
+env
 
 # 数据库文件
 *.sqlite
@@ -41,6 +42,9 @@ desktop.ini
 *.tmp
 *.temp
 .cache/
+
+# 自动化/检查产物（不上传）
+artifacts/
 
 # PM2 文件
 .pm2/

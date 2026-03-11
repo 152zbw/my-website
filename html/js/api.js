@@ -129,6 +129,23 @@ const AboutAPI = {
     delete: (id) => apiRequest(`/about/${id}`, { method: 'DELETE' })
 };
 
+// 公司简介API（基于 About 表，只使用第一条记录）
+const AboutCompanyAPI = {
+    // 获取公司简介（如果没有记录，返回 null）
+    get: async () => {
+        const list = await AboutAPI.getAll();
+        return Array.isArray(list) && list.length ? list[0] : null;
+    },
+    // 更新公司简介：如果已有记录则更新第一条，否则创建新记录
+    update: async (data) => {
+        const list = await AboutAPI.getAll();
+        if (Array.isArray(list) && list.length && list[0].id) {
+            return AboutAPI.update(list[0].id, data);
+        }
+        return AboutAPI.create(data);
+    }
+};
+
 // 团队成员API
 const TeamAPI = {
     getAll: () => apiRequest('/team'),
@@ -160,12 +177,28 @@ const NavigationAPI = {
 
 // 首页特色模块API
 const HomeFeaturesAPI = {
-    getAll: () => apiRequest('/homeFeatures'), // 前端获取激活的特色模块
+    getAll: () => apiRequest('/homeFeatures'), // 前台获取激活的特色模块
     getAllAdmin: () => apiRequest('/homeFeatures/admin'), // 后台获取所有特色模块
     get: (id) => apiRequest(`/homeFeatures/${id}`),
     create: (data) => apiRequest('/homeFeatures', { method: 'POST', body: JSON.stringify(data) }),
     update: (id, data) => apiRequest(`/homeFeatures/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
     delete: (id) => apiRequest(`/homeFeatures/${id}`, { method: 'DELETE' })
+};
+
+// 招贤纳士职位API
+const CareersAPI = {
+    // 前台：获取所有激活的职位
+    getAll: () => apiRequest('/careers'),
+    // 后台：获取全部职位（含未激活）
+    getAllAdmin: () => apiRequest('/careers/admin/all'),
+    // 后台：获取单个职位
+    get: (id) => apiRequest(`/careers/${id}`),
+    // 后台：创建职位
+    create: (data) => apiRequest('/careers', { method: 'POST', body: JSON.stringify(data) }),
+    // 后台：更新职位
+    update: (id, data) => apiRequest(`/careers/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    // 后台：删除职位
+    delete: (id) => apiRequest(`/careers/${id}`, { method: 'DELETE' })
 };
 
 // 文件上传API
@@ -246,9 +279,11 @@ window.API = {
     Testimonials: TestimonialsAPI,
     Partners: PartnersAPI,
     About: AboutAPI,
+    AboutCompany: AboutCompanyAPI,
     Team: TeamAPI,
     Contacts: ContactsAPI,
     Navigation: NavigationAPI,
     HomeFeatures: HomeFeaturesAPI, // 注册新的首页特色模块API
+    Careers: CareersAPI, // 招贤纳士职位API
     Upload: UploadAPI
 };
