@@ -38,9 +38,8 @@
               <div class="rd-navbar-panel">
                 <!-- RD Navbar Toggle-->
                 <button class="rd-navbar-toggle" data-rd-navbar-toggle="#rd-navbar-nav-wrap-1"><span></span></button>
-                <!-- RD Navbar Brand--><a class="rd-navbar-brand" href="index.html"><img
-                    src="images/logo-default-169x24.png" alt="" width="169" height="24"
-                    srcset="images/logo-default-324x45.png 2x" /></a>
+                <!-- RD Navbar Brand--><a class="rd-navbar-brand" href="index.html"><img src="images/ce-logo.png"
+                    alt="CE International Group Co.,LTD" width="169" height="24" /></a>
               </div>
               <div class="rd-navbar-main-element">
                 <div class="rd-navbar-nav-wrap" id="rd-navbar-nav-wrap-1">
@@ -193,65 +192,11 @@ class="button button-lg button-primary button-winona" href="#">免费咨询</a>
 <section class="section section-lg text-center">
 <div class="container">
 <h3 class="wow-outer"><span class="wow slideInDown">客户评价</span></h3>
-<!-- Owl Carousel-->
-<div class="owl-carousel wow fadeIn" data-items="1" data-md-items="2" data-lg-items="3" data-dots="true"
-data-nav="false" data-loop="false" data-margin="30" data-stage-padding="0" data-mouse-drag="false">
-<blockquote class="quote-classic">
-<div class="quote-classic-meta">
-<div class="quote-classic-avatar"><img src="images/testimonials-person-3-96x96.jpg" alt="" width="96"
-height="96" />
-</div>
-<div class="quote-classic-info">
-<cite class="quote-classic-cite">艾伯特·韦伯</cite>
-<p class="quote-classic-caption">Majestic 首席执行官</p>
-</div>
-</div>
-<div class="quote-classic-text">
-<p>感谢您提供的专业服务，帮助我们的企业取得了显著的增长。您的团队非常专业，总是能够及时响应我们的需求。</p>
-</div>
-</blockquote>
-<blockquote class="quote-classic">
-<div class="quote-classic-meta">
-<div class="quote-classic-avatar"><img src="images/testimonials-person-1-96x96.jpg" alt="" width="96"
-height="96" />
-</div>
-<div class="quote-classic-info">
-<cite class="quote-classic-cite">凯莉·麦克米兰</cite>
-<p class="quote-classic-caption">私人企业家</p>
-</div>
-</div>
-<div class="quote-classic-text">
-<p>作为一名私人企业家，我非常感谢您提供的会计和财务建议。您的服务帮助我更好地管理了我的业务财务，让我能够专注于业务增长。</p>
-</div>
-</blockquote>
-<blockquote class="quote-classic">
-<div class="quote-classic-meta">
-<div class="quote-classic-avatar"><img src="images/testimonials-person-2-96x96.jpg" alt="" width="96"
-height="96" />
-</div>
-<div class="quote-classic-info">
-<cite class="quote-classic-cite">哈罗德·巴尼特</cite>
-<p class="quote-classic-caption">区域经理</p>
-}
-</div>
-<div class="quote-classic-text">
-<p>您的团队提供的业务管理服务非常出色，帮助我们优化了业务流程，提高了效率。强烈推荐给其他企业。</p>
-</div>
-</blockquote>
-<blockquote class="quote-classic">
-<div class="quote-classic-meta">
-<div class="quote-classic-avatar"><img src="images/testimonials-person-5-96x96.jpg" alt="" width="96"
-height="96" />
-</div>
-<div class="quote-classic-info">
-<cite class="quote-classic-cite">比尔·华纳</cite>
-<p class="quote-classic-caption">私人企业家</p>
-</div>
-</div>
-<div class="quote-classic-text">
-<p>感谢您提供的财务解决方案，帮助我们的企业实现了更高的利润。您的专家团队非常专业，总是能够提供有价值的建议。</p>
-</div>
-</blockquote>
+<!-- Owl Carousel（后台可编辑，前台轮播展示） -->
+<!-- 注意：这里先不加 owl-carousel 类，避免脚本在“空内容”时自动初始化 -->
+<div id="testimonialsCarousel" class="wow fadeIn" data-items="1" data-md-items="1" data-lg-items="1"
+data-dots="true" data-nav="false" data-loop="true" data-autoplay="true" data-autoplay-timeout="5000"
+data-margin="30" data-stage-padding="0" data-mouse-drag="true">
 </div>
 </div>
 </section>
@@ -338,8 +283,8 @@ title="网站模板">网站模板</a></p>
 </footer>
 </div>
 <div class="preloader">
-<div class="preloader-logo"><img src="images/logo-default-169x24.png" alt="" width="169" height="24"
-srcset="images/logo-default-324x45.png 2x" />
+<div class="preloader-logo"><img src="images/ce-logo.png" alt="CE International Group Co.,LTD" width="169"
+height="24" />
 </div>
 <div class="preloader-body">
 <div id="loadingProgressG">
@@ -359,6 +304,7 @@ srcset="images/logo-default-324x45.png 2x" />
     document.addEventListener('DOMContentLoaded', async function () {
       await loadServiceDetails();
       await loadAndRenderPricingPlans(); // 新增：加载并渲染价格表
+      await loadAndRenderTestimonials(); // 新增：加载并渲染客户评价（后台可编辑）
     });
 
     // 根据URL参数加载服务详情
@@ -466,6 +412,89 @@ function updateServiceContent(service) {
       }
       
       console.log('服务详情内容更新完成');
+    }
+
+    async function loadAndRenderTestimonials() {
+      const container = document.getElementById('testimonialsCarousel');
+      if (!container) return;
+
+      try {
+        if (!window.API || !window.API.Testimonials) {
+          console.warn('Testimonials API 不可用');
+          return;
+        }
+
+        const testimonials = await window.API.Testimonials.getAll();
+        const list = Array.isArray(testimonials) ? testimonials : [];
+
+        if (!list.length) {
+          container.innerHTML = '<div class="quote-classic"><div class="quote-classic-text"><p>暂无客户评价</p></div></div>';
+          return;
+        }
+
+        const html = list.map(t => {
+          const name = (t.name || '').trim() || '客户';
+          const caption = [t.company, t.position].filter(Boolean).join(' ') || t.position || '';
+          const avatar = t.image && t.image.trim()
+            ? t.image.trim()
+            : 'images/testimonials-person-1-96x96.jpg';
+          const content = (t.content || '').trim();
+
+          return `
+            <blockquote class="quote-classic">
+              <div class="quote-classic-meta">
+                <div class="quote-classic-avatar"><img src="${avatar}" alt="${name}" width="96" height="96" /></div>
+                <div class="quote-classic-info">
+                  <cite class="quote-classic-cite">${name}</cite>
+                  ${caption ? `<p class="quote-classic-caption">${caption}</p>` : ''}
+                </div>
+              </div>
+              <div class="quote-classic-text">${content || '<p></p>'}</div>
+            </blockquote>
+          `;
+        }).join('');
+
+        container.innerHTML = html;
+
+        // 手动初始化 Owl Carousel（等数据渲染完再初始化，保证有轮播效果）
+        if (window.jQuery && window.jQuery.fn && typeof window.jQuery.fn.owlCarousel === 'function') {
+          if (!container.classList.contains('owl-carousel')) {
+            container.classList.add('owl-carousel');
+          }
+
+          const $c = window.jQuery(container);
+
+          // 如果之前被初始化过（例如用户返回/缓存），先销毁再重建
+          if ($c.hasClass('owl-loaded')) {
+            $c.trigger('destroy.owl.carousel');
+          }
+
+          const toInt = (v, defaultVal) => {
+            const n = parseInt(v, 10);
+            return Number.isFinite(n) ? n : defaultVal;
+          };
+
+          $c.owlCarousel({
+            autoplay: container.getAttribute('data-autoplay') === 'true',
+            autoplayTimeout: toInt(container.getAttribute('data-autoplay-timeout'), 5000),
+            autoplayHoverPause: true,
+            loop: container.getAttribute('data-loop') !== 'false',
+            dots: container.getAttribute('data-dots') !== 'false',
+            nav: container.getAttribute('data-nav') === 'true',
+            margin: toInt(container.getAttribute('data-margin'), 30),
+            stagePadding: toInt(container.getAttribute('data-stage-padding'), 0),
+            mouseDrag: container.getAttribute('data-mouse-drag') !== 'false',
+            items: 1,
+            responsive: {
+              0: { items: 1 },
+              768: { items: 1 },
+              992: { items: 1 }
+            }
+          });
+        }
+      } catch (err) {
+        console.error('加载客户评价失败:', err);
+      }
     }
 // 加载并渲染价格计划
 async function loadAndRenderPricingPlans() {

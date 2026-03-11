@@ -1,794 +1,359 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>招贤纳士 - 后台管理系统</title>
-    <script src="../js/api.js"></script>
-    <link href="../css/quill.snow.css" rel="stylesheet">
-    <script src="../js/quill.js"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
-        .main-container { display: flex; min-height: 100vh; }
-        .sidebar { width: 280px; background: linear-gradient(180deg,#354879 0%,#28334f 100%); color: #fff; padding: 20px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.1); position: fixed; height: 100vh; overflow-y: auto; z-index: 1000; }
-        .sidebar-header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .sidebar-header h3 { font-size: 24px; font-weight: 600; margin: 0; }
-        .nav-menu { list-style: none; padding: 0; }
-        .nav-menu li { margin: 0; }
-        .nav-menu a { display: flex; align-items: center; padding: 15px 20px; color: rgba(255,255,255,0.9); text-decoration: none; transition: all 0.3s ease; border-left: 3px solid transparent; }
-        .nav-menu a:hover { background: rgba(255,255,255,0.1); border-left-color: #fff; color: #fff; }
-        .nav-menu a.active { background: rgba(255,255,255,0.15); border-left-color: #fff; color: #fff; font-weight: 500; }
-        .nav-menu a i { margin-right: 15px; font-size: 18px; width: 20px; text-align: center; }
-        .content { margin-left: 280px; flex: 1; transition: all 0.3s ease; }
-        .top-nav { background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 999; }
-        .top-nav-left { display: flex; align-items: center; }
-        .menu-toggle { background: none; border: none; font-size: 20px; cursor: pointer; margin-right: 20px; color: #333; }
-        .page-title { font-size: 20px; font-weight: 600; color: #354879; }
-        .top-nav-right { display: flex; align-items: center; }
-        .user-info { display: flex; align-items: center; margin-right: 20px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background: #354879; color: #fff; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-weight: 600; }
-        .logout-btn { background: #dc0000; color: #fff; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; transition: background-color 0.3s ease; font-weight: 500; }
-        .logout-btn:hover { background: #b71c1c; }
-        .main-content { padding: 20px; }
-        .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .content-title { font-size: 24px; font-weight: 600; color: #354879; }
-        .card { background: #fff; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 25px; margin-bottom: 20px; }
-        .btn { padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s ease; }
-        .btn-primary { background: #354879; color: #fff; }
-        .btn-primary:hover { background: #28334f; }
-        .btn-secondary { background: #95a5a6; color: #fff; }
-        .btn-secondary:hover { background: #7f8c8d; }
-        .btn-sm { padding: 6px 10px; font-size: 12px; }
-        .btn-danger { background: #e53935; color: #fff; }
-        .btn-danger:hover { background: #c62828; }
-        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; }
-        .status-active { background: #e3f9e5; color: #1b5e20; }
-        .status-inactive { background: #ffe4e4; color: #c62828; }
-        .data-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        .data-table th, .data-table td { padding: 10px 12px; border-bottom: 1px solid #edf2f7; text-align: left; font-size: 14px; vertical-align: top; }
-        .data-table th { background: #f9fafb; font-weight: 600; color: #4a5568; white-space: nowrap; }
-        .data-table tr:hover { background: #f8fafc; }
-        .message { padding: 15px; border-radius: 4px; position: fixed; top: 80px; right: 20px; z-index: 1002; min-width: 250px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-        .modal { display: none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background: rgba(0,0,0,0.45); }
-        .modal-content { background: #fff; margin: 5% auto; padding: 20px; border-radius: 10px; width: 90%; max-width: 640px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); }
-        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .modal-header h3 { margin: 0; font-size: 20px; color: #354879; }
-        .modal-header .close { cursor: pointer; font-size: 22px; color: #aaa; }
-        .modal-header .close:hover { color: #333; }
-        .form-group { margin-bottom: 15px; }
-        .form-label { display: block; margin-bottom: 5px; font-weight: 600; color: #354879; }
-        .form-input, .form-textarea, .form-select { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
-        .form-textarea { resize: vertical; min-height: 100px; }
-        .form-row { display: flex; gap: 12px; }
-        .form-row .form-group { flex: 1; }
-        @media(max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .content { margin-left: 0; }
-            .content-header { flex-direction: column; align-items: flex-start; }
-            .btn { margin-top: 10px; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>招贤纳士管理 - 后台管理系统</title>
+  <script src="../js/api.js"></script>
+  <link rel="stylesheet" href="../css/fonts.css" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; }
+    .main-container { display: flex; min-height: 100vh; }
+    .sidebar { width: 280px; background: linear-gradient(180deg,#354879 0%,#28334f 100%); color: #fff; padding: 20px 0; box-shadow: 2px 0 10px rgba(0,0,0,0.1); position: fixed; height: 100vh; overflow-y: auto; z-index: 1000; }
+    .sidebar-header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+    .sidebar-header h3 { font-size: 24px; font-weight: 600; margin: 0; }
+    .nav-menu { list-style: none; padding: 0; }
+    .nav-menu a { display: flex; align-items: center; padding: 15px 20px; color: rgba(255,255,255,0.9); text-decoration: none; transition: all 0.3s ease; border-left: 3px solid transparent; }
+    .nav-menu a:hover { background: rgba(255,255,255,0.1); border-left-color: #fff; color: #fff; }
+    .nav-menu a.active { background: rgba(255,255,255,0.15); border-left-color: #fff; color: #fff; font-weight: 500; }
+    .nav-menu a i { margin-right: 15px; font-size: 18px; width: 20px; text-align: center; }
+    .content { margin-left: 280px; flex: 1; }
+    .top-nav { background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.1); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 999; }
+    .top-nav-left { display: flex; align-items: center; gap: 12px; }
+    .menu-toggle { background: none; border: none; font-size: 20px; cursor: pointer; color: #333; }
+    .page-title { font-size: 20px; font-weight: 600; color: #354879; }
+    .top-nav-right { display: flex; align-items: center; gap: 16px; }
+    .user-info { display: flex; align-items: center; gap: 10px; }
+    .user-avatar { width: 36px; height: 36px; border-radius: 50%; background: #354879; color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 600; }
+    .logout-btn { background: #dc0000; color: #fff; border: none; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-weight: 500; }
+    .logout-btn:hover { background: #b71c1c; }
+    .main-content { padding: 20px; }
+    .content-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; gap: 12px; flex-wrap: wrap; }
+    .content-title { font-size: 22px; font-weight: 600; color: #354879; }
+    .card { background: #fff; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); padding: 18px; }
+    .btn { padding: 10px 14px; border: none; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 600; display: inline-flex; align-items: center; gap: 8px; }
+    .btn-primary { background: #354879; color: #fff; }
+    .btn-primary:hover { background: #28334f; }
+    .btn-secondary { background: #95a5a6; color: #fff; }
+    .btn-secondary:hover { background: #7f8c8d; }
+    .btn-danger { background: #e53935; color: #fff; }
+    .btn-danger:hover { background: #c62828; }
+    .btn-sm { padding: 6px 10px; font-size: 12px; border-radius: 6px; }
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th, .data-table td { padding: 12px; text-align: left; border-bottom: 1px solid #edf2f7; font-size: 14px; vertical-align: top; }
+    .data-table th { background: #f8fafc; color: #354879; font-weight: 700; white-space: nowrap; }
+    .status-badge { display: inline-block; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 700; }
+    .status-active { background: #e3f9e5; color: #1b5e20; }
+    .status-inactive { background: #ffe4e4; color: #c62828; }
+    .modal { display: none; position: fixed; z-index: 1100; inset: 0; background: rgba(0,0,0,0.45); }
+    .modal-content { background: #fff; width: 92%; max-width: 720px; margin: 6vh auto; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.25); overflow: hidden; }
+    .modal-header { padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #edf2f7; }
+    .modal-header h3 { margin: 0; color: #354879; }
+    .close { cursor: pointer; font-size: 22px; color: #999; }
+    .close:hover { color: #333; }
+    .modal-body { padding: 16px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .form-group { margin-bottom: 12px; }
+    .form-label { display: block; margin-bottom: 6px; font-weight: 700; color: #354879; font-size: 13px; }
+    .form-input, .form-textarea, .form-select { width: 100%; padding: 10px; border: 1px solid #dfe6ee; border-radius: 8px; font-size: 14px; }
+    .form-textarea { min-height: 110px; resize: vertical; }
+    .form-actions { display: flex; justify-content: flex-end; gap: 10px; padding: 14px 16px; border-top: 1px solid #edf2f7; background: #fafbfc; }
+    .message { padding: 12px 14px; border-radius: 8px; position: fixed; top: 80px; right: 18px; z-index: 1200; min-width: 260px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); font-size: 14px; }
+    .message.success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .message.error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+    @media (max-width: 768px) {
+      .sidebar { transform: translateX(-100%); }
+      .sidebar.open { transform: translateX(0); }
+      .content { margin-left: 0; }
+      .form-row { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
 <body>
-    <div class="main-container">
-        <!-- 侧边栏 -->
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header">
-                <h3>后台管理</h3>
-            </div>
-            <ul class="nav-menu">
-                <li><a href="dashboard-new.html"><i class="fas fa-tachometer-alt"></i>仪表盘</a></li>
-                <li><a href="website-info.html"><i class="fas fa-info-circle"></i>网站信息</a></li>
-                <li><a href="navigation.html"><i class="fas fa-bars"></i>导航管理</a></li>
-                <li><a href="services.html"><i class="fas fa-concierge-bell"></i>服务项目</a></li>
-                <li><a href="projects.html"><i class="fas fa-briefcase"></i>成功案例</a></li>
-                <li><a href="news.html"><i class="fas fa-newspaper"></i>博客/新闻</a></li>
-                <li><a href="testimonials.html"><i class="fas fa-comments"></i>客户评价</a></li>
-                <li><a href="partners.html"><i class="fas fa-handshake"></i>合作伙伴</a></li>
-                <li><a href="about-company.html"><i class="fas fa-info-circle"></i>公司简介</a></li>
-                <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
-                <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
-                <li><a href="pricing.html"><i class="fas fa-dollar-sign"></i>价格表</a></li>
-                <li><a href="home-features.html"><i class="fas fa-star"></i>首页特色模块</a></li>
-                <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
-                <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
-                <li><a href="careers.html" class="active"><i class="fas fa-user-tie"></i>招贤纳士</a></li>
-            </ul>
-        </aside>
+  <div class="main-container">
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header"><h3>后台管理</h3></div>
+      <ul class="nav-menu">
+        <li><a href="dashboard-new.html"><i class="fa fa-dashboard"></i>仪表盘</a></li>
+        <li><a href="website-info.html"><i class="fa fa-info-circle"></i>网站信息</a></li>
+        <li><a href="navigation.html"><i class="fa fa-bars"></i>导航管理</a></li>
+        <li><a href="services.html"><i class="fa fa-bell"></i>服务项目</a></li>
+        <li><a href="projects.html"><i class="fa fa-briefcase"></i>成功案例</a></li>
+        <li><a href="news.html"><i class="fa fa-newspaper-o"></i>博客/新闻</a></li>
+        <li><a href="testimonials.html"><i class="fa fa-comments"></i>客户评价</a></li>
+        <li><a href="partners.html"><i class="fa fa-handshake-o"></i>合作伙伴</a></li>
+        <li><a href="about.html"><i class="fa fa-building"></i>关于我们</a></li>
+        <li><a href="about-company.html"><i class="fa fa-info-circle"></i>公司简介</a></li>
+        <li><a href="about-me.html"><i class="fa fa-user"></i>个人简介</a></li>
+        <li><a href="team.html"><i class="fa fa-users"></i>团队成员</a></li>
+        <li><a href="careers.html" class="active"><i class="fa fa-suitcase"></i>招贤纳士</a></li>
+        <li><a href="pricing.html"><i class="fa fa-dollar"></i>价格表</a></li>
+        <li><a href="home-features.html"><i class="fa fa-star"></i>首页特色模块</a></li>
+        <li><a href="contacts.html"><i class="fa fa-envelope"></i>联系我们</a></li>
+        <li><a href="map-settings.html"><i class="fa fa-map-marker"></i>地图管理</a></li>
+      </ul>
+    </aside>
 
-        <!-- 主内容区域 -->
-        <main class="content">
-            <!-- 顶部导航 -->
-            <header class="top-nav">
-                <div class="top-nav-left">
-                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-                    <h2 class="page-title">招贤纳士管理</h2>
-                </div>
-                <div class="top-nav-right">
-                    <div class="user-info">
-                        <div class="user-avatar">A</div>
-                        <span>admin</span>
-                    </div>
-                    <button class="logout-btn" onclick="logout()">退出登录</button>
-                </div>
-            </header>
-
-            <!-- 主要内容 -->
-            <div class="main-content">
-                <div class="content-header">
-                    <h3 class="content-title">职位列表</h3>
-                    <button class="btn btn-primary" onclick="openCareerModal()">
-                        <i class="fas fa-plus"></i> 添加职位
-                    </button>
-                </div>
-
-                <div class="card">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>职位名称</th>
-                                <th>职位类型</th>
-                                <th>工作地点</th>
-                                <th>排序</th>
-                                <th>状态</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="careersTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <!-- 职位编辑模态框 -->
-    <div id="careerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">添加职位</h3>
-                <span class="close" onclick="closeCareerModal()">&times;</span>
-            </div>
-            <form id="careerForm">
-                <input type="hidden" id="careerId">
-                <div class="form-group">
-                    <label for="careerTitle" class="form-label">职位名称</label>
-                    <input type="text" id="careerTitle" class="form-input" placeholder="例如：财务经理" required>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="careerJobType" class="form-label">职位类型</label>
-                        <input type="text" id="careerJobType" class="form-input" placeholder="例如：全职 / 兼职">
-                    </div>
-                    <div class="form-group">
-                        <label for="careerLocation" class="form-label">工作地点</label>
-                        <input type="text" id="careerLocation" class="form-input" placeholder="例如：上海 / 北京">
-                    </div>
-                </div>
-                <div class="form-group">
-                    <label for="careerDescription" class="form-label">职位描述</label>
-                    <textarea id="careerDescription" class="form-textarea" placeholder="简要介绍岗位职责、任职要求等"></textarea>
-                </div>
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="careerSortOrder" class="form-label">排序</label>
-                        <input type="number" id="careerSortOrder" class="form-input" value="0">
-                    </div>
-                    <div class="form-group">
-                        <label class="form-label">状态</label>
-                        <select id="careerStatus" class="form-select">
-                            <option value="1">启用（前台显示）</option>
-                            <option value="0">停用（前台隐藏）</option>
-                        </select>
-                    </div>
-                </div>
-                <div style="text-align: right; margin-top: 10px;">
-                    <button type="button" class="btn btn-secondary" onclick="closeCareerModal()">取消</button>
-                    <button type="submit" class="btn btn-primary">保存</button>
-                </div>
-            </form>
+    <main class="content">
+      <header class="top-nav">
+        <div class="top-nav-left">
+          <button class="menu-toggle" id="menuToggle" aria-label="toggle menu"><i class="fa fa-bars"></i></button>
+          <div class="page-title">招贤纳士管理</div>
         </div>
+        <div class="top-nav-right">
+          <div class="user-info">
+            <div class="user-avatar">A</div>
+            <span>admin</span>
+          </div>
+          <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+      </header>
+
+      <div class="main-content">
+        <div class="content-header">
+          <div class="content-title">职位列表</div>
+          <button class="btn btn-primary" id="addBtn"><i class="fa fa-plus"></i>添加职位</button>
+        </div>
+
+        <div class="card">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>ID</th>
+                <th>职位名称</th>
+                <th>类型</th>
+                <th>地点</th>
+                <th>排序</th>
+                <th>状态</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody id="careersTableBody">
+              <tr><td colspan="7">加载中...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <div id="careerModal" class="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modalTitle">添加职位</h3>
+        <span class="close" id="modalClose">&times;</span>
+      </div>
+      <form id="careerForm">
+        <div class="modal-body">
+          <input type="hidden" id="careerId" />
+          <div class="form-group">
+            <label class="form-label" for="careerTitle">职位名称</label>
+            <input class="form-input" id="careerTitle" required placeholder="例如：财务经理" />
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="careerJobType">类型</label>
+              <input class="form-input" id="careerJobType" placeholder="全职 / 兼职 / 实习" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="careerLocation">地点</label>
+              <input class="form-input" id="careerLocation" placeholder="上海 / 北京 / 远程" />
+            </div>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="careerDescription">职位描述</label>
+            <textarea class="form-textarea" id="careerDescription" placeholder="岗位职责、任职要求等"></textarea>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label class="form-label" for="careerSortOrder">排序</label>
+              <input class="form-input" id="careerSortOrder" type="number" min="0" value="0" />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="careerStatus">状态</label>
+              <select class="form-select" id="careerStatus">
+                <option value="1">启用（前台显示）</option>
+                <option value="0">停用（前台隐藏）</option>
+              </select>
+            </div>
+          </div>
+        </div>
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="cancelBtn">取消</button>
+          <button type="submit" class="btn btn-primary">保存</button>
+        </div>
+      </form>
     </div>
+  </div>
 
-    <!-- 移除外网 FontAwesome，避免加载卡顿 -->
-    <script>
-        let careersCache = [];
+  <script>
+    let careersCache = [];
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const token = localStorage.getItem('adminToken');
-            if (!token) {
-                if (confirm('您尚未登录后台，是否前往登录？')) {
-                    window.location.href = 'index.html';
-                }
-                return;
-            }
-            loadCareersAdmin();
+    document.addEventListener('DOMContentLoaded', () => {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        window.location.href = 'index.html';
+        return;
+      }
 
-            const form = document.getElementById('careerForm');
-            form.addEventListener('submit', saveCareer);
+      document.getElementById('menuToggle').addEventListener('click', () => {
+        document.getElementById('sidebar').classList.toggle('open');
+      });
 
-            const menuToggle = document.getElementById('menuToggle');
-            const sidebar = document.getElementById('sidebar');
-            menuToggle.addEventListener('click', () => {
-                sidebar.classList.toggle('open');
-            });
-        });
+      document.getElementById('addBtn').addEventListener('click', openAddModal);
+      document.getElementById('modalClose').addEventListener('click', closeModal);
+      document.getElementById('cancelBtn').addEventListener('click', closeModal);
+      document.getElementById('careerModal').addEventListener('click', (e) => {
+        if (e.target && e.target.id === 'careerModal') closeModal();
+      });
+      document.getElementById('careerForm').addEventListener('submit', saveCareer);
 
-        async function loadCareersAdmin() {
-            const tbody = document.getElementById('careersTableBody');
-            tbody.innerHTML = '<tr><td colspan="7">加载中...</td></tr>';
-            try {
-                const list = await window.API.Careers.getAllAdmin();
-                careersCache = Array.isArray(list) ? list : [];
+      loadCareers();
+    });
 
-                if (!careersCache.length) {
-                    tbody.innerHTML = '<tr><td colspan="7">暂时没有职位，请点击右上角“添加职位”。</td></tr>';
-                    return;
-                }
+    async function loadCareers() {
+      const tbody = document.getElementById('careersTableBody');
+      tbody.innerHTML = '<tr><td colspan=\"7\">加载中...</td></tr>';
 
-                tbody.innerHTML = careersCache.map(item => `
-                    <tr>
-                        <td>${item.id}</td>
-                        <td>${item.title || ''}</td>
-                        <td>${item.jobType || ''}</td>
-                        <td>${item.location || ''}</td>
-                        <td>${item.sortOrder ?? 0}</td>
-                        <td>
-                            <span class="status-badge ${item.isActive ? 'status-active' : 'status-inactive'}">
-                                ${item.isActive ? '启用' : '停用'}
-                            </span>
-                        </td>
-                        <td>
-                            <button class="btn btn-sm btn-secondary" onclick="editCareer(${item.id})">编辑</button>
-                            <button class="btn btn-sm btn-danger" onclick="deleteCareer(${item.id})">删除</button>
-                        </td>
-                    </tr>
-                `).join('');
-            } catch (err) {
-                console.error('加载职位失败:', err);
-                tbody.innerHTML = '<tr><td colspan="7">加载失败，请稍后重试。</td></tr>';
-                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
-                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
-                        localStorage.removeItem('adminToken');
-                        localStorage.removeItem('adminUser');
-                        window.location.href = 'index.html';
-                    }
-                }
-            }
+      try {
+        const list = await window.API.Careers.getAllAdmin();
+        careersCache = Array.isArray(list) ? list : [];
+
+        if (!careersCache.length) {
+          tbody.innerHTML = '<tr><td colspan=\"7\">暂无职位，请点击右上角“添加职位”。</td></tr>';
+          return;
         }
 
-        function openCareerModal() {
-            document.getElementById('careerId').value = '';
-            document.getElementById('careerTitle').value = '';
-            document.getElementById('careerJobType').value = '';
-            document.getElementById('careerLocation').value = '';
-            document.getElementById('careerDescription').value = '';
-            document.getElementById('careerSortOrder').value = 0;
-            document.getElementById('careerStatus').value = '1';
-            document.getElementById('modalTitle').textContent = '添加职位';
-            document.getElementById('careerModal').style.display = 'block';
+        tbody.innerHTML = careersCache.map(item => {
+          const statusClass = item.isActive ? 'status-active' : 'status-inactive';
+          const statusText = item.isActive ? '启用' : '停用';
+          return `
+            <tr>
+              <td>${item.id}</td>
+              <td>${escapeHtml(item.title || '')}</td>
+              <td>${escapeHtml(item.jobType || '')}</td>
+              <td>${escapeHtml(item.location || '')}</td>
+              <td>${item.sortOrder ?? 0}</td>
+              <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+              <td>
+                <button class="btn btn-sm btn-secondary" onclick="editCareer(${item.id})">编辑</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteCareer(${item.id})">删除</button>
+              </td>
+            </tr>
+          `;
+        }).join('');
+      } catch (err) {
+        console.error(err);
+        tbody.innerHTML = '<tr><td colspan=\"7\">加载失败，请稍后重试。</td></tr>';
+        showMessage('加载失败：' + (err.message || '未知错误'), 'error');
+      }
+    }
+
+    function openAddModal() {
+      setFormData({ id: '', title: '', jobType: '', location: '', description: '', sortOrder: 0, isActive: 1 });
+      document.getElementById('modalTitle').textContent = '添加职位';
+      openModal();
+    }
+
+    function editCareer(id) {
+      const item = careersCache.find(x => x.id === id);
+      if (!item) return;
+      setFormData(item);
+      document.getElementById('modalTitle').textContent = '编辑职位';
+      openModal();
+    }
+
+    function setFormData(item) {
+      document.getElementById('careerId').value = item.id ?? '';
+      document.getElementById('careerTitle').value = item.title ?? '';
+      document.getElementById('careerJobType').value = item.jobType ?? '';
+      document.getElementById('careerLocation').value = item.location ?? '';
+      document.getElementById('careerDescription').value = item.description ?? '';
+      document.getElementById('careerSortOrder').value = item.sortOrder ?? 0;
+      document.getElementById('careerStatus').value = item.isActive ? '1' : '0';
+    }
+
+    function openModal() {
+      document.getElementById('careerModal').style.display = 'block';
+    }
+
+    function closeModal() {
+      document.getElementById('careerModal').style.display = 'none';
+    }
+
+    async function saveCareer(e) {
+      e.preventDefault();
+      const id = document.getElementById('careerId').value;
+      const payload = {
+        title: document.getElementById('careerTitle').value.trim(),
+        jobType: document.getElementById('careerJobType').value.trim(),
+        location: document.getElementById('careerLocation').value.trim(),
+        description: document.getElementById('careerDescription').value.trim(),
+        sortOrder: parseInt(document.getElementById('careerSortOrder').value || '0', 10),
+        isActive: document.getElementById('careerStatus').value === '1' ? 1 : 0
+      };
+
+      if (!payload.title) {
+        showMessage('请填写职位名称', 'error');
+        return;
+      }
+
+      try {
+        if (id) {
+          await window.API.Careers.update(id, payload);
+          showMessage('职位更新成功', 'success');
+        } else {
+          await window.API.Careers.create(payload);
+          showMessage('职位创建成功', 'success');
         }
-
-        function closeCareerModal() {
-            document.getElementById('careerModal').style.display = 'none';
+        closeModal();
+        await loadCareers();
+      } catch (err) {
+        console.error(err);
+        showMessage('保存失败：' + (err.message || '未知错误'), 'error');
+        if (err.message && (err.message.includes('认证') || err.message.includes('登录'))) {
+          setTimeout(() => { window.location.href = 'index.html'; }, 600);
         }
+      }
+    }
 
-        function editCareer(id) {
-            const item = careersCache.find(c => c.id === id);
-            if (!item) return;
-            document.getElementById('careerId').value = item.id;
-            document.getElementById('careerTitle').value = item.title || '';
-            document.getElementById('careerJobType').value = item.jobType || '';
-            document.getElementById('careerLocation').value = item.location || '';
-            document.getElementById('careerDescription').value = item.description || '';
-            document.getElementById('careerSortOrder').value = item.sortOrder ?? 0;
-            document.getElementById('careerStatus').value = item.isActive ? '1' : '0';
-            document.getElementById('modalTitle').textContent = '编辑职位';
-            document.getElementById('careerModal').style.display = 'block';
-        }
+    async function deleteCareer(id) {
+      if (!confirm('确定要删除该职位吗？此操作不可恢复。')) return;
+      try {
+        await window.API.Careers.delete(id);
+        showMessage('职位已删除', 'success');
+        await loadCareers();
+      } catch (err) {
+        console.error(err);
+        showMessage('删除失败：' + (err.message || '未知错误'), 'error');
+      }
+    }
 
-        async function saveCareer(e) {
-            e.preventDefault();
-            const id = document.getElementById('careerId').value;
-            const payload = {
-                title: document.getElementById('careerTitle').value.trim(),
-                jobType: document.getElementById('careerJobType').value.trim(),
-                location: document.getElementById('careerLocation').value.trim(),
-                description: document.getElementById('careerDescription').value.trim(),
-                sortOrder: parseInt(document.getElementById('careerSortOrder').value || '0', 10),
-                isActive: document.getElementById('careerStatus').value === '1' ? 1 : 0
-            };
+    function logout() {
+      if (confirm('确定要退出登录吗？')) {
+        localStorage.removeItem('adminUser');
+        localStorage.removeItem('adminToken');
+        window.location.href = 'index.html';
+      }
+    }
 
-            if (!payload.title) {
-                showMessage('请填写职位名称', 'error');
-                return;
-            }
+    function showMessage(text, type) {
+      const div = document.createElement('div');
+      div.className = `message ${type}`;
+      div.textContent = text;
+      document.body.appendChild(div);
+      setTimeout(() => div.remove(), 3000);
+    }
 
-            try {
-                if (id) {
-                    await window.API.Careers.update(id, payload);
-                    showMessage('职位更新成功', 'success');
-                } else {
-                    await window.API.Careers.create(payload);
-                    showMessage('职位创建成功', 'success');
-                }
-                closeCareerModal();
-                loadCareersAdmin();
-            } catch (err) {
-                console.error('保存职位失败:', err);
-                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
-                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
-                        localStorage.removeItem('adminToken');
-                        localStorage.removeItem('adminUser');
-                        window.location.href = 'index.html';
-                    }
-                    return;
-                }
-                showMessage(err.message || '保存失败', 'error');
-            }
-        }
-
-        async function deleteCareer(id) {
-            if (!confirm('确定要删除该职位吗？此操作不可恢复。')) return;
-            try {
-                await window.API.Careers.delete(id);
-                showMessage('职位已删除', 'success');
-                loadCareersAdmin();
-            } catch (err) {
-                console.error('删除职位失败:', err);
-                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
-                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
-                        localStorage.removeItem('adminToken');
-                        localStorage.removeItem('adminUser');
-                        window.location.href = 'index.html';
-                    }
-                    return;
-                }
-                showMessage(err.message || '删除失败', 'error');
-            }
-        }
-
-        function showMessage(text, type) {
-            const div = document.createElement('div');
-            div.className = `message ${type}`;
-            div.textContent = text;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 3000);
-        }
-
-        function logout() {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('adminUser');
-                localStorage.removeItem('adminToken');
-                window.location.href = 'index.html';
-            }
-        }
-    </script>
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+  </script>
 </body>
 </html>
-
-<!DOCTYPE html>
-<html lang="zh-CN">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>招贤纳士 - 后台管理系统</title>
-    <script src="../js/api.js"></script>
-    <!-- Quill 已改为本地加载（见 head 引入） -->
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box;}
-        body{font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;background:#f5f7fa;color:#333;line-height:1.6;}
-        .main-container{display:flex;min-height:100vh;}
-        .sidebar{width:280px;background:linear-gradient(180deg,#354879 0%,#28334f 100%);color:#fff;padding:20px 0;box-shadow:2px 0 10px rgba(0,0,0,0.1);position:fixed;height:100vh;overflow-y:auto;z-index:1000;}
-        .sidebar-header{text-align:center;padding:20px 0;border-bottom:1px solid rgba(255,255,255,0.1);margin-bottom:20px;}
-        .sidebar-header h3{font-size:24px;font-weight:600;margin:0;}
-        .nav-menu{list-style:none;padding:0;}
-        .nav-menu li{margin:0;}
-        .nav-menu a{display:flex;align-items:center;padding:15px 20px;color:rgba(255,255,255,0.9);text-decoration:none;transition:all 0.3s ease;border-left:3px solid transparent;}
-        .nav-menu a:hover{background:rgba(255,255,255,0.1);border-left-color:#fff;color:#fff;}
-        .nav-menu a.active{background:rgba(255,255,255,0.15);border-left-color:#fff;color:#fff;font-weight:500;}
-        .nav-menu a i{margin-right:15px;font-size:18px;width:20px;text-align:center;}
-        .content{margin-left:280px;flex:1;transition:all 0.3s ease;}
-        .top-nav{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:15px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:999;}
-        .top-nav-left{display:flex;align-items:center;}
-        .menu-toggle{background:none;border:none;font-size:20px;cursor:pointer;margin-right:20px;color:#333;}
-        .page-title{font-size:20px;font-weight:600;color:#354879;}
-        .top-nav-right{display:flex;align-items:center;}
-        .user-info{display:flex;align-items:center;margin-right:20px;}
-        .user-avatar{width:40px;height:40px;border-radius:50%;background:#354879;color:#fff;display:flex;align-items:center;justify-content:center;margin-right:10px;font-weight:600;}
-        .logout-btn{background:#dc0000;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;transition:background-color 0.3s ease;font-weight:500;}
-        .logout-btn:hover{background:#b71c1c;}
-        .main-content{padding:20px;}
-        .content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;row-gap:10px;}
-        .content-title{font-size:24px;font-weight:600;color:#354879;}
-        .card{background:#fff;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,0.1);padding:20px;margin-bottom:20px;}
-        .btn{padding:8px 16px;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:500;transition:all 0.3s ease;display:inline-flex;align-items:center;gap:6px;}
-        .btn-primary{background:#354879;color:#fff;}
-        .btn-primary:hover{background:#28334f;}
-        .btn-secondary{background:#95a5a6;color:#fff;}
-        .btn-secondary:hover{background:#7f8c8d;}
-        .btn-danger{background:#e53935;color:#fff;}
-        .btn-danger:hover{background:#c62828;}
-        .data-table{width:100%;border-collapse:collapse;margin-top:10px;}
-        .data-table th,.data-table td{padding:10px;border-bottom:1px solid #eee;text-align:left;font-size:14px;vertical-align:top;}
-        .data-table th{background:#f8f9fa;font-weight:600;color:#354879;}
-        .badge{display:inline-block;padding:2px 8px;border-radius:10px;font-size:12px;}
-        .badge-success{background:#d4edda;color:#155724;}
-        .badge-secondary{background:#e0e0e0;color:#555;}
-        .badge-info{background:#e3f2fd;color:#1976d2;}
-        .badge-location{background:#fff3e0;color:#ef6c00;}
-        .actions{display:flex;gap:8px;flex-wrap:wrap;}
-        .modal{display:none;position:fixed;z-index:1001;left:0;top:0;width:100%;height:100%;overflow:auto;background-color:rgba(0,0,0,0.4);}
-        .modal-content{background-color:#fefefe;margin:60px auto;padding:20px;border:1px solid #888;width:95%;max-width:640px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.2);}
-        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-        .modal-header h3{margin:0;font-size:20px;color:#354879;}
-        .close{color:#aaa;font-size:24px;font-weight:bold;cursor:pointer;}
-        .close:hover{color:#000;}
-        .form-group{margin-bottom:12px;}
-        .form-label{display:block;margin-bottom:5px;font-weight:600;color:#354879;font-size:14px;}
-        .form-input,.form-textarea,.form-select{width:100%;padding:8px;border:1px solid #ddd;border-radius:4px;font-size:14px;}
-        .form-textarea{resize:vertical;min-height:80px;}
-        #description-editor-container{height:160px;border:1px solid #ddd;border-radius:4px;font-size:14px;margin-bottom:8px;}
-        .form-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px;}
-        .message{padding:12px 16px;border-radius:4px;position:fixed;top:80px;right:20px;z-index:1002;min-width:260px;box-shadow:0 2px 10px rgba(0,0,0,0.1);font-size:14px;}
-        .message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;}
-        .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;}
-        @media(max-width:768px){
-            .sidebar{transform:translateX(-100%);}
-            .sidebar.open{transform:translateX(0);}
-            .content{margin-left:0;}
-            .top-nav{flex-direction:column;align-items:flex-start;row-gap:10px;}
-            .content-header{flex-direction:column;align-items:flex-start;}
-        }
-    </style>
-</head>
-<body>
-    <div class="main-container">
-        <aside class="sidebar" id="sidebar">
-            <div class="sidebar-header"><h3>后台管理</h3></div>
-            <ul class="nav-menu">
-                <li><a href="dashboard-new.html"><i class="fas fa-tachometer-alt"></i>仪表盘</a></li>
-                <li><a href="website-info.html"><i class="fas fa-info-circle"></i>网站信息</a></li>
-                <li><a href="navigation.html"><i class="fas fa-bars"></i>导航管理</a></li>
-                <li><a href="services.html"><i class="fas fa-concierge-bell"></i>服务项目</a></li>
-                <li><a href="projects.html"><i class="fas fa-briefcase"></i>成功案例</a></li>
-                <li><a href="news.html"><i class="fas fa-newspaper"></i>博客/新闻</a></li>
-                <li><a href="testimonials.html"><i class="fas fa-comments"></i>客户评价</a></li>
-                <li><a href="partners.html"><i class="fas fa-handshake"></i>合作伙伴</a></li>
-                <li><a href="about-company.html"><i class="fas fa-info-circle"></i>公司简介</a></li>
-                <li><a href="about-me.html"><i class="fas fa-user"></i>个人简介</a></li>
-                <li><a href="team.html"><i class="fas fa-users"></i>团队成员</a></li>
-                <li><a href="pricing.html"><i class="fas fa-dollar-sign"></i>价格表</a></li>
-                <li><a href="home-features.html"><i class="fas fa-star"></i>首页特色模块</a></li>
-                <li><a href="contacts.html"><i class="fas fa-envelope"></i>联系我们</a></li>
-                <li><a href="map-settings.html"><i class="fas fa-map-marker-alt"></i>地图管理</a></li>
-                <li><a href="careers.html" class="active"><i class="fas fa-briefcase"></i>招贤纳士</a></li>
-            </ul>
-        </aside>
-
-        <main class="content">
-            <header class="top-nav">
-                <div class="top-nav-left">
-                    <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
-                    <h2 class="page-title">招贤纳士管理</h2>
-                </div>
-                <div class="top-nav-right">
-                    <div class="user-info">
-                        <div class="user-avatar">A</div>
-                        <span>admin</span>
-                    </div>
-                    <button class="logout-btn" onclick="logout()">退出登录</button>
-                </div>
-            </header>
-
-            <div class="main-content">
-                <div class="content-header">
-                    <h3 class="content-title">职位列表</h3>
-                    <button class="btn btn-primary" onclick="openAddModal()">
-                        <i class="fas fa-plus"></i> 添加职位
-                    </button>
-                </div>
-                <div class="card">
-                    <table class="data-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>职位名称</th>
-                                <th>类型</th>
-                                <th>地点</th>
-                                <th>排序</th>
-                                <th>状态</th>
-                                <th>操作</th>
-                            </tr>
-                        </thead>
-                        <tbody id="careersTableBody">
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </main>
-    </div>
-
-    <div id="careerModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3 id="modalTitle">添加职位</h3>
-                <span class="close" onclick="closeModal()">&times;</span>
-            </div>
-            <form id="careerForm">
-                <input type="hidden" id="careerId">
-                <div class="form-group">
-                    <label class="form-label" for="careerTitle">职位名称</label>
-                    <input id="careerTitle" class="form-input" required>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="careerJobType">职位类型</label>
-                    <input id="careerJobType" class="form-input" placeholder="如：全职 / 兼职 / 实习">
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="careerLocation">工作地点</label>
-                    <input id="careerLocation" class="form-input" placeholder="如：上海 / 远程">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">职位描述（支持富文本）</label>
-                    <div id="description-editor-container"></div>
-                </div>
-                <div class="form-group">
-                    <label class="form-label" for="careerSortOrder">排序</label>
-                    <input id="careerSortOrder" type="number" class="form-input" value="0" min="0">
-                </div>
-                <div class="form-group">
-                    <label class="form-label">状态</label>
-                    <div style="display:flex;gap:20px;">
-                        <label style="display:flex;align-items:center;">
-                            <input type="radio" name="careerStatus" value="1" checked>
-                            <span style="margin-left:5px;">显示</span>
-                        </label>
-                        <label style="display:flex;align-items:center;">
-                            <input type="radio" name="careerStatus" value="0">
-                            <span style="margin-left:5px;">隐藏</span>
-                        </label>
-                    </div>
-                </div>
-                <div class="form-actions">
-                    <button type="button" class="btn btn-secondary" onclick="closeModal()">取消</button>
-                    <button type="submit" class="btn btn-primary">保存</button>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div id="deleteModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>确认删除</h3>
-                <span class="close" onclick="closeDeleteModal()">&times;</span>
-            </div>
-            <p>确定要删除这个职位吗？此操作不可恢复。</p>
-            <div class="form-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeDeleteModal()">取消</button>
-                <button type="button" class="btn btn-danger" onclick="confirmDelete()">删除</button>
-            </div>
-        </div>
-    </div>
-
-    <script>
-        let descriptionQuill;
-        let careerToDelete = null;
-
-        document.addEventListener('DOMContentLoaded', async () => {
-            const user = localStorage.getItem('adminUser');
-            const token = localStorage.getItem('adminToken');
-            if (!user || !token) { window.location.href = 'index.html'; return; }
-            initMenuToggle();
-            initQuillEditor();
-            bindEvents();
-            await loadCareers();
-        });
-
-        function initMenuToggle() {
-            document.getElementById('menuToggle').addEventListener('click', () => {
-                document.getElementById('sidebar').classList.toggle('open');
-            });
-        }
-
-        function logout() {
-            if (confirm('确定要退出登录吗？')) {
-                localStorage.removeItem('adminUser');
-                localStorage.removeItem('adminToken');
-                window.location.href = 'index.html';
-            }
-        }
-
-        function initQuillEditor() {
-            descriptionQuill = new Quill('#description-editor-container', {
-                theme: 'snow',
-                modules: {
-                    toolbar: [
-                        ['bold', 'italic', 'underline', 'strike'],
-                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-                        [{ 'indent': '-1' }, { 'indent': '+1' }],
-                        [{ 'size': ['small', false, 'large', 'huge'] }],
-                        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-                        [{ 'color': [] }, { 'background': [] }],
-                        [{ 'align': [] }],
-                        ['clean']
-                    ]
-                }
-            });
-        }
-
-        function bindEvents() {
-            document.getElementById('careerForm').addEventListener('submit', onSave);
-            window.addEventListener('click', (event) => {
-                if (event.target === document.getElementById('careerModal')) {
-                    closeModal();
-                }
-                if (event.target === document.getElementById('deleteModal')) {
-                    closeDeleteModal();
-                }
-            });
-        }
-
-        async function loadCareers() {
-            const tbody = document.getElementById('careersTableBody');
-            tbody.innerHTML = '<tr><td colspan="7">加载中...</td></tr>';
-            try {
-                const list = await window.API.Careers.getAllAdmin();
-                renderTable(list || []);
-            } catch (err) {
-                console.error('加载职位列表失败:', err);
-                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
-                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
-                        localStorage.removeItem('adminToken');
-                        localStorage.removeItem('adminUser');
-                        window.location.href = 'index.html';
-                    }
-                    return;
-                }
-                tbody.innerHTML = '<tr><td colspan="7">加载失败，请稍后重试</td></tr>';
-            }
-        }
-
-        function renderTable(list) {
-            const tbody = document.getElementById('careersTableBody');
-            tbody.innerHTML = '';
-            if (!list.length) {
-                tbody.innerHTML = '<tr><td colspan="7">暂无职位</td></tr>';
-                return;
-            }
-            list.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td>${item.id}</td>
-                    <td>${item.title || ''}</td>
-                    <td>${item.jobType ? `<span class="badge badge-info">${item.jobType}</span>` : '-'}</td>
-                    <td>${item.location ? `<span class="badge badge-location">${item.location}</span>` : '-'}</td>
-                    <td>${item.sortOrder ?? 0}</td>
-                    <td>${item.isActive ? '<span class="badge badge-success">显示</span>' : '<span class="badge badge-secondary">隐藏</span>'}</td>
-                    <td>
-                        <div class="actions">
-                            <button class="btn btn-secondary" onclick="openEditModal(${item.id})">编辑</button>
-                            <button class="btn btn-danger" onclick="openDeleteModal(${item.id})">删除</button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(tr);
-            });
-        }
-
-        function openAddModal() {
-            document.getElementById('modalTitle').textContent = '添加职位';
-            document.getElementById('careerId').value = '';
-            document.getElementById('careerTitle').value = '';
-            document.getElementById('careerJobType').value = '';
-            document.getElementById('careerLocation').value = '';
-            document.getElementById('careerSortOrder').value = 0;
-            descriptionQuill.root.innerHTML = '';
-            document.querySelector('input[name="careerStatus"][value="1"]').checked = true;
-            document.getElementById('careerModal').style.display = 'block';
-        }
-
-        async function openEditModal(id) {
-            try {
-                const data = await window.API.Careers.get(id);
-                if (!data) {
-                    showMessage('未找到该职位', 'error');
-                    return;
-                }
-                document.getElementById('modalTitle').textContent = '编辑职位';
-                document.getElementById('careerId').value = data.id;
-                document.getElementById('careerTitle').value = data.title || '';
-                document.getElementById('careerJobType').value = data.jobType || '';
-                document.getElementById('careerLocation').value = data.location || '';
-                document.getElementById('careerSortOrder').value = data.sortOrder ?? 0;
-                descriptionQuill.root.innerHTML = data.description || '';
-                document.querySelector(`input[name="careerStatus"][value="${data.isActive ? 1 : 0}"]`).checked = true;
-                document.getElementById('careerModal').style.display = 'block';
-            } catch (err) {
-                console.error('加载职位详情失败:', err);
-                showMessage('加载职位详情失败', 'error');
-            }
-        }
-
-        function closeModal() {
-            document.getElementById('careerModal').style.display = 'none';
-        }
-
-        function openDeleteModal(id) {
-            careerToDelete = id;
-            document.getElementById('deleteModal').style.display = 'block';
-        }
-
-        function closeDeleteModal() {
-            careerToDelete = null;
-            document.getElementById('deleteModal').style.display = 'none';
-        }
-
-        async function confirmDelete() {
-            if (!careerToDelete) return;
-            try {
-                await window.API.Careers.delete(careerToDelete);
-                showMessage('删除成功', 'success');
-                closeDeleteModal();
-                await loadCareers();
-            } catch (err) {
-                console.error('删除职位失败:', err);
-                showMessage('删除失败', 'error');
-            }
-        }
-
-        async function onSave(e) {
-            e.preventDefault();
-            const id = document.getElementById('careerId').value;
-            const payload = {
-                title: document.getElementById('careerTitle').value.trim(),
-                jobType: document.getElementById('careerJobType').value.trim(),
-                location: document.getElementById('careerLocation').value.trim(),
-                description: descriptionQuill.root.innerHTML.trim(),
-                sortOrder: parseInt(document.getElementById('careerSortOrder').value || '0', 10),
-                isActive: document.querySelector('input[name="careerStatus"]:checked').value === '1' ? 1 : 0
-            };
-            if (!payload.title) {
-                showMessage('请填写职位名称', 'error');
-                return;
-            }
-            try {
-                if (id) {
-                    await window.API.Careers.update(id, payload);
-                    showMessage('更新成功', 'success');
-                } else {
-                    await window.API.Careers.create(payload);
-                    showMessage('创建成功', 'success');
-                }
-                closeModal();
-                await loadCareers();
-            } catch (err) {
-                console.error('保存职位失败:', err);
-                if (err.message && (err.message.includes('认证失败') || err.message.includes('登录已过期') || err.message.includes('无效的认证令牌'))) {
-                    if (confirm('登录已过期，需要重新登录。是否现在重新登录？')) {
-                        localStorage.removeItem('adminToken');
-                        localStorage.removeItem('adminUser');
-                        window.location.href = 'index.html';
-                    }
-                    return;
-                }
-                showMessage(err.message || '保存失败', 'error');
-            }
-        }
-
-        function showMessage(text, type) {
-            const div = document.createElement('div');
-            div.className = `message ${type}`;
-            div.textContent = text;
-            document.body.appendChild(div);
-            setTimeout(() => div.remove(), 3000);
-        }
-    </script>
-</body>
-</html>
-
