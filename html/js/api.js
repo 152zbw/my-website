@@ -201,6 +201,15 @@ const CareersAPI = {
     delete: (id) => apiRequest(`/careers/${id}`, { method: 'DELETE' })
 };
 
+// 用户管理API（后台）
+const UsersAPI = {
+    getAllAdmin: () => apiRequest('/users/admin/all'),
+    create: (data) => apiRequest('/users', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id, data) => apiRequest(`/users/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id) => apiRequest(`/users/${id}`, { method: 'DELETE' }),
+    changeMyPassword: (data) => apiRequest('/users/me/password', { method: 'PUT', body: JSON.stringify(data) })
+};
+
 // 文件上传API
 const UploadAPI = {
     // 单文件上传
@@ -285,5 +294,6 @@ window.API = {
     Navigation: NavigationAPI,
     HomeFeatures: HomeFeaturesAPI, // 注册新的首页特色模块API
     Careers: CareersAPI, // 招贤纳士职位API
+    Users: UsersAPI, // 用户管理API
     Upload: UploadAPI
 };

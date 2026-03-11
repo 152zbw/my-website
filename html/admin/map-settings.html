@@ -94,8 +94,34 @@
                     <h3 class="content-title">地图设置</h3>
                     <form id="mapForm">
                         <div class="form-group">
-                            <label class="form-label" for="address">公司地址</label>
-                            <input id="address" class="form-input" placeholder="例如：上海市浦东新区张江高科技园区" required>
+                            <label class="form-label" for="province">省份</label>
+                            <select id="province" class="form-input">
+                                <option value="">请选择省份</option>
+                                <option value="北京市">北京市</option>
+                                <option value="上海市">上海市</option>
+                                <option value="广东省">广东省</option>
+                                <option value="浙江省">浙江省</option>
+                                <option value="江苏省">江苏省</option>
+                                <option value="山东省">山东省</option>
+                                <option value="四川省">四川省</option>
+                                <option value="湖北省">湖北省</option>
+                                <option value="重庆市">重庆市</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="city">城市</label>
+                            <input id="city" class="form-input" placeholder="例如：上海市 / 杭州市">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="addressDetail">详细地址</label>
+                            <input id="addressDetail" class="form-input" placeholder="例如：张江高科技园区科苑路88号">
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-secondary" onclick="autoFillLatLng()">根据上面地址自动获取经纬度</button>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="address">完整地址（可自动生成，也可手动修改）</label>
+                            <input id="address" class="form-input" placeholder="例如：上海市浦东新区张江高科技园区科苑路88号" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="lat">纬度</label>
@@ -121,30 +147,265 @@
                 </div>
 
                 <div class="card">
-                    <h3 class="content-title">地图预览（示意）</h3>
-                    <div class="map-placeholder" id="mapPreview">地图预览占位（当前环境禁用外网地图API）</div>
-                    <p style="margin-top:10px;color:#777;font-size:13px;">保存后会持久化配置；正式环境可用对应地图SDK读取经纬度进行渲染。</p>
+                    <h3 class="content-title">地图预览</h3>
+                    <div class="map-placeholder" id="mapPreview">正在加载地图预览...</div>
+                    <p style="margin-top:10px;color:#777;font-size:13px;">
+                        预览使用百度地图 JS API（需要能访问公网）。保存后，前台联系方式/关于我们等页面会按这里的经纬度展示地图。
+                    </p>
                 </div>
             </div>
         </main>
     </div>
 
     <script>
-        const MAP_KEY='map_settings_v2';
-        document.addEventListener('DOMContentLoaded',()=>{
-            const user=localStorage.getItem('adminUser');
-            const token=localStorage.getItem('adminToken');
-            if(!user||!token){window.location.href='index.html';return;}
+        const MAP_KEY = 'map_settings_v2';
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const user = localStorage.getItem('adminUser');
+            const token = localStorage.getItem('adminToken');
+            if (!user || !token) {
+                window.location.href = 'index.html';
+                return;
+            }
             initMenuToggle();
             loadData();
-            document.getElementById('mapForm').addEventListener('submit',onSave);
+            document.getElementById('mapForm').addEventListener('submit', onSave);
+            // 初次加载也尝试画出预览
+            renderPreview();
         });
-        function initMenuToggle(){document.getElementById('menuToggle').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');});}
-        function logout(){if(confirm('确定要退出登录吗？')){localStorage.removeItem('adminUser');localStorage.removeItem('adminToken');window.location.href='index.html';}}
-        function getData(){const d=localStorage.getItem(MAP_KEY);if(!d)return null;try{return JSON.parse(d);}catch(e){return null;}}
-        function loadData(){const data=getData()||{address:'上海市浦东新区张江高科技园区科苑路88号',lat:31.224361,lng:121.537021,zoom:15,desc:'欢迎前来咨询！'};document.getElementById('address').value=data.address||'';document.getElementById('lat').value=data.lat||'';document.getElementById('lng').value=data.lng||'';document.getElementById('zoom').value=data.zoom||15;document.getElementById('desc').value=data.desc||'';}
-        function onSave(e){e.preventDefault();const payload={address:document.getElementById('address').value.trim(),lat:parseFloat(document.getElementById('lat').value||'0'),lng:parseFloat(document.getElementById('lng').value||'0'),zoom:parseInt(document.getElementById('zoom').value||'15',10),desc:document.getElementById('desc').value.trim()};if(!payload.address){showMessage('请输入地址','error');return;}localStorage.setItem(MAP_KEY,JSON.stringify(payload));showMessage('保存成功','success');}
-        function showMessage(text,type){const div=document.createElement('div');div.className=`message ${type}`;div.textContent=text;document.body.appendChild(div);setTimeout(()=>div.remove(),3000);}
+
+        function initMenuToggle() {
+            document.getElementById('menuToggle').addEventListener('click', () => {
+                document.getElementById('sidebar').classList.toggle('open');
+            });
+        }
+
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                localStorage.removeItem('adminUser');
+                localStorage.removeItem('adminToken');
+                window.location.href = 'index.html';
+            }
+        }
+
+        function getData() {
+            const d = localStorage.getItem(MAP_KEY);
+            if (!d) return null;
+            try { return JSON.parse(d); } catch (e) { return null; }
+        }
+
+        function loadData() {
+            const data = getData() || {
+                address: '上海市浦东新区张江高科技园区科苑路88号',
+                lat: 31.224361,
+                lng: 121.537021,
+                zoom: 15,
+                desc: '欢迎前来咨询！',
+                province: '上海市',
+                city: '上海市',
+                addressDetail: '浦东新区张江高科技园区科苑路88号'
+            };
+            document.getElementById('province').value = data.province || '';
+            document.getElementById('city').value = data.city || '';
+            document.getElementById('addressDetail').value = data.addressDetail || data.address || '';
+            document.getElementById('address').value = data.address || '';
+            document.getElementById('lat').value = data.lat || '';
+            document.getElementById('lng').value = data.lng || '';
+            document.getElementById('zoom').value = data.zoom || 15;
+            document.getElementById('desc').value = data.desc || '';
+        }
+
+        function onSave(e) {
+            e.preventDefault();
+            const payload = {
+                province: document.getElementById('province').value.trim(),
+                city: document.getElementById('city').value.trim(),
+                addressDetail: document.getElementById('addressDetail').value.trim(),
+                address: document.getElementById('address').value.trim(),
+                lat: parseFloat(document.getElementById('lat').value || '0'),
+                lng: parseFloat(document.getElementById('lng').value || '0'),
+                zoom: parseInt(document.getElementById('zoom').value || '15', 10),
+                desc: document.getElementById('desc').value.trim()
+            };
+            if (!payload.address) {
+                showMessage('请输入地址', 'error');
+                return;
+            }
+            if (!payload.lat || !payload.lng) {
+                showMessage('请填写有效的经纬度', 'error');
+                return;
+            }
+
+            // 1）保存后台自己的 key（兼容老数据）
+            localStorage.setItem(MAP_KEY, JSON.stringify(payload));
+
+            // 2）同步一份给前台使用的 mapSettings（供 contacts 等页面的地图读取）
+            const frontSettings = {
+                companyAddress: payload.address,
+                latitude: payload.lat,
+                longitude: payload.lng,
+                zoomLevel: payload.zoom,
+                mapWidth: '100%',
+                mapHeight: 500,
+                markerTitle: '我们的公司',
+                markerDescription: payload.desc || '欢迎前来咨询！',
+                mapType: 'roadmap'
+            };
+            localStorage.setItem('mapSettings', JSON.stringify(frontSettings));
+
+            showMessage('保存成功', 'success');
+            renderPreview();
+        }
+
+        function showMessage(text, type) {
+            const div = document.createElement('div');
+            div.className = `message ${type}`;
+            div.textContent = text;
+            document.body.appendChild(div);
+            setTimeout(() => div.remove(), 3000);
+        }
+
+        // 地图预览（使用百度地图 JS API）
+        function renderPreview() {
+            const container = document.getElementById('mapPreview');
+            if (!container) return;
+
+            const data = getData();
+            if (!data || !data.lat || !data.lng) {
+                container.textContent = '请先填写并保存地址和经纬度，然后在这里预览地图。';
+                return;
+            }
+
+            container.innerHTML = '正在加载地图...';
+            container.style.position = 'relative';
+
+            // 如果 BMap 已经存在，直接画
+            if (typeof BMap !== 'undefined') {
+                initPreviewMap(data);
+                return;
+            }
+
+            // 动态加载百度地图脚本（使用公共 demo AK，仅用于示意；正式环境请换成你自己的 AK）
+            const scriptId = 'baidu-map-admin-script';
+            if (document.getElementById(scriptId)) {
+                // 已经在加载或加载完成，稍后再尝试
+                setTimeout(() => initPreviewMap(data), 500);
+                return;
+            }
+
+            const script = document.createElement('script');
+            script.id = scriptId;
+            script.type = 'text/javascript';
+            script.src = 'https://api.map.baidu.com/api?v=3.0&ak=E4805d16520de693a3fe707cdc962045&callback=_noop';
+            script.onerror = function () {
+                container.textContent = '地图脚本加载失败，请检查当前网络是否能访问百度地图。';
+            };
+            document.body.appendChild(script);
+
+            // 等待脚本加载完成后再初始化
+            let retries = 0;
+            (function waitForBMap() {
+                if (typeof BMap !== 'undefined') {
+                    initPreviewMap(data);
+                } else if (retries < 20) {
+                    retries++;
+                    setTimeout(waitForBMap, 300);
+                } else {
+                    container.textContent = '地图初始化超时，请刷新页面重试。';
+                }
+            })();
+        }
+
+        // 根据省 / 市 / 详细地址自动获取经纬度
+        function autoFillLatLng() {
+            const province = document.getElementById('province').value.trim();
+            const city = document.getElementById('city').value.trim();
+            const detail = document.getElementById('addressDetail').value.trim();
+            if (!province && !city && !detail) {
+                showMessage('请先选择省份、填写城市和详细地址', 'error');
+                return;
+            }
+            const fullAddress = [province, city, detail].filter(Boolean).join('');
+            document.getElementById('address').value = fullAddress;
+
+            const doGeocode = () => {
+                try {
+                    const geocoder = new BMap.Geocoder();
+                    geocoder.getPoint(fullAddress, function (point) {
+                        if (!point) {
+                            showMessage('根据地址无法获取经纬度，请检查地址是否正确', 'error');
+                            return;
+                        }
+                        document.getElementById('lng').value = point.lng.toFixed(6);
+                        document.getElementById('lat').value = point.lat.toFixed(6);
+                        showMessage('已根据地址自动填入经纬度', 'success');
+                        renderPreview();
+                    }, city || province || '');
+                } catch (err) {
+                    console.error('地址解析失败:', err);
+                    showMessage('地址解析失败，请稍后重试', 'error');
+                }
+            };
+
+            // 如果 BMap 已经存在，直接解析
+            if (typeof BMap !== 'undefined') {
+                doGeocode();
+                return;
+            }
+
+            // 否则复用地图脚本加载逻辑
+            const scriptId = 'baidu-map-admin-script';
+            if (!document.getElementById(scriptId)) {
+                const script = document.createElement('script');
+                script.id = scriptId;
+                script.type = 'text/javascript';
+                script.src = 'https://api.map.baidu.com/api?v=3.0&ak=E4805d16520de693a3fe707cdc962045&callback=_noop';
+                script.onerror = function () {
+                    showMessage('地图脚本加载失败，无法根据地址获取经纬度', 'error');
+                };
+                document.body.appendChild(script);
+            }
+
+            let retries = 0;
+            (function waitForBMapForGeo() {
+                if (typeof BMap !== 'undefined') {
+                    doGeocode();
+                } else if (retries < 20) {
+                    retries++;
+                    setTimeout(waitForBMapForGeo, 300);
+                } else {
+                    showMessage('地图脚本加载超时，无法根据地址获取经纬度', 'error');
+                }
+            })();
+        }
+
+        function initPreviewMap(data) {
+            const container = document.getElementById('mapPreview');
+            if (!container) return;
+
+            container.innerHTML = '';
+            container.style.borderStyle = 'solid';
+            container.style.background = '#fff';
+
+            const map = new BMap.Map(container);
+            const point = new BMap.Point(data.lng, data.lat);
+            map.centerAndZoom(point, data.zoom || 15);
+            map.enableScrollWheelZoom(true);
+            map.addControl(new BMap.NavigationControl());
+
+            const marker = new BMap.Marker(point);
+            map.addOverlay(marker);
+
+            const infoWindow = new BMap.InfoWindow(
+                `<div style="padding: 6px 10px;">
+                    <strong>${data.address || '我们的公司'}</strong><br>
+                    <span>${data.desc || '欢迎前来咨询！'}</span>
+                 </div>`
+            );
+            marker.addEventListener('click', function () {
+                map.openInfoWindow(infoWindow, point);
+            });
+        }
     </script>
 </body>
 </html>

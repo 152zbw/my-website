@@ -557,25 +557,21 @@
         </div>
     </div>
 
+    <script src="../js/api.js"></script>
     <script>
-        // 全局变量
         let currentEditId = null;
         let currentDeleteId = null;
         let confirmActionCallback = null;
 
-        // 页面加载时检查登录状态
-        document.addEventListener('DOMContentLoaded', function () {
-            const user = localStorage.getItem('adminUser');
-            if (!user) {
-                // 未登录，跳转到登录页
+        document.addEventListener('DOMContentLoaded', async function () {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
                 window.location.href = 'index.html';
+                return;
             }
-
-            // 加载用户数据
-            loadUsers();
+            await loadUsers();
         });
 
-        // 显示确认模态框
         function showConfirmModal(title, message, callback) {
             document.getElementById('confirmTitle').textContent = title;
             document.getElementById('confirmMessage').textContent = message;
@@ -583,72 +579,43 @@
             document.getElementById('confirmModal').style.display = 'block';
         }
 
-        // 确认操作
         function confirmAction() {
-            if (confirmActionCallback) {
-                confirmActionCallback();
-            }
+            if (confirmActionCallback) confirmActionCallback();
             closeConfirmModal();
         }
 
-        // 退出登录功能
         function logout() {
             showConfirmModal('确认退出', '确定要退出登录吗？', function () {
                 localStorage.removeItem('adminUser');
+                localStorage.removeItem('adminToken');
                 window.location.href = 'index.html';
             });
         }
 
-        // 加载用户数据
-        function loadUsers() {
-            const users = localStorage.getItem('users');
+        async function loadUsers() {
             const usersTableBody = document.getElementById('usersTableBody');
-
-            if (users) {
-                const usersList = JSON.parse(users);
-
-                usersTableBody.innerHTML = usersList.map(user => `
+            usersTableBody.innerHTML = '<tr><td colspan="8">加载中...</td></tr>';
+            try {
+                const users = await window.API.Users.getAllAdmin();
+                usersTableBody.innerHTML = (users || []).map(u => `
                     <tr>
-                        <td>${user.id}</td>
-                        <td>${user.username}</td>
-                        <td>${user.realName}</td>
-                        <td>${user.email}</td>
-                        <td>${user.role === 'admin' ? '管理员' : '编辑'}</td>
-                        <td>${user.status === 'active' ? '<span style="color: #27ae60;">激活</span>' : '<span style="color: #e74c3c;">禁用</span>'}</td>
+                        <td>${u.id}</td>
+                        <td>${u.username || ''}</td>
+                        <td>${u.name || ''}</td>
+                        <td>${u.email || ''}</td>
+                        <td>${u.role === 'admin' ? '管理员' : (u.role || '')}</td>
+                        <td>${u.isActive ? '<span style="color:#27ae60;">激活</span>' : '<span style="color:#e74c3c;">禁用</span>'}</td>
                         <td>
-                            <button class="btn btn-primary btn-sm" onclick="openEditModal(${user.id})">编辑</button>
-                            <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${user.id})">删除</button>
+                            <button class="btn btn-primary btn-sm" onclick="openEditModal(${u.id})">编辑</button>
+                            <button class="btn btn-danger btn-sm" onclick="openDeleteModal(${u.id})">删除</button>
                         </td>
                     </tr>
-                `).join('');
-            } else {
-                // 初始化示例数据
-                const initialUsers = [
-                    {
-                        id: 1,
-                        username: 'admin',
-                        realName: '管理员',
-                        email: 'admin@example.com',
-                        password: 'admin123', // 实际应用中应该使用加密密码
-                        role: 'admin',
-                        status: 'active'
-                    },
-                    {
-                        id: 2,
-                        username: 'editor',
-                        realName: '编辑',
-                        email: 'editor@example.com',
-                        password: 'editor123',
-                        role: 'editor',
-                        status: 'active'
-                    }
-                ];
-                localStorage.setItem('users', JSON.stringify(initialUsers));
-                loadUsers();
+                `).join('') || '<tr><td colspan="8">暂无用户</td></tr>';
+            } catch (err) {
+                usersTableBody.innerHTML = `<tr><td colspan="8" style="color:red;">加载失败：${err.message || ''}</td></tr>`;
             }
         }
 
-        // 打开添加模态框
         function openAddModal() {
             currentEditId = null;
             document.getElementById('modalTitle').textContent = '添加用户';
@@ -657,127 +624,101 @@
             document.getElementById('userModal').style.display = 'block';
         }
 
-        // 打开编辑模态框
-        function openEditModal(id) {
+        async function openEditModal(id) {
             currentEditId = id;
-            const users = JSON.parse(localStorage.getItem('users') || '[]');
-            const user = users.find(u => u.id === id);
+            try {
+                const users = await window.API.Users.getAllAdmin();
+                const user = (users || []).find(u => u.id === id);
+                if (!user) return;
 
-            if (user) {
                 document.getElementById('modalTitle').textContent = '编辑用户';
                 document.getElementById('userId').value = user.id;
-                document.getElementById('username').value = user.username;
-                document.getElementById('realName').value = user.realName;
-                document.getElementById('email').value = user.email;
+                document.getElementById('username').value = user.username || '';
+                document.getElementById('realName').value = user.name || '';
+                document.getElementById('email').value = user.email || '';
                 document.getElementById('password').value = '';
                 document.getElementById('password').required = false;
-                document.getElementById('role').value = user.role;
-                document.getElementById('status').value = user.status;
+                document.getElementById('role').value = user.role || 'admin';
+                document.getElementById('status').value = user.isActive ? 'active' : 'inactive';
                 document.getElementById('userModal').style.display = 'block';
+            } catch (err) {
+                showMessage('加载用户失败：' + (err.message || ''), 'error');
             }
         }
 
-        // 关闭模态框
         function closeModal() {
             document.getElementById('userModal').style.display = 'none';
             currentEditId = null;
         }
 
-        // 打开删除确认模态框
         function openDeleteModal(id) {
             currentDeleteId = id;
             showConfirmModal('确认删除', '确定要删除这个用户吗？', confirmDelete);
         }
 
-        // 关闭删除确认模态框
         function closeConfirmModal() {
             document.getElementById('confirmModal').style.display = 'none';
             currentDeleteId = null;
             confirmActionCallback = null;
         }
 
-        // 确认删除
-        function confirmDelete() {
-            if (currentDeleteId) {
-                let users = JSON.parse(localStorage.getItem('users') || '[]');
-                users = users.filter(user => user.id !== currentDeleteId);
-                localStorage.setItem('users', JSON.stringify(users));
-                loadUsers();
+        async function confirmDelete() {
+            if (!currentDeleteId) return;
+            try {
+                await window.API.Users.delete(currentDeleteId);
                 showMessage('用户删除成功', 'success');
+                await loadUsers();
+            } catch (err) {
+                showMessage('删除失败：' + (err.message || ''), 'error');
             }
         }
 
-        // 表单提交处理
-        document.getElementById('userForm').addEventListener('submit', function (e) {
+        document.getElementById('userForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
-            const formData = {
-                id: parseInt(document.getElementById('userId').value) || Date.now(),
-                username: document.getElementById('username').value,
-                realName: document.getElementById('realName').value,
-                email: document.getElementById('email').value,
+            const id = document.getElementById('userId').value;
+            const payload = {
+                username: document.getElementById('username').value.trim(),
+                name: document.getElementById('realName').value.trim(),
+                email: document.getElementById('email').value.trim(),
                 role: document.getElementById('role').value,
-                status: document.getElementById('status').value
+                isActive: document.getElementById('status').value === 'active' ? 1 : 0
             };
-
-            // 只有在填写了密码时才更新密码
             const password = document.getElementById('password').value;
-            if (password) {
-                formData.password = password; // 实际应用中应该使用加密密码
-            }
+            if (password) payload.password = password;
 
-            let users = JSON.parse(localStorage.getItem('users') || '[]');
-
-            if (currentEditId) {
-                // 编辑现有用户
-                const index = users.findIndex(user => user.id === currentEditId);
-                if (index !== -1) {
-                    // 如果没有填写密码，保留原密码
-                    if (!password) {
-                        formData.password = users[index].password;
-                    }
-                    users[index] = formData;
+            try {
+                if (currentEditId) {
+                    await window.API.Users.update(currentEditId, payload);
                     showMessage('用户更新成功', 'success');
+                } else {
+                    if (!payload.password) {
+                        showMessage('请填写密码', 'error');
+                        return;
+                    }
+                    await window.API.Users.create(payload);
+                    showMessage('用户添加成功', 'success');
                 }
-            } else {
-                // 添加新用户
-                users.push(formData);
-                showMessage('用户添加成功', 'success');
+                closeModal();
+                await loadUsers();
+            } catch (err) {
+                showMessage('保存失败：' + (err.message || ''), 'error');
             }
-
-            // 保存到localStorage
-            localStorage.setItem('users', JSON.stringify(users));
-
-            // 刷新表格
-            loadUsers();
-
-            // 关闭模态框
-            closeModal();
         });
 
-        // 显示消息提示
         function showMessage(text, type) {
             const messageDiv = document.createElement('div');
             messageDiv.className = `message ${type}`;
             messageDiv.textContent = text;
-
             document.body.appendChild(messageDiv);
-
-            // 3秒后移除
-            setTimeout(() => {
-                messageDiv.remove();
-            }, 3000);
+            setTimeout(() => messageDiv.remove(), 3000);
         }
 
-        // 点击模态框外部关闭
         window.onclick = function (event) {
             const modal = document.getElementById('userModal');
             const confirmModal = document.getElementById('confirmModal');
-            if (event.target === modal) {
-                closeModal();
-            } else if (event.target === confirmModal) {
-                closeConfirmModal();
-            }
+            if (event.target === modal) closeModal();
+            if (event.target === confirmModal) closeConfirmModal();
         }
     </script>
 </body>

@@ -4,6 +4,10 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const routes = require('./routes');
 const sequelize = require('./config/db');
+const Service = require('./models/Service');
+const Project = require('./models/Project');
+const News = require('./models/News');
+const Career = require('./models/Career');
 require('dotenv').config();
 
 // 创建Express应用
@@ -32,6 +36,102 @@ app.get('/health', (req, res) => {
 // 前端页面路由
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'html', 'index.html'));
+});
+
+function xmlEscape(value) {
+    return String(value)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&apos;');
+}
+
+function resolveBaseUrl(req) {
+    const envUrl = process.env.PUBLIC_BASE_URL || process.env.SITE_URL;
+    if (envUrl) return envUrl.replace(/\/+$/, '');
+
+    const proto = (req.headers['x-forwarded-proto'] || req.protocol || 'http').split(',')[0].trim();
+    const host = req.headers['x-forwarded-host'] || req.headers.host;
+    return `${proto}://${host}`.replace(/\/+$/, '');
+}
+
+// robots.txt（指向 sitemap.xml）
+app.get('/robots.txt', (req, res) => {
+    const baseUrl = resolveBaseUrl(req);
+    res.type('text/plain; charset=utf-8').send(
+        [
+            'User-agent: *',
+            'Allow: /',
+            `Sitemap: ${baseUrl}/sitemap.xml`,
+            ''
+        ].join('\n')
+    );
+});
+
+// sitemap.xml（网站地图）
+app.get('/sitemap.xml', async (req, res) => {
+    try {
+        const baseUrl = resolveBaseUrl(req);
+        const now = new Date().toISOString();
+
+        const staticPaths = [
+            '/', // 首页
+            '/services.html',
+            '/projects.html',
+            '/news.html',
+            '/about.html',
+            '/about-company.html',
+            '/about-me.html',
+            '/careers.html',
+            '/contacts.html',
+            '/sidebar-blog.html'
+        ];
+
+        const [services, projects, news, careers] = await Promise.all([
+            Service.findAll({ where: { isActive: 1 }, attributes: ['id', 'updatedAt'], order: [['id', 'ASC']] }),
+            Project.findAll({ where: { isActive: 1 }, attributes: ['id', 'updatedAt'], order: [['id', 'ASC']] }),
+            News.findAll({ where: { isActive: 1 }, attributes: ['id', 'updatedAt'], order: [['id', 'ASC']] }),
+            Career.findAll({ where: { isActive: 1 }, attributes: ['id', 'updatedAt'], order: [['id', 'ASC']] })
+        ]);
+
+        const urls = [];
+
+        for (const p of staticPaths) {
+            urls.push({ loc: `${baseUrl}${p}`, lastmod: now, changefreq: 'weekly', priority: p === '/' ? '1.0' : '0.7' });
+        }
+
+        for (const s of services) urls.push({ loc: `${baseUrl}/single-service.html?id=${s.id}`, lastmod: new Date(s.updatedAt).toISOString(), changefreq: 'monthly', priority: '0.6' });
+        for (const p of projects) urls.push({ loc: `${baseUrl}/single-project.html?id=${p.id}`, lastmod: new Date(p.updatedAt).toISOString(), changefreq: 'monthly', priority: '0.6' });
+        for (const n of news) urls.push({ loc: `${baseUrl}/single-blog-post.html?id=${n.id}`, lastmod: new Date(n.updatedAt).toISOString(), changefreq: 'monthly', priority: '0.5' });
+        // careers 目前是列表页展示，这里只保证列表页被收录；如果后续有职位详情页，再补充
+        if (careers.length > 0) {
+            // 让列表页更“新”，利于收录更新
+            const newest = careers.reduce((acc, cur) => (cur.updatedAt > acc ? cur.updatedAt : acc), careers[0].updatedAt);
+            const idx = urls.findIndex(u => u.loc === `${baseUrl}/careers.html`);
+            if (idx >= 0) urls[idx].lastmod = new Date(newest).toISOString();
+        }
+
+        const xml = [
+            '<?xml version="1.0" encoding="UTF-8"?>',
+            '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">',
+            ...urls.map(u => [
+                '  <url>',
+                `    <loc>${xmlEscape(u.loc)}</loc>`,
+                `    <lastmod>${xmlEscape(u.lastmod)}</lastmod>`,
+                `    <changefreq>${xmlEscape(u.changefreq)}</changefreq>`,
+                `    <priority>${xmlEscape(u.priority)}</priority>`,
+                '  </url>'
+            ].join('\n')),
+            '</urlset>',
+            ''
+        ].join('\n');
+
+        res.type('application/xml; charset=utf-8').send(xml);
+    } catch (err) {
+        console.error('生成 sitemap.xml 失败:', err);
+        res.status(500).json({ message: '生成网站地图失败' });
+    }
 });
 
 // 404处理
