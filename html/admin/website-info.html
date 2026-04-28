@@ -529,6 +529,19 @@
                         <h4>首页文案与统计配置</h4>
 
                         <div class="form-group">
+                            <label for="heroRightImage" class="form-label">首页右侧图片</label>
+                            <div class="file-upload-group">
+                                <input type="text" id="heroRightImage" name="heroRightImage" class="form-input"
+                                    placeholder="例如：images/screens-3-960x752.png 或 /uploads/xxx.png">
+                                <label for="heroRightImageFile" class="upload-label">选择文件</label>
+                                <input type="file" id="heroRightImageFile" accept="image/*" style="display:none;">
+                            </div>
+                            <div class="image-preview" id="heroRightImagePreview" style="display:none; margin-top:10px;">
+                                <img id="heroRightImagePreviewImg" src="" alt="预览">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label for="heroTitle" class="form-label">首页主标题（左侧大字）</label>
                             <input type="text" id="heroTitle" name="heroTitle" class="form-input">
                         </div>
@@ -608,6 +621,9 @@
             });
             document.getElementById('favicon').addEventListener('input', function () {
                 updateImagePreview(this.value, 'faviconPreview', 'faviconPreviewImg');
+            });
+            document.getElementById('heroRightImage').addEventListener('input', function () {
+                updateImagePreview(this.value, 'heroRightImagePreview', 'heroRightImagePreviewImg');
             });
         });
 
@@ -713,6 +729,8 @@
                         updateImagePreview(result.file.path, 'logoPreview', 'logoPreviewImg');
                     } else if (fieldName === 'favicon') {
                         updateImagePreview(result.file.path, 'faviconPreview', 'faviconPreviewImg');
+                    } else if (fieldName === 'heroRightImage') {
+                        updateImagePreview(result.file.path, 'heroRightImagePreview', 'heroRightImagePreviewImg');
                     }
 
                     showMessage('上传成功！图片路径已自动填入', 'success');
@@ -763,6 +781,7 @@
                 document.getElementById('address').value = data.address || '';
                 document.getElementById('logo').value = data.logo || '';
                 document.getElementById('favicon').value = data.favicon || '';
+                document.getElementById('heroRightImage').value = data.heroRightImage || '';
 
                 document.getElementById('heroTitle').value = data.heroTitle || '';
                 document.getElementById('heroSubtitle').value = data.heroSubtitle || '';
@@ -786,6 +805,9 @@
                 if (data.favicon) {
                     updateImagePreview(data.favicon, 'faviconPreview', 'faviconPreviewImg');
                 }
+                if (data.heroRightImage) {
+                    updateImagePreview(data.heroRightImage, 'heroRightImagePreview', 'heroRightImagePreviewImg');
+                }
             } catch (err) {
                 console.error('加载网站信息失败:', err);
                 showMessage('从服务器加载网站信息失败', 'error');
@@ -804,6 +826,7 @@
                 address: document.getElementById('address').value.trim(),
                 logo: document.getElementById('logo').value.trim(),
                 favicon: document.getElementById('favicon').value.trim(),
+                heroRightImage: document.getElementById('heroRightImage').value.trim(),
                 heroTitle: document.getElementById('heroTitle').value.trim(),
                 heroSubtitle: document.getElementById('heroSubtitle').value.trim(),
                 heroDescription: heroDescriptionQuill.root.innerHTML.trim(), // 从Quill获取内容

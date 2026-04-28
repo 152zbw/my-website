@@ -261,7 +261,7 @@
     <section class="section section-halfscreen bg-image" id="heroSection" style="background-color: #d9eef9; background-image: none !important;">
       <div class="section-halfscreen-inner">
         <div class="container">
-          <div class="row">
+          <div class="row align-items-center">
             <div class="col-md-6 col-lg-5">
               <div class="section-halfscreen-content">
                 <div class="wow-outer heading-3">
@@ -273,6 +273,9 @@
                   <p class="custom-article wow fadeInDown" data-wow-delay=".2s" id="heroDescription">我们公司提供各类专业咨询和规划服务，帮助全球中小企业实现可持续发展。</p>
                 </div><a class="button button-primary button-winona wow FadeIn" id="heroButton" href="contacts.html">了解更多</a>
               </div>
+            </div>
+            <div class="col-md-6 col-lg-7 d-flex justify-content-center justify-content-md-end mt-5 mt-md-0">
+              <div id="heroRightImage" class="wow fadeInRight" aria-hidden="true" style="width: 100%; min-height: 420px; border-radius: 18px; background-color: #eef5ff; background-image: none; background-size: cover; background-position: center center; background-repeat: no-repeat; box-shadow: 0 14px 40px rgba(53, 72, 121, 0.12);"></div>
             </div>
           </div>
         </div>
@@ -834,12 +837,14 @@
           }
           // 不再使用首页头图图片，始终保持空白蓝底
           const heroSection = document.getElementById('heroSection');
-          const heroImage = document.getElementById('heroImage');
+          const heroRightImage = document.getElementById('heroRightImage');
           if (heroSection) {
             heroSection.style.backgroundImage = 'none';
           }
-          if (heroImage) {
-            heroImage.style.backgroundImage = 'none';
+          if (heroRightImage && info.heroRightImage) {
+            heroRightImage.style.backgroundImage = `url(${info.heroRightImage})`;
+          } else if (heroRightImage) {
+            heroRightImage.style.backgroundImage = 'none';
           }
           // 更新首页文案
           const heroTitle = document.getElementById('heroTitle');

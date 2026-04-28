@@ -41,6 +41,11 @@ const WebsiteInfo = sequelize.define('WebsiteInfo', {
         comment: 'favicon路径'
     },
     // 首页视觉与统计配置
+    heroRightImage: {
+        type: DataTypes.STRING(255),
+        field: 'hero_right_image',
+        comment: '首页右侧图片'
+    },
     heroTitle: {
         type: DataTypes.STRING(255),
         field: 'hero_title',
