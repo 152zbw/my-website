@@ -526,20 +526,7 @@
                             </div>
                         </div>
 
-                        <h4>首页头图与统计配置</h4>
-
-                        <div class="form-group">
-                            <label for="heroBackground" class="form-label">首页头图背景图片</label>
-                            <div class="file-upload-group">
-                                <input type="text" id="heroBackground" name="heroBackground" class="form-input"
-                                    placeholder="例如：images/screens-3-960x752.png 或 /uploads/xxx.png">
-                                <label for="heroBackgroundFile" class="upload-label">选择文件</label>
-                                <input type="file" id="heroBackgroundFile" accept="image/*" style="display:none;">
-                            </div>
-                            <div class="image-preview" id="heroPreview" style="display:none; margin-top:10px;">
-                                <img id="heroPreviewImg" src="" alt="预览">
-                            </div>
-                        </div>
+                        <h4>首页文案与统计配置</h4>
 
                         <div class="form-group">
                             <label for="heroTitle" class="form-label">首页主标题（左侧大字）</label>
@@ -616,10 +603,6 @@
             loadWebsiteInfo();
             initFileUploads();
 
-            // 让首页头图默认更快生效，减少首屏闪烁
-            document.getElementById('heroBackground').addEventListener('input', function () {
-                updateImagePreview(this.value, 'heroPreview', 'heroPreviewImg');
-            });
             document.getElementById('logo').addEventListener('input', function () {
                 updateImagePreview(this.value, 'logoPreview', 'logoPreviewImg');
             });
@@ -703,18 +686,6 @@
                 }
             });
 
-            // Hero背景上传
-            const heroFile = document.getElementById('heroBackgroundFile');
-            const heroLabel = heroFile.previousElementSibling;
-            heroLabel.addEventListener('click', (e) => {
-                e.preventDefault();
-                heroFile.click();
-            });
-            heroFile.addEventListener('change', async function() {
-                if (this.files && this.files[0]) {
-                    await uploadFile(this.files[0], 'heroBackground');
-                }
-            });
         }
 
         async function uploadFile(file, fieldName) {
@@ -742,10 +713,8 @@
                         updateImagePreview(result.file.path, 'logoPreview', 'logoPreviewImg');
                     } else if (fieldName === 'favicon') {
                         updateImagePreview(result.file.path, 'faviconPreview', 'faviconPreviewImg');
-                    } else if (fieldName === 'heroBackground') {
-                        updateImagePreview(result.file.path, 'heroPreview', 'heroPreviewImg');
                     }
-                    
+
                     showMessage('上传成功！图片路径已自动填入', 'success');
                 } else {
                     showMessage('上传失败：服务器返回格式错误', 'error');
@@ -795,7 +764,6 @@
                 document.getElementById('logo').value = data.logo || '';
                 document.getElementById('favicon').value = data.favicon || '';
 
-                document.getElementById('heroBackground').value = data.heroBackground || '';
                 document.getElementById('heroTitle').value = data.heroTitle || '';
                 document.getElementById('heroSubtitle').value = data.heroSubtitle || '';
                 // heroDescriptionQuill.setContents([]);
@@ -818,9 +786,6 @@
                 if (data.favicon) {
                     updateImagePreview(data.favicon, 'faviconPreview', 'faviconPreviewImg');
                 }
-                if (data.heroBackground) {
-                    updateImagePreview(data.heroBackground, 'heroPreview', 'heroPreviewImg');
-                }
             } catch (err) {
                 console.error('加载网站信息失败:', err);
                 showMessage('从服务器加载网站信息失败', 'error');
@@ -839,7 +804,6 @@
                 address: document.getElementById('address').value.trim(),
                 logo: document.getElementById('logo').value.trim(),
                 favicon: document.getElementById('favicon').value.trim(),
-                heroBackground: document.getElementById('heroBackground').value.trim(),
                 heroTitle: document.getElementById('heroTitle').value.trim(),
                 heroSubtitle: document.getElementById('heroSubtitle').value.trim(),
                 heroDescription: heroDescriptionQuill.root.innerHTML.trim(), // 从Quill获取内容

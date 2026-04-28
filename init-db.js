@@ -54,7 +54,6 @@ async function initDatabase() {
                 address: '北京市朝阳区建国路88号',
                 logo: 'images/ce-logo.png',
                 favicon: 'images/favicon.ico',
-                heroBackground: 'images/screens-3-960x752.png',
                 heroTitle: '专业咨询',
                 heroSubtitle: '战略规划',
                 heroDescription: '我们公司提供各类专业咨询和规划服务，帮助全球中小企业实现可持续发展。',

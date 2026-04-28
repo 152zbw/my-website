@@ -41,11 +41,6 @@ const WebsiteInfo = sequelize.define('WebsiteInfo', {
         comment: 'favicon路径'
     },
     // 首页视觉与统计配置
-    heroBackground: {
-        type: DataTypes.STRING(255),
-        field: 'hero_background',
-        comment: '首页头图背景（如 screens-3）'
-    },
     heroTitle: {
         type: DataTypes.STRING(255),
         field: 'hero_title',
