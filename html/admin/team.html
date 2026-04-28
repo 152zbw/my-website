@@ -377,7 +377,7 @@
                 <td>${i.id}</td>
                 <td>${i.name||''}</td>
                 <td>${i.position||''}</td>
-                        <td>${i.image?`<img src="${i.image}" class="avatar-img" alt="${i.name}">`:'-'}</td>
+                        <td>-</td>
                         <td>${i.sortOrder||0}</td>
                 <td>${i.isActive?'激活':'禁用'}</td>
                 <td>
@@ -406,13 +406,12 @@
             const id = document.getElementById('memberId').value;
             const name = document.getElementById('memberName').value.trim();
             const position = document.getElementById('memberPosition').value.trim();
-            const image = document.getElementById('memberAvatar').value.trim();
             const sortOrder = parseInt(document.getElementById('memberSort').value||'0',10);
             const isActive = document.querySelector('input[name="memberStatus"]:checked').value==='1' ? 1 : 0;
             const bio = memberBioQuill.root.innerHTML.trim(); // 从Quill编辑器获取内容
             if(!name||!position){showMessage('请填写姓名和职位','error');return;}
             try {
-                const payload = { name, position, image, bio, sortOrder, isActive };
+                const payload = { name, position, image: '', bio, sortOrder, isActive };
                 if(id){
                     await window.API.Team.update(id, payload);
                     showMessage('更新成功','success');
@@ -445,8 +444,8 @@
                 document.getElementById('memberId').value=item.id;
                 document.getElementById('memberName').value=item.name||'';
                 document.getElementById('memberPosition').value=item.position||'';
-                document.getElementById('memberAvatar').value=item.image||'';
-                updateImagePreview(item.image || ''); // Update image preview
+                document.getElementById('memberAvatar').value='';
+                updateImagePreview(''); // 不再使用头像预览
                 document.getElementById('memberSort').value=item.sortOrder||0;
                 // document.getElementById('memberBio').value=item.bio||''; // 旧textarea
                 memberBioQuill.root.innerHTML = item.bio||''; // 设置Quill编辑器内容

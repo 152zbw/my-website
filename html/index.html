@@ -833,18 +833,14 @@
               link.setAttribute('href', `tel:${info.phone}`);
             });
           }
-          // 更新首页头图背景：只使用后台上传的图片；没有配置时保持纯蓝底，不显示任何默认图
+          // 不再使用首页头图图片，始终保持空白蓝底
           const heroSection = document.getElementById('heroSection');
           const heroImage = document.getElementById('heroImage');
           if (heroSection) {
             heroSection.style.backgroundImage = 'none';
           }
           if (heroImage) {
-            if (info.heroBackground) {
-              heroImage.style.backgroundImage = `url(${info.heroBackground})`;
-            } else {
-              heroImage.style.backgroundImage = 'none';
-            }
+            heroImage.style.backgroundImage = 'none';
           }
           // 更新首页文案
           const heroTitle = document.getElementById('heroTitle');
