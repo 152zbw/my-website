@@ -81,6 +81,17 @@
       background-repeat: no-repeat;
       background-size: cover;
     }
+
+    /* 手机端直接隐藏右侧人物图，保证只显示蓝底 */
+    @media (max-width: 767.98px) {
+      #heroImage {
+        display: none !important;
+      }
+
+      #heroSection {
+        background-color: #d9eef9 !important;
+      }
+    }
   </style>
   <!--[if lt IE 10]>
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
