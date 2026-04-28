@@ -72,9 +72,10 @@
       opacity: 0 !important;
     }
 
-    /* 首页首屏头图默认显示蓝色底图，避免首次加载闪白/闪旧图 */
+    /* 首页首屏头图：默认不显示图片，避免出现不想要的默认人物图 */
     #heroImage {
-      background-color: #d9eef9;
+      background-color: #ffffff;
+      background-image: none !important;
       background-position: center center;
       background-repeat: no-repeat;
       background-size: cover;
