@@ -702,6 +702,19 @@
                 }
             });
 
+            // 首页右侧图片上传
+            const heroRightImageFile = document.getElementById('heroRightImageFile');
+            const heroRightImageLabel = heroRightImageFile.previousElementSibling;
+            heroRightImageLabel.addEventListener('click', (e) => {
+                e.preventDefault();
+                heroRightImageFile.click();
+            });
+            heroRightImageFile.addEventListener('change', async function() {
+                if (this.files && this.files[0]) {
+                    await uploadFile(this.files[0], 'heroRightImage');
+                }
+            });
+
         }
 
         async function uploadFile(file, fieldName) {
