@@ -74,11 +74,17 @@
 
     /* 首页首屏头图：默认不显示图片，避免出现不想要的默认人物图 */
     #heroImage {
-      background-color: #ffffff;
+      background-color: #d9eef9;
       background-image: none !important;
       background-position: center center;
       background-repeat: no-repeat;
       background-size: cover;
+    }
+
+    /* 首屏容器也直接使用蓝色底，避免右侧人物图闪现 */
+    #heroSection {
+      background-color: #d9eef9 !important;
+      background-image: none !important;
     }
   </style>
   <!--[if lt IE 10]>
@@ -252,7 +258,7 @@
       </div>
     </header>
     <!-- FScreen-->
-    <section class="section section-halfscreen bg-image" id="heroSection" style="background-color: #ffffff; background-image: none;">
+    <section class="section section-halfscreen bg-image" id="heroSection">
       <div class="section-halfscreen-inner">
         <div class="section-halfscreen-image wow fadeIn" id="heroImage">
         </div>
@@ -831,8 +837,12 @@
           // 更新首页头图背景：优先使用后台配置；没有配置时保留默认蓝色图
           const heroSection = document.getElementById('heroSection');
           const heroImage = document.getElementById('heroImage');
-          if (heroImage && info.heroBackground) {
-            heroImage.style.backgroundImage = `url(${info.heroBackground})`;
+          if (heroImage) {
+            if (info.heroBackground) {
+              heroImage.style.backgroundImage = `url(${info.heroBackground})`;
+            } else {
+              heroImage.style.backgroundImage = 'none';
+            }
           }
           // 更新首页文案
           const heroTitle = document.getElementById('heroTitle');
