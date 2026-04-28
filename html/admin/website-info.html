@@ -616,7 +616,7 @@
             loadWebsiteInfo();
             initFileUploads();
 
-            // 图片预览
+            // 让首页头图默认更快生效，减少首屏闪烁
             document.getElementById('heroBackground').addEventListener('input', function () {
                 updateImagePreview(this.value, 'heroPreview', 'heroPreviewImg');
             });

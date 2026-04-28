@@ -71,6 +71,14 @@
       visibility: hidden !important;
       opacity: 0 !important;
     }
+
+    /* 首页首屏头图默认显示蓝色底图，避免首次加载闪白/闪旧图 */
+    #heroImage {
+      background-color: #d9eef9;
+      background-position: center center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
   </style>
   <!--[if lt IE 10]>
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
@@ -245,7 +253,7 @@
     <!-- FScreen-->
     <section class="section section-halfscreen bg-image" id="heroSection" style="background-image: url(images/header-bg.jpg);">
       <div class="section-halfscreen-inner">
-        <div class="section-halfscreen-image wow fadeIn" id="heroImage" style="background-image: url(images/screens-1-960x752.jpg);">
+        <div class="section-halfscreen-image wow fadeIn" id="heroImage" style="background-image: url(images/screens-3-960x752.png);">
         </div>
         <div class="container">
           <div class="row">
@@ -819,13 +827,11 @@
               link.setAttribute('href', `tel:${info.phone}`);
             });
           }
-          // 更新首页头图背景
+          // 更新首页头图背景：优先使用后台配置；没有配置时保留默认蓝色图
           const heroSection = document.getElementById('heroSection');
           const heroImage = document.getElementById('heroImage');
-          if (info.heroBackground) {
-            if (heroImage) {
-              heroImage.style.backgroundImage = `url(${info.heroBackground})`;
-            }
+          if (heroImage && info.heroBackground) {
+            heroImage.style.backgroundImage = `url(${info.heroBackground})`;
           }
           // 更新首页文案
           const heroTitle = document.getElementById('heroTitle');
