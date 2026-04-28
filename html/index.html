@@ -72,19 +72,14 @@
       opacity: 0 !important;
     }
 
-    /* 首页首屏头图：默认不显示图片，避免出现不想要的默认人物图 */
+    /* 首页首屏默认不使用任何人物图或内置背景图，完全交给后台配置 */
+    #heroSection,
     #heroImage {
       background-color: #d9eef9;
       background-image: none !important;
       background-position: center center;
       background-repeat: no-repeat;
       background-size: cover;
-    }
-
-    /* 首屏容器也直接使用蓝色底，避免右侧人物图闪现 */
-    #heroSection {
-      background-color: #d9eef9 !important;
-      background-image: none !important;
     }
   </style>
   <!--[if lt IE 10]>
@@ -834,9 +829,12 @@
               link.setAttribute('href', `tel:${info.phone}`);
             });
           }
-          // 更新首页头图背景：优先使用后台配置；没有配置时保留默认蓝色图
+          // 更新首页头图背景：只使用后台上传的图片；没有配置时保持纯蓝底，不显示任何默认图
           const heroSection = document.getElementById('heroSection');
           const heroImage = document.getElementById('heroImage');
+          if (heroSection) {
+            heroSection.style.backgroundImage = 'none';
+          }
           if (heroImage) {
             if (info.heroBackground) {
               heroImage.style.backgroundImage = `url(${info.heroBackground})`;
