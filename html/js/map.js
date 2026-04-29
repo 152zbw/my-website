@@ -54,7 +54,7 @@ function loadMap() {
 
   if (typeof BMap === 'undefined') {
     const script = document.createElement('script');
-    script.src = `https://api.map.baidu.com/api?v=3.0&ak=E4805d16520de693a3fe707cdc962045&callback=initBaiduMap`;
+    script.src = `https://api.map.baidu.com/api?v=3.0&ak=5lxkJXs0kXPRL62ZyImrIVfubkrjICwa&callback=initBaiduMap`;
     script.type = 'text/javascript';
     script.async = true;
     script.onerror = function () {
