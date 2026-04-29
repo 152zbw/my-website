@@ -46,6 +46,47 @@ const WebsiteInfo = sequelize.define('WebsiteInfo', {
         field: 'hero_right_image',
         comment: '首页右侧图片'
     },
+    mapProvince: {
+        type: DataTypes.STRING(100),
+        field: 'map_province',
+        comment: '地图省份'
+    },
+    mapCity: {
+        type: DataTypes.STRING(100),
+        field: 'map_city',
+        comment: '地图城市'
+    },
+    mapAddressDetail: {
+        type: DataTypes.STRING(255),
+        field: 'map_address_detail',
+        comment: '地图详细地址'
+    },
+    mapAddress: {
+        type: DataTypes.STRING(255),
+        field: 'map_address',
+        comment: '地图完整地址'
+    },
+    mapLat: {
+        type: DataTypes.DECIMAL(10, 6),
+        field: 'map_lat',
+        comment: '地图纬度'
+    },
+    mapLng: {
+        type: DataTypes.DECIMAL(10, 6),
+        field: 'map_lng',
+        comment: '地图经度'
+    },
+    mapZoom: {
+        type: DataTypes.INTEGER,
+        field: 'map_zoom',
+        defaultValue: 15,
+        comment: '地图缩放级别'
+    },
+    mapDesc: {
+        type: DataTypes.TEXT,
+        field: 'map_desc',
+        comment: '地图标记描述'
+    },
     heroTitle: {
         type: DataTypes.STRING(255),
         field: 'hero_title',

@@ -158,7 +158,7 @@
     </div>
 
     <script>
-        const MAP_KEY = 'map_settings_v2';
+        const MAP_API_KEY = '5lxkJXs0kXPRL62ZyImrIVfubkrjICwa';
 
         document.addEventListener('DOMContentLoaded', () => {
             const user = localStorage.getItem('adminUser');
@@ -188,31 +188,35 @@
             }
         }
 
-        function getData() {
-            const d = localStorage.getItem(MAP_KEY);
-            if (!d) return null;
-            try { return JSON.parse(d); } catch (e) { return null; }
+        async function getData() {
+            try {
+                const data = await window.API.WebsiteInfo.get();
+                return data || null;
+            } catch (e) {
+                console.error('加载地图数据失败:', e);
+                return null;
+            }
         }
 
-        function loadData() {
-            const data = getData() || {
-                address: '上海市浦东新区张江高科技园区科苑路88号',
-                lat: 31.224361,
-                lng: 121.537021,
-                zoom: 15,
-                desc: '欢迎前来咨询！',
-                province: '上海市',
-                city: '上海市',
-                addressDetail: '浦东新区张江高科技园区科苑路88号'
+        async function loadData() {
+            const data = await getData() || {
+                mapAddress: '上海市浦东新区张江高科技园区科苑路88号',
+                mapLat: 31.224361,
+                mapLng: 121.537021,
+                mapZoom: 15,
+                mapDesc: '欢迎前来咨询！',
+                mapProvince: '上海市',
+                mapCity: '上海市',
+                mapAddressDetail: '浦东新区张江高科技园区科苑路88号'
             };
-            document.getElementById('province').value = data.province || '';
-            document.getElementById('city').value = data.city || '';
-            document.getElementById('addressDetail').value = data.addressDetail || data.address || '';
-            document.getElementById('address').value = data.address || '';
-            document.getElementById('lat').value = data.lat || '';
-            document.getElementById('lng').value = data.lng || '';
-            document.getElementById('zoom').value = data.zoom || 15;
-            document.getElementById('desc').value = data.desc || '';
+            document.getElementById('province').value = data.mapProvince || '';
+            document.getElementById('city').value = data.mapCity || '';
+            document.getElementById('addressDetail').value = data.mapAddressDetail || data.mapAddress || '';
+            document.getElementById('address').value = data.mapAddress || '';
+            document.getElementById('lat').value = data.mapLat || '';
+            document.getElementById('lng').value = data.mapLng || '';
+            document.getElementById('zoom').value = data.mapZoom || 15;
+            document.getElementById('desc').value = data.mapDesc || '';
         }
 
         function onSave(e) {
@@ -236,22 +240,23 @@
                 return;
             }
 
-            // 1）保存后台自己的 key（兼容老数据）
-            localStorage.setItem(MAP_KEY, JSON.stringify(payload));
-
-            // 2）同步一份给前台使用的 mapSettings（供 contacts 等页面的地图读取）
-            const frontSettings = {
-                companyAddress: payload.address,
-                latitude: payload.lat,
-                longitude: payload.lng,
-                zoomLevel: payload.zoom,
-                mapWidth: '100%',
-                mapHeight: 500,
-                markerTitle: '我们的公司',
-                markerDescription: payload.desc || '欢迎前来咨询！',
-                mapType: 'roadmap'
+            const websitePayload = {
+                mapProvince: payload.province,
+                mapCity: payload.city,
+                mapAddressDetail: payload.addressDetail,
+                mapAddress: payload.address,
+                mapLat: payload.lat,
+                mapLng: payload.lng,
+                mapZoom: payload.zoom,
+                mapDesc: payload.desc
             };
-            localStorage.setItem('mapSettings', JSON.stringify(frontSettings));
+
+            const current = await window.API.WebsiteInfo.get();
+            const base = current || {};
+            await window.API.WebsiteInfo.update({
+                ...base,
+                ...websitePayload
+            });
 
             showMessage('保存成功', 'success');
             renderPreview();
@@ -285,10 +290,8 @@
                 return;
             }
 
-            // 动态加载百度地图脚本（使用公共 demo AK，仅用于示意；正式环境请换成你自己的 AK）
             const scriptId = 'baidu-map-admin-script';
             if (document.getElementById(scriptId)) {
-                // 已经在加载或加载完成，稍后再尝试
                 setTimeout(() => initPreviewMap(data), 500);
                 return;
             }
@@ -296,7 +299,7 @@
             const script = document.createElement('script');
             script.id = scriptId;
             script.type = 'text/javascript';
-            script.src = 'https://api.map.baidu.com/api?v=3.0&ak=E4805d16520de693a3fe707cdc962045&callback=_noop';
+            script.src = `https://api.map.baidu.com/api?v=3.0&ak=${MAP_API_KEY}&callback=_noop`;
             script.onerror = function () {
                 container.textContent = '地图脚本加载失败，请检查当前网络是否能访问百度地图。';
             };
@@ -359,7 +362,7 @@
                 const script = document.createElement('script');
                 script.id = scriptId;
                 script.type = 'text/javascript';
-                script.src = 'https://api.map.baidu.com/api?v=3.0&ak=E4805d16520de693a3fe707cdc962045&callback=_noop';
+                script.src = `https://api.map.baidu.com/api?v=3.0&ak=${MAP_API_KEY}&callback=_noop`;
                 script.onerror = function () {
                     showMessage('地图脚本加载失败，无法根据地址获取经纬度', 'error');
                 };
@@ -388,8 +391,8 @@
             container.style.background = '#fff';
 
             const map = new BMap.Map(container);
-            const point = new BMap.Point(data.lng, data.lat);
-            map.centerAndZoom(point, data.zoom || 15);
+            const point = new BMap.Point(data.mapLng || data.lng, data.mapLat || data.lat);
+            map.centerAndZoom(point, data.mapZoom || data.zoom || 15);
             map.enableScrollWheelZoom(true);
             map.addControl(new BMap.NavigationControl());
 
@@ -398,8 +401,8 @@
 
             const infoWindow = new BMap.InfoWindow(
                 `<div style="padding: 6px 10px;">
-                    <strong>${data.address || '我们的公司'}</strong><br>
-                    <span>${data.desc || '欢迎前来咨询！'}</span>
+                    <strong>${data.mapAddress || data.address || '我们的公司'}</strong><br>
+                    <span>${data.mapDesc || data.desc || '欢迎前来咨询！'}</span>
                  </div>`
             );
             marker.addEventListener('click', function () {
