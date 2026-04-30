@@ -575,16 +575,16 @@
                                     <input type="number" id="statExperience" name="statExperience" class="form-input" min="0">
                                 </div>
                                 <div>
-                                    <label for="statCases" class="form-label">获得奖项</label>
-                                    <input type="number" id="statCases" name="statCases" class="form-input" min="0">
+                                    <label for="statAwards" class="form-label">获得奖项</label>
+                                    <input type="number" id="statAwards" name="statAwards" class="form-input" min="0">
                                 </div>
                                 <div>
                                     <label for="statConsultants" class="form-label">专业顾问</label>
                                     <input type="number" id="statConsultants" name="statConsultants" class="form-input" min="0">
                                 </div>
                                 <div>
-                                    <label for="statClients" class="form-label">满意客户</label>
-                                    <input type="number" id="statClients" name="statClients" class="form-input" min="0">
+                                    <label for="statSatisfaction" class="form-label">满意客户</label>
+                                    <input type="number" id="statSatisfaction" name="statSatisfaction" class="form-input" min="0">
                                 </div>
                             </div>
                             </div>
@@ -807,9 +807,9 @@
                 document.getElementById('heroButtonLink').value = data.heroButtonLink || '';
 
                 document.getElementById('statExperience').value = data.statExperience ?? 0;
-                document.getElementById('statCases').value = data.statAwards ?? data.statCases ?? 0;
+                document.getElementById('statAwards').value = data.statAwards ?? data.statCases ?? 0;
                 document.getElementById('statConsultants').value = data.statConsultants ?? 0;
-                document.getElementById('statClients').value = data.statSatisfaction ?? data.statClients ?? 0;
+                document.getElementById('statSatisfaction').value = data.statSatisfaction ?? data.statClients ?? 0;
 
                 // 触发图片预览
                 if (data.logo) {
@@ -846,9 +846,9 @@
                 heroButtonText: document.getElementById('heroButtonText').value.trim(),
                 heroButtonLink: document.getElementById('heroButtonLink').value.trim(),
                 statExperience: parseInt(document.getElementById('statExperience').value || '0', 10),
-                statCases: parseInt(document.getElementById('statCases').value || '0', 10),
-                statConsultants: parseInt(document.getElementById('statConsultants').value || '0', 10)
-                ,statClients: parseInt(document.getElementById('statClients').value || '0', 10)
+                statAwards: parseInt(document.getElementById('statAwards').value || '0', 10),
+                statConsultants: parseInt(document.getElementById('statConsultants').value || '0', 10),
+                statSatisfaction: parseInt(document.getElementById('statSatisfaction').value || '0', 10)
             };
 
             if (!data.title) {

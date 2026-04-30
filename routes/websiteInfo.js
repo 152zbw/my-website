@@ -44,15 +44,10 @@ router.put('/', authenticateToken, authorizeAdmin, async (req, res) => {
             heroButtonText,
             heroButtonLink,
             statAwards,
-            statCases,
             statSatisfaction,
-            statClients,
             statExperience,
             statConsultants
         } = req.body;
-
-        const normalizedStatAwards = statAwards ?? statCases;
-        const normalizedStatSatisfaction = statSatisfaction ?? statClients;
         
         let websiteInfo = await WebsiteInfo.findOne({ order: [['id', 'DESC']] });
         
@@ -81,8 +76,8 @@ router.put('/', authenticateToken, authorizeAdmin, async (req, res) => {
                 heroDescription,
                 heroButtonText,
                 heroButtonLink,
-                statAwards: normalizedStatAwards,
-                statSatisfaction: normalizedStatSatisfaction,
+                statAwards,
+                statSatisfaction,
                 statExperience,
                 statConsultants
             });
