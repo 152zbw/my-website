@@ -219,7 +219,7 @@
             document.getElementById('desc').value = data.mapDesc || '';
         }
 
-        function onSave(e) {
+        async function onSave(e) {
             e.preventDefault();
             const payload = {
                 province: document.getElementById('province').value.trim(),
