@@ -262,7 +262,7 @@
 
                 showMessage('保存成功', 'success');
                 await loadData();
-                renderPreview();
+                await renderPreview();
             } catch (error) {
                 console.error('保存地图配置失败:', error);
                 showMessage(error?.message || '保存失败，请稍后重试', 'error');
@@ -283,12 +283,12 @@
         }
 
         // 地图预览（使用百度地图 JS API）
-        function renderPreview() {
+        async function renderPreview() {
             const container = document.getElementById('mapPreview');
             if (!container) return;
 
-            const data = getData();
-            if (!data || !data.lat || !data.lng) {
+            const data = await getData();
+            if (!data || !data.mapLat || !data.mapLng) {
                 container.textContent = '请先填写并保存地址和经纬度，然后在这里预览地图。';
                 return;
             }
