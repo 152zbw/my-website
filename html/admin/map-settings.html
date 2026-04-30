@@ -305,39 +305,45 @@
             container.innerHTML = '正在加载地图...';
             container.style.position = 'relative';
 
-            // 如果 BMap 已经存在，直接画
-            if (typeof BMap !== 'undefined') {
+            const scriptId = 'baidu-map-admin-script';
+            window.__baiduMapPreviewData = data;
+            window.__baiduMapPreviewReady = () => {
+                initPreviewMap(window.__baiduMapPreviewData || data);
+            };
+
+            if (typeof BMap !== 'undefined' && typeof BMap.Map === 'function') {
                 initPreviewMap(data);
                 return;
             }
 
-            const scriptId = 'baidu-map-admin-script';
-            if (document.getElementById(scriptId)) {
-                setTimeout(() => initPreviewMap(data), 500);
+            const existingScript = document.getElementById(scriptId);
+            if (existingScript) {
+                const retryIfReady = () => {
+                    if (typeof BMap !== 'undefined' && typeof BMap.Map === 'function') {
+                        initPreviewMap(data);
+                    } else {
+                        setTimeout(retryIfReady, 300);
+                    }
+                };
+                retryIfReady();
                 return;
             }
 
             const script = document.createElement('script');
             script.id = scriptId;
             script.type = 'text/javascript';
-            script.src = `https://api.map.baidu.com/api?v=3.0&ak=${MAP_API_KEY}&callback=_noop`;
+            script.src = `https://api.map.baidu.com/api?v=3.0&ak=${MAP_API_KEY}&callback=baiduMapAdminPreviewLoaded`;
             script.onerror = function () {
                 container.textContent = '地图脚本加载失败，请检查当前网络是否能访问百度地图。';
             };
-            document.body.appendChild(script);
-
-            // 等待脚本加载完成后再初始化
-            let retries = 0;
-            (function waitForBMap() {
-                if (typeof BMap !== 'undefined') {
-                    initPreviewMap(data);
-                } else if (retries < 20) {
-                    retries++;
-                    setTimeout(waitForBMap, 300);
+            window.baiduMapAdminPreviewLoaded = function () {
+                if (typeof BMap !== 'undefined' && typeof BMap.Map === 'function') {
+                    window.__baiduMapPreviewReady && window.__baiduMapPreviewReady();
                 } else {
-                    container.textContent = '地图初始化超时，请刷新页面重试。';
+                    container.textContent = '地图初始化失败，请刷新页面重试。';
                 }
-            })();
+            };
+            document.body.appendChild(script);
         }
 
         // 根据省 / 市 / 详细地址自动获取经纬度
@@ -410,6 +416,11 @@
             container.innerHTML = '';
             container.style.borderStyle = 'solid';
             container.style.background = '#fff';
+
+            if (typeof BMap === 'undefined' || typeof BMap.Map !== 'function') {
+                container.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;">地图暂时无法初始化，请刷新页面重试。</div>';
+                return;
+            }
 
             const map = new BMap.Map(container);
             const lng = Number(data.mapLng ?? data.lng);
