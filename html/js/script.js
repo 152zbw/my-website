@@ -1094,7 +1094,8 @@
 		}
 
 		// RD Mailform
-		if (plugins.rdMailForm.length) {
+		// Disabled: public contact pages use custom API submission instead of the legacy bat/rd-mailform.php flow.
+		if (false && plugins.rdMailForm.length) {
 			var i, j, k,
 				msg = {
 					'MF000': 'Successfully sent!',
