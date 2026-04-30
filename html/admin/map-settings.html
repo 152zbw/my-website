@@ -221,45 +221,57 @@
 
         async function onSave(e) {
             e.preventDefault();
-            const payload = {
-                province: document.getElementById('province').value.trim(),
-                city: document.getElementById('city').value.trim(),
-                addressDetail: document.getElementById('addressDetail').value.trim(),
-                address: document.getElementById('address').value.trim(),
-                lat: parseFloat(document.getElementById('lat').value || '0'),
-                lng: parseFloat(document.getElementById('lng').value || '0'),
-                zoom: parseInt(document.getElementById('zoom').value || '15', 10),
-                desc: document.getElementById('desc').value.trim()
-            };
-            if (!payload.address) {
-                showMessage('请输入地址', 'error');
-                return;
+            const saveBtn = e.submitter || document.querySelector('#mapForm button[type="submit"]');
+            const originalText = saveBtn ? saveBtn.textContent : '';
+            if (saveBtn) {
+                saveBtn.disabled = true;
+                saveBtn.textContent = '保存中...';
             }
-            if (!payload.lat || !payload.lng) {
-                showMessage('请填写有效的经纬度', 'error');
-                return;
+            try {
+                const payload = {
+                    province: document.getElementById('province').value.trim(),
+                    city: document.getElementById('city').value.trim(),
+                    addressDetail: document.getElementById('addressDetail').value.trim(),
+                    address: document.getElementById('address').value.trim(),
+                    lat: parseFloat(document.getElementById('lat').value || '0'),
+                    lng: parseFloat(document.getElementById('lng').value || '0'),
+                    zoom: parseInt(document.getElementById('zoom').value || '15', 10),
+                    desc: document.getElementById('desc').value.trim()
+                };
+                if (!payload.address) {
+                    showMessage('请输入地址', 'error');
+                    return;
+                }
+                if (!payload.lat || !payload.lng) {
+                    showMessage('请填写有效的经纬度', 'error');
+                    return;
+                }
+
+                const websitePayload = {
+                    mapProvince: payload.province,
+                    mapCity: payload.city,
+                    mapAddressDetail: payload.addressDetail,
+                    mapAddress: payload.address,
+                    mapLat: payload.lat,
+                    mapLng: payload.lng,
+                    mapZoom: payload.zoom,
+                    mapDesc: payload.desc
+                };
+
+                await window.API.WebsiteInfo.update(websitePayload);
+
+                showMessage('保存成功', 'success');
+                await loadData();
+                renderPreview();
+            } catch (error) {
+                console.error('保存地图配置失败:', error);
+                showMessage(error?.message || '保存失败，请稍后重试', 'error');
+            } finally {
+                if (saveBtn) {
+                    saveBtn.disabled = false;
+                    saveBtn.textContent = originalText || '保存';
+                }
             }
-
-            const websitePayload = {
-                mapProvince: payload.province,
-                mapCity: payload.city,
-                mapAddressDetail: payload.addressDetail,
-                mapAddress: payload.address,
-                mapLat: payload.lat,
-                mapLng: payload.lng,
-                mapZoom: payload.zoom,
-                mapDesc: payload.desc
-            };
-
-            const current = await window.API.WebsiteInfo.get();
-            const base = current || {};
-            await window.API.WebsiteInfo.update({
-                ...base,
-                ...websitePayload
-            });
-
-            showMessage('保存成功', 'success');
-            renderPreview();
         }
 
         function showMessage(text, type) {
