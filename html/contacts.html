@@ -155,7 +155,7 @@
               <div class="section-lg">
                 <h3 class="wow-outer"><span class="wow slideInDown">联系我们</span></h3>
                 <!-- Contact Form-->
-                <form class="rd-form" id="contactForm">
+                <form id="contactForm" novalidate>
                   <div class="row row-10">
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
@@ -309,10 +309,18 @@
         };
 
         submitBtn.disabled = true;
-        submitBtn.textContent = '发送中...';
+        submitBtn.textContent = 'Sending...';
+
+        const timeout = new Promise((_, reject) => {
+          setTimeout(() => reject(new Error('请求超时，请检查服务器是否可用')), 15000);
+        });
 
         try {
-          await window.API.Contacts.create(payload);
+          const result = await Promise.race([
+            window.API.Contacts.create(payload),
+            timeout
+          ]);
+          console.log('提交联系信息成功:', result);
           showSuccess();
           form.reset();
         } catch (error) {
