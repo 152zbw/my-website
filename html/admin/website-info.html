@@ -807,9 +807,9 @@
                 document.getElementById('heroButtonLink').value = data.heroButtonLink || '';
 
                 document.getElementById('statExperience').value = data.statExperience ?? 0;
-                document.getElementById('statCases').value = data.statCases ?? data.statAwards ?? 0;
+                document.getElementById('statCases').value = data.statAwards ?? data.statCases ?? 0;
                 document.getElementById('statConsultants').value = data.statConsultants ?? 0;
-                document.getElementById('statClients').value = data.statClients ?? data.statSatisfaction ?? 0;
+                document.getElementById('statClients').value = data.statSatisfaction ?? data.statClients ?? 0;
 
                 // 触发图片预览
                 if (data.logo) {
