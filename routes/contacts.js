@@ -7,7 +7,7 @@ const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
 router.get('/', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
         const contacts = await Contact.findAll({
-            order: [['createdAt', 'DESC']]
+            order: [['created_at', 'DESC']]
         });
         res.json(contacts);
     } catch (error) {
