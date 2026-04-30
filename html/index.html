@@ -120,7 +120,7 @@
                   <div class="rd-navbar-collapse">
                     <ul class="list-inline-bordered rd-navbar-list">
                       <li><span class="icon mdi mdi-comment-text-outline"></span><a href="contacts.html">联系我们</a></li>
-                      <li><span class="icon mdi mdi-cellphone-android"></span><a href="tel:#" id="topPhone">电话加载中...</a></li>
+                      <li><span class="icon mdi mdi-cellphone-android"></span><a href="tel:#" id="topPhone"></a></li>
                     </ul>
                   </div>
                   <button class="rd-navbar-search-toggle"
@@ -270,12 +270,12 @@
                   </h2>
                 </div>
                 <div class="wow-outer p">
-                  <p class="custom-article wow fadeInDown" data-wow-delay=".2s" id="heroDescription">我们公司提供各类专业咨询和规划服务，帮助全球中小企业实现可持续发展。</p>
+                  <p class="custom-article wow fadeInDown" data-wow-delay=".2s" id="heroDescription">加载中...</p>
                 </div><a class="button button-primary button-winona wow FadeIn" id="heroButton" href="contacts.html">了解更多</a>
               </div>
             </div>
             <div class="col-md-6 col-lg-7 d-flex justify-content-center justify-content-md-end mt-5 mt-md-0">
-              <div id="heroRightImage" class="wow fadeInRight" aria-hidden="true" style="width: 100%; min-height: 420px; border-radius: 18px; background-color: #eef5ff; background-image: none; background-size: cover; background-position: center center; background-repeat: no-repeat; box-shadow: 0 14px 40px rgba(53, 72, 121, 0.12);"></div>
+              <div id="heroRightImage" class="wow fadeInRight hero-image-placeholder" aria-hidden="true" style="width: 100%; min-height: 420px; border-radius: 18px; background-color: #eef5ff; background-image: linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.45) 37%, rgba(255,255,255,0.2) 63%); background-size: 400% 100%; background-position: 100% 0; background-repeat: no-repeat; box-shadow: 0 14px 40px rgba(53, 72, 121, 0.12); transition: opacity 0.35s ease, background-image 0.35s ease; opacity: 0.85;"></div>
             </div>
           </div>
         </div>
@@ -381,7 +381,7 @@
             <div class="col-md-10 cell-inner">
               <div class="section-lg inset-right-2">
                 <h3 class="wow-outer"><span class="wow slideInDown">关于我们</span></h3>
-                <p class="wow fadeIn" id="aboutDescription">加载中...</p>
+                <p class="wow fadeIn" id="aboutDescription"></p>
                 <div class="wow-outer button-outer"><a class="button button-primary button-winona wow slideInUp"
                     href="about-me.html">了解更多</a></div>
               </div>
@@ -723,16 +723,23 @@
             if (descMeta) descMeta.setAttribute('content', info.description);
           }
           // 更新联系方式
-          if (info.phone) {
-            const topPhone = document.getElementById('topPhone');
-            if (topPhone) {
+          const topPhone = document.getElementById('topPhone');
+          if (topPhone) {
+            if (info.phone) {
               topPhone.textContent = info.phone;
               topPhone.setAttribute('href', `tel:${info.phone}`);
+            } else {
+              topPhone.textContent = '';
+              topPhone.setAttribute('href', 'tel:#');
             }
+          }
+          if (info.phone) {
             const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
             phoneLinks.forEach(link => {
-              link.textContent = info.phone;
-              link.setAttribute('href', `tel:${info.phone}`);
+              if (link !== topPhone) {
+                link.textContent = info.phone;
+                link.setAttribute('href', `tel:${info.phone}`);
+              }
             });
           }
           // 不再使用首页头图图片，始终保持空白蓝底
@@ -742,11 +749,21 @@
             heroSection.style.backgroundImage = 'none';
           }
           if (heroRightImage) {
-            heroRightImage.style.backgroundImage = 'none';
+            heroRightImage.style.opacity = '0.85';
+            heroRightImage.style.backgroundImage = 'linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.45) 37%, rgba(255,255,255,0.2) 63%)';
+            heroRightImage.style.backgroundSize = '400% 100%';
+            heroRightImage.style.backgroundPosition = '100% 0';
             if (info.heroRightImage) {
               const img = new Image();
               img.onload = () => {
                 heroRightImage.style.backgroundImage = `url(${info.heroRightImage})`;
+                heroRightImage.style.backgroundSize = 'cover';
+                heroRightImage.style.backgroundPosition = 'center center';
+                heroRightImage.style.opacity = '1';
+              };
+              img.onerror = () => {
+                heroRightImage.classList.add('hero-image-error');
+                heroRightImage.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;padding:24px;text-align:center;">图片加载失败，请检查后台图片地址</div>';
               };
               img.src = info.heroRightImage;
             }
@@ -763,11 +780,11 @@
               <span class="font-weight-light">${info.heroSubtitle || '战略规划'}</span>
             `;
           }
-          if (heroDescription && info.heroDescription) {
-            heroDescription.innerHTML = info.heroDescription;
+          if (heroDescription) {
+            heroDescription.innerHTML = info.heroDescription || '加载中...';
           }
           if (aboutDescription) {
-            aboutDescription.innerHTML = info.description || '咨询公司是一家拥有10多年行业经验的商业咨询公司，为广泛的客户提供可靠且价格合理的服务。';
+            aboutDescription.innerHTML = info.description || '';
           }
           if (heroButton) {
             heroButton.textContent = info.heroButtonText || '了解更多';
