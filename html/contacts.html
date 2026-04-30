@@ -155,7 +155,7 @@
               <div class="section-lg">
                 <h3 class="wow-outer"><span class="wow slideInDown">联系我们</span></h3>
                 <!-- Contact Form-->
-                <form id="contactForm" action="javascript:void(0)" method="POST" novalidate>
+                <form id="contactForm" action="javascript:void(0)" method="POST" novalidate onsubmit="return false;">
                   <div class="row row-10">
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
@@ -255,6 +255,15 @@
       loadWebsiteInfoToContact();
       bindContactForm();
     });
+
+    // 额外拦截任何可能的默认提交行为，避免跳转到旧模板地址
+    document.addEventListener('submit', (event) => {
+      const form = event.target;
+      if (form && form.id === 'contactForm') {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    }, true);
 
     async function loadWebsiteInfoToContact() {
       try {
