@@ -71,7 +71,18 @@ async function initDatabase() {
                 statAwards: 12,
                 statSatisfaction: 99,
                 statExperience: 15,
-                statConsultants: 54
+                statConsultants: 54,
+                footerBrandText: '我们提供专业的咨询服务，帮助企业实现可持续发展。',
+                footerCopyright: '© 2024 笠偲咨询. 保留所有权利.',
+                footerIcp: 'ICP备案号：请在后台填写',
+                footerTermsText: '隐私政策',
+                footerLinksJson: JSON.stringify([
+                    { title: '关于我们', url: 'about.html' },
+                    { title: '服务项目', url: 'services.html' },
+                    { title: '成功案例', url: 'grid-gallery.html' },
+                    { title: '团队成员', url: 'team.html' },
+                    { title: '联系我们', url: 'contacts.html' }
+                ])
             });
             console.log('默认网站信息创建成功');
         } else {

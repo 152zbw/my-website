@@ -587,12 +587,39 @@
                                     <input type="number" id="statSatisfaction" name="statSatisfaction" class="form-input" min="0">
                                 </div>
                             </div>
-                            </div>
+                        </div>
 
-                            <div class="form-actions">
+                        <h4>页脚管理</h4>
+
+                        <div class="form-group">
+                            <label for="footerBrandText" class="form-label">页脚品牌说明</label>
+                            <textarea id="footerBrandText" name="footerBrandText" class="form-textarea" rows="3" placeholder="例如：我们提供专业的咨询服务，帮助企业实现可持续发展。"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="footerCopyright" class="form-label">页脚版权文案</label>
+                            <input type="text" id="footerCopyright" name="footerCopyright" class="form-input" placeholder="例如：© 2024 咨询公司. 保留所有权利.">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="footerIcp" class="form-label">页脚备案号</label>
+                            <input type="text" id="footerIcp" name="footerIcp" class="form-input" placeholder="例如：ICP备12345678号">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="footerTermsText" class="form-label">页脚条款说明</label>
+                            <input type="text" id="footerTermsText" name="footerTermsText" class="form-input" placeholder="例如：使用条款 | 隐私政策">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="footerLinksJson" class="form-label">页脚链接配置 JSON</label>
+                            <textarea id="footerLinksJson" name="footerLinksJson" class="form-textarea" rows="5" placeholder='[{"title":"快速链接","links":[{"label":"关于我们","href":"about.html"}]}]'></textarea>
+                        </div>
+
+                        <div class="form-actions">
                             <button type="reset" class="btn btn-secondary">重置</button>
-                                <button type="submit" class="btn btn-primary">保存更改</button>
-                            </div>
+                            <button type="submit" class="btn btn-primary">保存更改</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -811,6 +838,12 @@
                 document.getElementById('statConsultants').value = data.statConsultants ?? 0;
                 document.getElementById('statSatisfaction').value = data.statSatisfaction ?? data.statClients ?? 0;
 
+                document.getElementById('footerBrandText').value = data.footerBrandText || '';
+                document.getElementById('footerCopyright').value = data.footerCopyright || '';
+                document.getElementById('footerIcp').value = data.footerIcp || '';
+                document.getElementById('footerTermsText').value = data.footerTermsText || '';
+                document.getElementById('footerLinksJson').value = data.footerLinksJson || '';
+
                 // 触发图片预览
                 if (data.logo) {
                     updateImagePreview(data.logo, 'logoPreview', 'logoPreviewImg');
@@ -848,7 +881,12 @@
                 statExperience: parseInt(document.getElementById('statExperience').value || '0', 10),
                 statAwards: parseInt(document.getElementById('statAwards').value || '0', 10),
                 statConsultants: parseInt(document.getElementById('statConsultants').value || '0', 10),
-                statSatisfaction: parseInt(document.getElementById('statSatisfaction').value || '0', 10)
+                statSatisfaction: parseInt(document.getElementById('statSatisfaction').value || '0', 10),
+                footerBrandText: document.getElementById('footerBrandText').value.trim(),
+                footerCopyright: document.getElementById('footerCopyright').value.trim(),
+                footerIcp: document.getElementById('footerIcp').value.trim(),
+                footerTermsText: document.getElementById('footerTermsText').value.trim(),
+                footerLinksJson: document.getElementById('footerLinksJson').value.trim()
             };
 
             if (!data.title) {

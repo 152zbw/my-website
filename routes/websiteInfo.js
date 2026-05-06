@@ -46,7 +46,12 @@ router.put('/', authenticateToken, authorizeAdmin, async (req, res) => {
             statAwards,
             statSatisfaction,
             statExperience,
-            statConsultants
+            statConsultants,
+            footerBrandText,
+            footerCopyright,
+            footerIcp,
+            footerTermsText,
+            footerLinksJson
         } = req.body;
         
         let websiteInfo = await WebsiteInfo.findOne({ order: [['id', 'DESC']] });
@@ -79,7 +84,12 @@ router.put('/', authenticateToken, authorizeAdmin, async (req, res) => {
                 statAwards,
                 statSatisfaction,
                 statExperience,
-                statConsultants
+                statConsultants,
+                footerBrandText,
+                footerCopyright,
+                footerIcp,
+                footerTermsText,
+                footerLinksJson
             });
         } else {
             // 创建新信息
@@ -109,7 +119,12 @@ router.put('/', authenticateToken, authorizeAdmin, async (req, res) => {
                 statAwards: normalizedStatAwards,
                 statSatisfaction: normalizedStatSatisfaction,
                 statExperience,
-                statConsultants
+                statConsultants,
+                footerBrandText,
+                footerCopyright,
+                footerIcp,
+                footerTermsText,
+                footerLinksJson
             });
         }
         

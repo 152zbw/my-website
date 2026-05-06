@@ -142,6 +142,31 @@ const WebsiteInfo = sequelize.define('WebsiteInfo', {
         defaultValue: 150,
         comment: '满意客户数量'
     },
+    footerBrandText: {
+        type: DataTypes.TEXT,
+        field: 'footer_brand_text',
+        comment: '页脚品牌说明'
+    },
+    footerCopyright: {
+        type: DataTypes.STRING(255),
+        field: 'footer_copyright',
+        comment: '页脚版权文案'
+    },
+    footerIcp: {
+        type: DataTypes.STRING(255),
+        field: 'footer_icp',
+        comment: '页脚备案号'
+    },
+    footerTermsText: {
+        type: DataTypes.STRING(255),
+        field: 'footer_terms_text',
+        comment: '页脚条款说明'
+    },
+    footerLinksJson: {
+        type: DataTypes.TEXT,
+        field: 'footer_links_json',
+        comment: '页脚链接配置JSON'
+    },
     updatedAt: {
         type: DataTypes.DATE,
         field: 'updated_at',
