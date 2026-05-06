@@ -209,8 +209,7 @@ data-margin="30" data-stage-padding="0" data-mouse-drag="true">
 <div class="section-lg">
 <h3 class="wow-outer"><span class="wow slideInDown">联系我们</span></h3>
 <!-- RD Mailform-->
-<form class="rd-form rd-mailform" data-form-output="form-output-global" data-form-type="contact"
-method="post" action="bat/rd-mailform.php">
+<form id="contactForm" action="javascript:void(0)" method="POST" novalidate onsubmit="return false;">
 <div class="row row-10">
 <div class="col-md-6 wow-outer">
 <div class="form-wrap wow fadeSlideInUp">
@@ -250,13 +249,14 @@ data-constraints="@Required"></textarea>
 </div>
 <div class="group group-middle">
 <div class="wow-outer">
-<button class="button button-primary button-winona wow slideInRight" type="submit">发送消息</button>
+<button class="button button-primary button-winona wow slideInRight" type="submit" id="submitBtn">发送消息</button>
 </div>
-<p>or use</p>
+<p>或使用</p>
 <div class="wow-outer"><a
 class="button button-primary-outline button-icon button-icon-left button-winona wow slideInLeft"
 href="#"><span class="icon text-primary mdi mdi-facebook-messenger"></span>信使</a></div>
 </div>
+<div id="successMessage" style="display:none;margin-top:20px;padding:15px;background-color:#d4edda;color:#155724;border-radius:4px;">消息发送成功！我们会尽快与您联系。</div>
 </form>
 </div>
 </div>
