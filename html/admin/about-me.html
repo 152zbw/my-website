@@ -537,7 +537,10 @@
             const body = {
                 title: payload.name,
                 image: payload.avatar,
-                content: JSON.stringify(payload)
+                content: JSON.stringify(payload),
+                videoTitle: payload.videoTitle,
+                videoUrl: payload.videoUrl,
+                videoPoster: payload.videoPoster
             };
             try {
                 if (currentId) {

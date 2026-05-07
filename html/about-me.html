@@ -202,65 +202,8 @@
         <h3 class="wow-outer text-center"><span class="wow slideInUp">客户评价 & 视频</span></h3>
         <div class="row row-50 justify-content-center justify-content-lg-between">
           <div class="col-md-10 col-lg-5 wow-outer">
-            <div class="owl-carousel wow slideInLeft" data-items="1" data-dots="true" data-nav="false" data-loop="true"
-              data-margin="30" data-stage-padding="0" data-mouse-drag="false">
-              <blockquote class="quote-modern">
-                <svg class="quote-modern-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
-                  <path
-                    d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5                L7.539,10.206z">
-                  </path>
-                </svg>
-                <div class="quote-modern-text">
-                  <p>团队响应很快，方案清晰，执行过程也比较顺畅。</p>
-                </div>
-                <div class="quote-modern-meta">
-                  <div class="quote-modern-avatar"><img src="images/testimonials-person-3-96x96.jpg" alt="" width="96"
-                      height="96" />
-                  </div>
-                  <div class="quote-modern-info">
-                    <cite class="quote-modern-cite">张先生</cite>
-                    <p class="quote-modern-caption">企业负责人</p>
-                  </div>
-                </div>
-              </blockquote>
-              <blockquote class="quote-modern">
-                <svg class="quote-modern-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
-                  <path
-                    d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5                L7.539,10.206z">
-                  </path>
-                </svg>
-                <div class="quote-modern-text">
-                  <p>整个项目节奏稳定，沟通清楚，落地效果也比较符合预期。</p>
-                </div>
-                <div class="quote-modern-meta">
-                  <div class="quote-modern-avatar"><img src="images/testimonials-person-1-96x96.jpg" alt="" width="96"
-                      height="96" />
-                  </div>
-                  <div class="quote-modern-info">
-                    <cite class="quote-modern-cite">李女士</cite>
-                    <p class="quote-modern-caption">创业者</p>
-                  </div>
-                </div>
-              </blockquote>
-              <blockquote class="quote-modern">
-                <svg class="quote-modern-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
-                  <path
-                    d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5                L7.539,10.206z">
-                  </path>
-                </svg>
-                <div class="quote-modern-text">
-                  <p>沟通体验很好，团队能够快速理解需求并给出建议。</p>
-                </div>
-                <div class="quote-modern-meta">
-                  <div class="quote-modern-avatar"><img src="images/testimonials-person-2-96x96.jpg" alt="" width="96"
-                      height="96" />
-                  </div>
-                  <div class="quote-modern-info">
-                    <cite class="quote-modern-cite">王先生</cite>
-                    <p class="quote-modern-caption">运营负责人</p>
-                  </div>
-                </div>
-              </blockquote>
+            <div id="aboutTestimonialsCarousel" class="about-testimonials-list">
+              <div class="quote-modern text-center text-muted">正在加载客户评价...</div>
             </div>
           </div>
           <div class="col-md-10 col-lg-6 wow-outer">
@@ -378,7 +321,8 @@
     document.addEventListener('DOMContentLoaded', async function () {
       await loadAboutFromApi();
       await renderRecentBlogs();
-      renderAboutVideo();
+      await renderTestimonials();
+      await renderAboutVideo();
     });
 
     async function loadAboutFromApi() {

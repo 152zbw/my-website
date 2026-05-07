@@ -415,30 +415,8 @@
     <!-- Partners-->
     <section class="section section-sm text-center">
       <div class="container">
-        <!-- Owl Carousel-->
-        <div class="owl-carousel owl-carousel-1" data-items="2" data-sm-items="3" data-md-items="4" data-lg-items="5"
-          data-dots="true" data-nav="false" data-stage-padding="0" data-loop="true" data-margin="30"
-          data-mouse-drag="false">
-          <div class="item wow-outer">
-            <div class="wow slideInLeft"><a class="link-image" href="#"><img src="images/logo-john-brad-135x87.png"
-                  alt="" width="135" height="87" /></a></div>
-          </div>
-          <div class="item wow-outer">
-            <div class="wow slideInLeft" data-wow-delay=".05s"><a class="link-image" href="#"><img
-                  src="images/logo-the-oldbrand-134x104.png" alt="" width="134" height="104" /></a></div>
-          </div>
-          <div class="item wow-outer">
-            <div class="wow slideInLeft" data-wow-delay=".1s"><a class="link-image" href="#"><img
-                  src="images/logo-havana-cabana-132x87.png" alt="" width="132" height="87" /></a></div>
-          </div>
-          <div class="item wow-outer">
-            <div class="wow slideInLeft" data-wow-delay=".15s"><a class="link-image" href="#"><img
-                  src="images/logo-brownie-143x85.png" alt="" width="143" height="85" /></a></div>
-          </div>
-          <div class="item wow-outer">
-            <div class="wow slideInLeft" data-wow-delay=".2s"><a class="link-image" href="#"><img
-                  src="images/logo-hillplan-111x85.png" alt="" width="111" height="85" /></a></div>
-          </div>
+        <div id="partnersContainer" class="row row-20 row-sm-30 justify-content-center align-items-center">
+          <div class="col-12"><p class="text-muted">正在加载合作伙伴...</p></div>
         </div>
       </div>
     </section>
@@ -691,6 +669,7 @@
       await renderBlogs();
       console.log('博客渲染完成，开始渲染客户评价');
       await renderTestimonials();
+      await renderPartners();
       // 新增：渲染首页特色模块
       await renderHomeFeatures();
       console.log('所有动态内容渲染完成');
@@ -915,6 +894,41 @@
       } catch (error) {
         console.error('加载新闻动态失败:', error);
         blogsContainer.innerHTML = '<p>加载新闻动态失败，请稍后重试</p>';
+      }
+    }
+
+    // 渲染合作伙伴 - 从API获取
+    async function renderPartners() {
+      const partnersContainer = document.getElementById('partnersContainer');
+      if (!partnersContainer || !window.API?.Partners?.getAll) return;
+
+      try {
+        const partners = await window.API.Partners.getAll();
+        const displayPartners = Array.isArray(partners)
+          ? partners.filter(p => (p.isActive ?? p.is_active ?? 1)).slice(0, 8)
+          : [];
+
+        if (displayPartners.length > 0) {
+          partnersContainer.innerHTML = displayPartners.map((partner) => {
+            const imageUrl = partner.logo || partner.image || '';
+            const website = partner.website || '#';
+            const name = partner.name || '';
+            return `
+              <div class="col-6 col-sm-4 col-md-3 col-lg-2 wow-outer">
+                <div class="partner-item wow slideInUp">
+                  <a class="link-image partner-link" href="${website}" target="_blank" rel="noopener noreferrer">
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${name}" class="partner-logo" />` : `<span class="partner-name">${name}</span>`}
+                  </a>
+                </div>
+              </div>
+            `;
+          }).join('');
+        } else {
+          partnersContainer.innerHTML = '<div class="col-12"><p class="text-muted">暂无合作伙伴</p></div>';
+        }
+      } catch (error) {
+        console.error('加载合作伙伴失败:', error);
+        partnersContainer.innerHTML = '<div class="item wow-outer"><div class="wow slideInLeft"><p class="text-danger">加载合作伙伴失败，请稍后重试</p></div></div>';
       }
     }
 
