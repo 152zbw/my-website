@@ -210,6 +210,92 @@
                         </div>
 
                         <div class="form-group">
+                            <label class="form-label">个人简介页客户评价（前台“客户评价 & 视频”左侧）</label>
+                            <small style="color:#666;display:block;margin-bottom:10px;">这里单独管理 about-me 页面左侧轮播的评价内容，不影响首页评价。</small>
+                            <div style="border:1px solid #eee;border-radius:6px;padding:12px;margin-bottom:12px;">
+                                <div style="font-weight:600;color:#354879;margin-bottom:8px;">评价 1</div>
+                                <div class="form-group">
+                                    <label class="form-label" for="testimonial1Name">姓名</label>
+                                    <input id="testimonial1Name" class="form-input" placeholder="张先生">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="testimonial1Position">职位</label>
+                                    <input id="testimonial1Position" class="form-input" placeholder="企业负责人">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="testimonial1Content">评价内容</label>
+                                    <textarea id="testimonial1Content" class="form-textarea" rows="3" placeholder="填写评价内容"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">头像</label>
+                                    <input type="hidden" id="testimonial1Image">
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerTestimonialUpload(1)">选择头像</button>
+                                        <span id="testimonial1ImageName" style="color:#555;">未选择文件</span>
+                                    </div>
+                                    <input type="file" id="testimonial1FileInput" accept="image/*" style="display:none;">
+                                    <div id="testimonial1Preview" style="margin-top:10px;display:none;">
+                                        <img id="testimonial1PreviewImg" src="" alt="头像预览" style="max-width:120px;border:1px solid #ddd;border-radius:4px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="border:1px solid #eee;border-radius:6px;padding:12px;margin-bottom:12px;">
+                                <div style="font-weight:600;color:#354879;margin-bottom:8px;">评价 2</div>
+                                <div class="form-group">
+                                    <label class="form-label" for="testimonial2Name">姓名</label>
+                                    <input id="testimonial2Name" class="form-input" placeholder="李女士">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="testimonial2Position">职位</label>
+                                    <input id="testimonial2Position" class="form-input" placeholder="创业者">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="testimonial2Content">评价内容</label>
+                                    <textarea id="testimonial2Content" class="form-textarea" rows="3" placeholder="填写评价内容"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">头像</label>
+                                    <input type="hidden" id="testimonial2Image">
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerTestimonialUpload(2)">选择头像</button>
+                                        <span id="testimonial2ImageName" style="color:#555;">未选择文件</span>
+                                    </div>
+                                    <input type="file" id="testimonial2FileInput" accept="image/*" style="display:none;">
+                                    <div id="testimonial2Preview" style="margin-top:10px;display:none;">
+                                        <img id="testimonial2PreviewImg" src="" alt="头像预览" style="max-width:120px;border:1px solid #ddd;border-radius:4px;">
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="border:1px solid #eee;border-radius:6px;padding:12px;margin-bottom:12px;">
+                                <div style="font-weight:600;color:#354879;margin-bottom:8px;">评价 3</div>
+                                <div class="form-group">
+                                    <label class="form-label" for="testimonial3Name">姓名</label>
+                                    <input id="testimonial3Name" class="form-input" placeholder="王先生">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="testimonial3Position">职位</label>
+                                    <input id="testimonial3Position" class="form-input" placeholder="运营负责人">
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label" for="testimonial3Content">评价内容</label>
+                                    <textarea id="testimonial3Content" class="form-textarea" rows="3" placeholder="填写评价内容"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label class="form-label">头像</label>
+                                    <input type="hidden" id="testimonial3Image">
+                                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                        <button type="button" class="btn btn-secondary btn-sm" onclick="triggerTestimonialUpload(3)">选择头像</button>
+                                        <span id="testimonial3ImageName" style="color:#555;">未选择文件</span>
+                                    </div>
+                                    <input type="file" id="testimonial3FileInput" accept="image/*" style="display:none;">
+                                    <div id="testimonial3Preview" style="margin-top:10px;display:none;">
+                                        <img id="testimonial3PreviewImg" src="" alt="头像预览" style="max-width:120px;border:1px solid #ddd;border-radius:4px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
                             <label class="form-label">视频模块（前台“客户评价 & 视频”右侧）</label>
                             <div class="form-group">
                                 <label class="form-label" for="videoTitle">视频标题</label>
@@ -346,6 +432,11 @@
             fillProject(2, projects[1]);
             fillProject(3, projects[2]);
 
+            const testimonials = Array.isArray(data.testimonials) ? data.testimonials : [];
+            fillTestimonial(1, testimonials[0]);
+            fillTestimonial(2, testimonials[1]);
+            fillTestimonial(3, testimonials[2]);
+
             document.getElementById('videoTitle').value = data.videoTitle || '';
             document.getElementById('videoUrl').value = data.videoUrl || '';
             document.getElementById('videoPoster').value = data.videoPoster || '';
@@ -357,6 +448,14 @@
             document.getElementById(`project${index}Desc`).value = project?.description || '';
             document.getElementById(`project${index}Image`).value = project?.image || '';
             setProjectPreview(index, project?.image || '');
+        }
+
+        function fillTestimonial(index, testimonial) {
+            document.getElementById(`testimonial${index}Name`).value = testimonial?.name || '';
+            document.getElementById(`testimonial${index}Position`).value = testimonial?.position || '';
+            document.getElementById(`testimonial${index}Content`).value = testimonial?.content || '';
+            document.getElementById(`testimonial${index}Image`).value = testimonial?.image || '';
+            setTestimonialPreview(index, testimonial?.image || '');
         }
 
         async function loadData() {
@@ -403,6 +502,20 @@
             return res;
         }
 
+        function collectTestimonials() {
+            const res = [];
+            for (const idx of [1, 2, 3]) {
+                const name = document.getElementById(`testimonial${idx}Name`).value.trim();
+                const position = document.getElementById(`testimonial${idx}Position`).value.trim();
+                const content = document.getElementById(`testimonial${idx}Content`).value.trim();
+                const image = document.getElementById(`testimonial${idx}Image`).value.trim();
+                if (name || position || content || image) {
+                    res.push({ name, position, content, image });
+                }
+            }
+            return res;
+        }
+
         async function onSave(e) {
             e.preventDefault();
             const payload = {
@@ -412,6 +525,7 @@
                 bio: bioQuill ? bioQuill.root.innerHTML.trim() : '',
                 skills: collectSkills(),
                 projects: collectProjects(),
+                testimonials: collectTestimonials(),
                 videoTitle: document.getElementById('videoTitle').value.trim(),
                 videoUrl: document.getElementById('videoUrl').value.trim(),
                 videoPoster: document.getElementById('videoPoster').value.trim()
@@ -485,6 +599,10 @@
             document.getElementById('videoPosterFileInput').click();
         }
 
+        function triggerTestimonialUpload(index) {
+            document.getElementById(`testimonial${index}FileInput`).click();
+        }
+
         async function onProjectImageChange(index, e) {
             const file = e.target.files && e.target.files[0];
             if (!file) return;
@@ -500,6 +618,26 @@
                 console.error(`项目${index}图片上传失败`, err);
                 setProjectPreview(index, '');
                 showMessage(err?.message || `项目${index}图片上传失败`, 'error');
+            } finally {
+                e.target.value = '';
+            }
+        }
+
+        async function onTestimonialImageChange(index, e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const nameSpan = document.getElementById(`testimonial${index}ImageName`);
+            nameSpan.textContent = '上传中...';
+            try {
+                const res = await window.API.Upload.uploadSingle(file);
+                const filePath = res?.file?.path || '';
+                document.getElementById(`testimonial${index}Image`).value = filePath;
+                setTestimonialPreview(index, filePath, file.name);
+                showMessage(`评价${index}头像上传成功`, 'success');
+            } catch (err) {
+                console.error(`评价${index}头像上传失败`, err);
+                setTestimonialPreview(index, '');
+                showMessage(err?.message || `评价${index}头像上传失败`, 'error');
             } finally {
                 e.target.value = '';
             }
@@ -536,6 +674,20 @@
                 showMessage(err?.message || '视频封面上传失败', 'error');
             } finally {
                 e.target.value = '';
+            }
+        }
+
+        function setTestimonialPreview(index, path, displayName) {
+            const wrap = document.getElementById(`testimonial${index}Preview`);
+            const img = document.getElementById(`testimonial${index}PreviewImg`);
+            const nameSpan = document.getElementById(`testimonial${index}ImageName`);
+            if (path) {
+                img.src = path;
+                wrap.style.display = 'block';
+                nameSpan.textContent = displayName || path.split('/').pop();
+            } else {
+                wrap.style.display = 'none';
+                nameSpan.textContent = '未选择文件';
             }
         }
 

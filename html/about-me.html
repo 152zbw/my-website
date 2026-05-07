@@ -554,13 +554,14 @@
 
     async function renderTestimonials() {
       const container = document.getElementById('aboutTestimonialsCarousel');
-      if (!container || !window.API?.Testimonials?.getAll) return;
+      if (!container || !window.API?.About?.getAll) return;
 
       try {
-        const list = await window.API.Testimonials.getAll();
-        const items = Array.isArray(list)
-          ? list.filter(item => (item?.scope || 'about-me') === 'about-me' && (item.isActive ?? item.is_active ?? 1)).slice(0, 3)
-          : [];
+        const list = await window.API.About.getAll();
+        const item = (Array.isArray(list) && list.length) ? list[0] : null;
+        const content = item && item.content ? safeParse(item.content) : null;
+        const data = content || defaultAboutData();
+        const items = Array.isArray(data.testimonials) ? data.testimonials.slice(0, 3) : [];
         if (!items.length) {
           container.innerHTML = '<p class="text-center text-muted">暂无客户评价</p>';
           return;
