@@ -138,6 +138,7 @@
                                 <th>ID</th>
                                 <th>姓名</th>
                                 <th>职位</th>
+                                <th>展示位置</th>
                                 <th>评价内容</th>
                                 <th>头像</th>
                                 <th>排序</th>
@@ -188,6 +189,13 @@
                 <div class="form-group">
                     <label for="testimonialSortOrder" class="form-label">排序</label>
                     <input type="number" id="testimonialSortOrder" class="form-input" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="testimonialScope" class="form-label">展示位置</label>
+                    <select id="testimonialScope" class="form-input">
+                        <option value="home">首页评价</option>
+                        <option value="about-me">个人简介页评价</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">状态</label>
@@ -302,7 +310,7 @@
 
         async function loadTestimonials() {
             const tableBody = document.getElementById('testimonialsTableBody');
-            tableBody.innerHTML = '<tr><td colspan="8">加载中...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="9">加载中...</td></tr>';
             try {
                 const testimonials = await window.API.Testimonials.getAll(); // 从公共接口获取激活的评价
                 renderTestimonialsTable(testimonials || []);
@@ -316,7 +324,7 @@
                     }
                     return;
                 }
-                tableBody.innerHTML = '<tr><td colspan="8">加载失败，请稍后重试</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="9">加载失败，请稍后重试</td></tr>';
                 showMessage('加载客户评价失败', 'error');
             }
         }
@@ -326,17 +334,19 @@
             tableBody.innerHTML = '';
 
             if (!testimonials || testimonials.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="8">暂无客户评价</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="9">暂无客户评价</td></tr>';
                 return;
             }
 
             testimonials.forEach(testimonial => {
                 const tr = document.createElement('tr');
                 const avatarSrc = testimonial.image && testimonial.image !== '' ? (testimonial.image.startsWith('http') || testimonial.image.startsWith('/') ? testimonial.image : `../${testimonial.image}`) : `../images/testimonials-person-1-96x96.jpg`;
+                const scopeLabel = testimonial.scope === 'about-me' ? '个人简介页评价' : '首页评价';
                 tr.innerHTML = `
                     <td>${testimonial.id}</td>
                     <td>${testimonial.name}</td>
                     <td>${testimonial.position}</td>
+                    <td>${scopeLabel}</td>
                     <td><div style="max-height: 100px; overflow-y: auto;">${testimonial.content || ''}</div></td>
                     <td>
                         <img src="${avatarSrc}" alt="${testimonial.name}" class="avatar-img">
@@ -422,6 +432,7 @@
                 }
                 document.getElementById('testimonialAvatar').value = testimonial.image || '';
                 document.getElementById('testimonialSortOrder').value = testimonial.sortOrder ?? 0;
+                document.getElementById('testimonialScope').value = testimonial.scope || 'home';
 
                 if (testimonial.image) {
                     const preview = document.getElementById('testimonialAvatarPreview');
@@ -462,6 +473,7 @@
             let image = document.getElementById('testimonialAvatar').value.trim();
             const sortOrder = parseInt(document.getElementById('testimonialSortOrder').value || '0', 10);
             const isActive = document.getElementById('testimonialActive').checked ? 1 : 0;
+            const scope = document.getElementById('testimonialScope').value;
 
             if (!name || !position || !content) {
                 showMessage('请填写完整的客户评价信息', 'error');
@@ -482,7 +494,7 @@
                 }
             }
 
-            const payload = { name, position, content, image, sortOrder, isActive };
+            const payload = { name, position, content, image, sortOrder, isActive, scope };
 
             try {
                 if (id) {

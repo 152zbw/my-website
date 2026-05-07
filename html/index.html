@@ -925,7 +925,10 @@
 
       try {
         const testimonials = await window.API.Testimonials.getAll();
-        if (testimonials && testimonials.length > 0) {
+        const homeTestimonials = Array.isArray(testimonials)
+          ? testimonials.filter(item => (item?.scope || 'home') === 'home' && (item.isActive ?? item.is_active ?? 1))
+          : [];
+        if (homeTestimonials.length > 0) {
           let childCarouselHTML = `
             <div class="slick-slider carousel-child" id="child-carousel" data-for=".carousel-parent" data-arrows="true"
               data-loop="true" data-dots="false" data-swipe="true" data-items="1" data-sm-items="3" data-md-items="5"
@@ -937,7 +940,7 @@
               data-swipe="false" data-items="1" data-fade="true" data-child="#child-carousel" data-for="#child-carousel">
           `;
 
-          testimonials.forEach((testimonial) => {
+          homeTestimonials.forEach((testimonial) => {
             const avatarUrl = testimonial.image || '';
             const positionText = testimonial.position ? 
               (testimonial.company ? `${testimonial.position} - ${testimonial.company}` : testimonial.position) : 
@@ -1009,7 +1012,7 @@
             });
           }
         } else {
-          testimonialsContainer.innerHTML = '<p>暂无客户评价</p>';
+          testimonialsContainer.innerHTML = '<p>暂无首页客户评价</p>';
         }
       } catch (error) {
         console.error('加载客户评价失败:', error);

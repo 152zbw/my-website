@@ -183,50 +183,18 @@
     <section class="section section-lg bg-gray-100 text-center">
       <div class="container">
         <h3>辛笠的项目</h3>
-        <div id="projectsContainer"></div>
+        <div id="projectsContainer" class="row row-50 row-xxl-70 justify-content-center"></div>
       </div>
     </section>
-    <!-- Nathan’s Blog Posts-->
+    <!-- Recent Blogs-->
     <section class="section section-lg text-center">
       <div class="container">
         <h3>近期新闻</h3>
-        <div class="row row-50">
-          <div class="col-sm-6 col-md-4 col-lg-3 wow-outer">
-            <!-- Post Tiny-->
-            <article class="post-tiny wow fadeSlideInDown"><a class="post-tiny-media" href="single-blog-post.html"><img
-                  src="images/blog-layouts-1-270x184.jpg" alt="" width="270" height="184" /></a>
-              <h5 class="post-tiny-title"><a href="single-blog-post.html">企业服务观察</a></h5>
-              <time class="post-tiny-time" datetime="2024">2024年</time>
-            </article>
-          </div>
-          <div class="col-sm-6 col-md-4 col-lg-3 wow-outer">
-            <!-- Post Tiny-->
-            <article class="post-tiny wow fadeSlideInDown" data-wow-delay=".05s"><a class="post-tiny-media"
-                href="single-blog-post.html"><img src="images/blog-layouts-2-270x184.jpg" alt="" width="270"
-                  height="184" /></a>
-              <h5 class="post-tiny-title"><a href="single-blog-post.html">流程优化实践</a></h5>
-              <time class="post-tiny-time" datetime="2024">2024年</time>
-            </article>
-          </div>
-          <div class="col-sm-6 col-md-4 col-lg-3 wow-outer">
-            <!-- Post Tiny-->
-            <article class="post-tiny wow fadeSlideInDown" data-wow-delay=".1s"><a class="post-tiny-media"
-                href="single-blog-post.html"><img src="images/blog-layouts-3-270x184.jpg" alt="" width="270"
-                  height="184" /></a>
-              <h5 class="post-tiny-title"><a href="single-blog-post.html">效率提升案例</a></h5>
-              <time class="post-tiny-time" datetime="2024">2024年</time>
-            </article>
-          </div>
-          <div class="col-sm-6 col-md-4 col-lg-3 wow-outer">
-            <!-- Post Tiny-->
-            <article class="post-tiny wow fadeSlideInDown" data-wow-delay=".15s"><a class="post-tiny-media"
-                href="single-blog-post.html"><img src="images/blog-layouts-4-270x184.jpg" alt="" width="270"
-                  height="184" /></a>
-              <h5 class="post-tiny-title"><a href="single-blog-post.html">管理实践分享</a></h5>
-              <time class="post-tiny-time" datetime="2024">2024年</time>
-            </article>
-          </div>
-        </div><a class="button button-primary-outline button-winona" href="sidebar-blog.html">查看所有博客文章</a>
+        <div class="row row-50" id="recentBlogsContainer">
+          <p class="w-100 text-center text-muted">正在加载博客内容...</p>
+        </div>
+        <div class="wow-outer button-outer offset-top-2"><a
+            class="button button-primary-outline button-winona wow slideInUp" href="sidebar-blog.html">查看所有博客文章</a></div>
       </div>
     </section>
     <section class="section section-lg bg-gray-100">
@@ -298,12 +266,13 @@
           <div class="col-md-10 col-lg-6 wow-outer">
             <div class="thumbnail-video-1 bg-gray-700 wow slideInLeft">
               <div class="embed-responsive embed-responsive-16by9">
-                <iframe width="570" height="320" src="#" sandbox="" allowfullscreen=""></iframe>
+                <iframe width="570" height="320" id="aboutVideoFrame" src="" sandbox="" allowfullscreen=""></iframe>
               </div>
               <div class="thumbnail-video__overlay video-overlay"
+                id="aboutVideoOverlay"
                 style="background-image: url(images/video-preview-1-570x320.jpg)">
                 <div class="button-video"></div>
-                <h5>品牌与内容负责人</h5>
+                <h5 id="aboutVideoTitle">品牌与内容负责人</h5>
               </div>
             </div>
           </div>
@@ -408,6 +377,8 @@
   <script>
     document.addEventListener('DOMContentLoaded', async function () {
       await loadAboutFromApi();
+      await renderRecentBlogs();
+      renderAboutVideo();
     });
 
     async function loadAboutFromApi() {
@@ -482,32 +453,35 @@
     }
 
     function renderProjects(projects) {
-      // 找到“辛笠的项目”那一段的 row
       const section = document.querySelector('section.section.section-lg.bg-gray-100.text-center');
       if (!section) return;
 
-      const row = section.querySelector('.row.row-30');
+      const row = section.querySelector('#projectsContainer');
       if (!row) return;
 
       const list = Array.isArray(projects) ? projects : [];
-      const visible = list.filter(p => p && (p.title || p.description || p.image));
+      const normalized = list
+        .map((p) => ({
+          title: p?.title || p?.name || p?.projectTitle || '',
+          description: p?.description || p?.content || p?.summary || '',
+          image: p?.image || p?.cover || p?.picture || p?.thumb || ''
+        }))
+        .filter(p => p.title || p.description || p.image);
 
-      if (visible.length === 0) {
+      if (normalized.length === 0) {
         section.style.display = 'none';
         return;
       }
 
       section.style.display = '';
-      row.innerHTML = visible.slice(0, 6).map((p, idx) => {
+      row.innerHTML = normalized.slice(0, 6).map((p, idx) => {
         const img = p.image || `images/gallery-masonry-${(idx % 6) + 1}-370x256.jpg`;
         const title = p.title || '';
         const desc = p.description || '';
-        // 保持模板原有结构与样式类
-        const isLg = (idx % 3 === 1); // 让部分卡片使用 lg 高图，增加层次
         return `
-          <div class="col-12 col-sm-6 col-lg-4 isotope-item wow-outer">
-            <article class="thumbnail-corporate ${isLg ? 'thumbnail-corporate-lg' : ''} wow slideInDown">
-              <img class="thumbnail-corporate-image" src="${escapeAttr(img)}" alt="${escapeAttr(title)}" width="370" height="${isLg ? '464' : '256'}" />
+          <div class="col-12 col-sm-6 col-lg-4 wow-outer">
+            <article class="thumbnail-corporate wow slideInDown">
+              <img class="thumbnail-corporate-image" src="${escapeAttr(img)}" alt="${escapeAttr(title)}" width="370" height="256" />
               <div class="thumbnail-corporate-caption">
                 <p class="thumbnail-corporate-title">${escapeHtml(title)}</p>
                 <p>${escapeHtml(desc)}</p>
@@ -520,6 +494,105 @@
           </div>
         `;
       }).join('');
+    }
+
+    async function renderRecentBlogs() {
+      const container = document.getElementById('recentBlogsContainer');
+      if (!container || !window.API?.News?.getAll) return;
+
+      try {
+        const news = await window.API.News.getAll();
+        const items = Array.isArray(news) ? news.slice(0, 4) : [];
+        if (!items.length) {
+          container.innerHTML = '<p class="w-100 text-center text-muted">暂无博客内容</p>';
+          return;
+        }
+
+        container.innerHTML = items.map((item, idx) => {
+          const title = item?.title || item?.name || item?.headline || '';
+          const image = item?.image || item?.cover || item?.picture || `images/blog-layouts-${(idx % 4) + 1}-270x184.jpg`;
+          const dateText = item?.date || item?.createdAt || item?.publishedAt || '2024年';
+          const href = item?.id ? `single-blog-post.html?id=${encodeURIComponent(item.id)}` : 'single-blog-post.html';
+          return `
+            <div class="col-sm-6 col-md-4 col-lg-3 wow-outer">
+              <article class="post-tiny wow fadeSlideInDown" data-wow-delay="${idx * 0.05}s">
+                <a class="post-tiny-media" href="${href}"><img src="${escapeAttr(image)}" alt="${escapeAttr(title)}" width="270" height="184" /></a>
+                <h5 class="post-tiny-title"><a href="${href}">${escapeHtml(title)}</a></h5>
+                <time class="post-tiny-time" datetime="2024">${escapeHtml(dateText)}</time>
+              </article>
+            </div>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('加载近期博客失败:', error);
+        container.innerHTML = '<p class="w-100 text-center text-danger">博客加载失败</p>';
+      }
+    }
+
+    async function renderAboutVideo() {
+      const container = document.getElementById('aboutVideoOverlay');
+      const frame = document.getElementById('aboutVideoFrame');
+      const title = document.getElementById('aboutVideoTitle');
+      if (!window.API?.About?.getAll) return;
+
+      try {
+        const list = await window.API.About.getAll();
+        const item = (Array.isArray(list) && list.length) ? list[0] : null;
+        const content = item && item.content ? safeParse(item.content) : null;
+        const data = content || defaultAboutData();
+        if (title) title.textContent = data.videoTitle || '品牌与内容负责人';
+        if (container && data.videoPoster) {
+          container.style.backgroundImage = `url(${data.videoPoster})`;
+        }
+        if (frame) {
+          frame.src = data.videoUrl || '';
+        }
+      } catch (err) {
+        console.error('加载视频模块失败:', err);
+      }
+    }
+
+    async function renderTestimonials() {
+      const container = document.getElementById('aboutTestimonialsCarousel');
+      if (!container || !window.API?.Testimonials?.getAll) return;
+
+      try {
+        const list = await window.API.Testimonials.getAll();
+        const items = Array.isArray(list)
+          ? list.filter(item => (item?.scope || 'about-me') === 'about-me' && (item.isActive ?? item.is_active ?? 1)).slice(0, 3)
+          : [];
+        if (!items.length) {
+          container.innerHTML = '<p class="text-center text-muted">暂无客户评价</p>';
+          return;
+        }
+
+        container.innerHTML = items.map((item, idx) => {
+          const quote = item?.content || item?.quote || item?.text || '';
+          const name = item?.author || item?.name || '';
+          const caption = item?.company || item?.position || '';
+          const image = item?.image || item?.avatar || `images/testimonials-person-${(idx % 3) + 1}-96x96.jpg`;
+          return `
+            <blockquote class="quote-modern">
+              <svg class="quote-modern-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
+                <path d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5L7.539,10.206z"></path>
+              </svg>
+              <div class="quote-modern-text">
+                <p>${escapeHtml(quote)}</p>
+              </div>
+              <div class="quote-modern-meta">
+                <div class="quote-modern-avatar"><img src="${escapeAttr(image)}" alt="" width="96" height="96" /></div>
+                <div class="quote-modern-info">
+                  <cite class="quote-modern-cite">${escapeHtml(name)}</cite>
+                  <p class="quote-modern-caption">${escapeHtml(caption)}</p>
+                </div>
+              </div>
+            </blockquote>
+          `;
+        }).join('');
+      } catch (error) {
+        console.error('加载客户评价失败:', error);
+        container.innerHTML = '<p class="text-center text-danger">客户评价加载失败</p>';
+      }
     }
 
     function escapeHtml(str) {

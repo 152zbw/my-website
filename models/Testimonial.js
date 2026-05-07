@@ -24,6 +24,12 @@ const Testimonial = sequelize.define('Testimonial', {
         type: DataTypes.STRING(255),
         comment: '客户头像'
     },
+    scope: {
+        type: DataTypes.STRING(20),
+        field: 'scope',
+        defaultValue: 'home',
+        comment: '展示位置'
+    },
     content: {
         type: DataTypes.TEXT,
         allowNull: false,

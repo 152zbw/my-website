@@ -34,7 +34,7 @@ router.get('/:id', async (req, res) => {
 // 创建客户评价
 router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { name, position, company, image, content, sortOrder, isActive } = req.body;
+        const { name, position, company, image, content, sortOrder, isActive, scope } = req.body;
         const testimonial = await Testimonial.create({
             name,
             position,
@@ -42,7 +42,8 @@ router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
             image,
             content,
             sortOrder,
-            isActive
+            isActive,
+            scope
         });
         res.status(201).json({ message: '客户评价创建成功', testimonial });
     } catch (error) {
@@ -54,7 +55,7 @@ router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
 // 更新客户评价
 router.put('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { name, position, company, image, content, sortOrder, isActive } = req.body;
+        const { name, position, company, image, content, sortOrder, isActive, scope } = req.body;
         const testimonial = await Testimonial.findByPk(req.params.id);
         if (!testimonial) {
             return res.status(404).json({ message: '客户评价不存在' });
@@ -66,7 +67,8 @@ router.put('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
             image,
             content,
             sortOrder,
-            isActive
+            isActive,
+            scope
         });
         res.json({ message: '客户评价更新成功', testimonial });
     } catch (error) {

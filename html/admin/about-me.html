@@ -209,6 +209,30 @@
                             </div>
                         </div>
 
+                        <div class="form-group">
+                            <label class="form-label">视频模块（前台“客户评价 & 视频”右侧）</label>
+                            <div class="form-group">
+                                <label class="form-label" for="videoTitle">视频标题</label>
+                                <input id="videoTitle" class="form-input" placeholder="例如：品牌与内容负责人">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="videoUrl">视频地址</label>
+                                <input id="videoUrl" class="form-input" placeholder="支持 mp4 地址或嵌入链接">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label" for="videoPoster">视频封面</label>
+                                <input type="hidden" id="videoPoster">
+                                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+                                    <button type="button" class="btn btn-secondary btn-sm" onclick="triggerVideoPosterUpload()">选择封面</button>
+                                    <span id="videoPosterName" style="color:#555;">未选择文件</span>
+                                </div>
+                                <input type="file" id="videoPosterFileInput" accept="image/*" style="display:none;">
+                                <div id="videoPosterPreview" style="margin-top:10px;display:none;">
+                                    <img id="videoPosterPreviewImg" src="" alt="视频封面预览" style="max-width:240px;border:1px solid #ddd;border-radius:4px;">
+                                </div>
+                            </div>
+                        </div>
+
                         <div class="form-actions">
                             <button type="button" class="btn btn-secondary" onclick="loadData()">重置</button>
                             <button type="submit" class="btn btn-primary">保存</button>
@@ -275,6 +299,7 @@
             document.getElementById('project1FileInput').addEventListener('change', (e) => onProjectImageChange(1, e));
             document.getElementById('project2FileInput').addEventListener('change', (e) => onProjectImageChange(2, e));
             document.getElementById('project3FileInput').addEventListener('change', (e) => onProjectImageChange(3, e));
+            document.getElementById('videoPosterFileInput').addEventListener('change', onVideoPosterChange);
         }
 
         function defaultData() {
@@ -292,7 +317,10 @@
                     { title: '企业管理', description: '辛笠为公司提供工具和策略来改善运营。', image: 'images/gallery-masonry-1-370x256.jpg' },
                     { title: '人力资源规划', description: '我们的人力资源规划服务管理他们的人员。', image: 'images/gallery-masonry-2-370x464.jpg' },
                     { title: '税务与会计', description: '税务和会计服务构成了商业管理服务的财务核心。', image: 'images/gallery-masonry-3-370x256.jpg' }
-                ]
+                ],
+                videoTitle: '品牌与内容负责人',
+                videoUrl: '',
+                videoPoster: 'images/video-preview-1-570x320.jpg'
             };
         }
 
@@ -317,6 +345,11 @@
             fillProject(1, projects[0]);
             fillProject(2, projects[1]);
             fillProject(3, projects[2]);
+
+            document.getElementById('videoTitle').value = data.videoTitle || '';
+            document.getElementById('videoUrl').value = data.videoUrl || '';
+            document.getElementById('videoPoster').value = data.videoPoster || '';
+            setVideoPosterPreview(data.videoPoster);
         }
 
         function fillProject(index, project) {
@@ -378,7 +411,10 @@
                 avatar: document.getElementById('avatar').value.trim(),
                 bio: bioQuill ? bioQuill.root.innerHTML.trim() : '',
                 skills: collectSkills(),
-                projects: collectProjects()
+                projects: collectProjects(),
+                videoTitle: document.getElementById('videoTitle').value.trim(),
+                videoUrl: document.getElementById('videoUrl').value.trim(),
+                videoPoster: document.getElementById('videoPoster').value.trim()
             };
             if (!payload.name || !payload.position || !payload.bio) {
                 showMessage('请填写必填项', 'error');
@@ -445,6 +481,10 @@
             document.getElementById(`project${index}FileInput`).click();
         }
 
+        function triggerVideoPosterUpload() {
+            document.getElementById('videoPosterFileInput').click();
+        }
+
         async function onProjectImageChange(index, e) {
             const file = e.target.files && e.target.files[0];
             if (!file) return;
@@ -469,6 +509,40 @@
             const wrap = document.getElementById(`project${index}Preview`);
             const img = document.getElementById(`project${index}PreviewImg`);
             const nameSpan = document.getElementById(`project${index}ImageName`);
+            if (path) {
+                img.src = path;
+                wrap.style.display = 'block';
+                nameSpan.textContent = displayName || path.split('/').pop();
+            } else {
+                wrap.style.display = 'none';
+                nameSpan.textContent = '未选择文件';
+            }
+        }
+
+        async function onVideoPosterChange(e) {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            const nameSpan = document.getElementById('videoPosterName');
+            nameSpan.textContent = '上传中...';
+            try {
+                const res = await window.API.Upload.uploadSingle(file);
+                const filePath = res?.file?.path || '';
+                document.getElementById('videoPoster').value = filePath;
+                setVideoPosterPreview(filePath, file.name);
+                showMessage('视频封面上传成功', 'success');
+            } catch (err) {
+                console.error('视频封面上传失败', err);
+                setVideoPosterPreview('');
+                showMessage(err?.message || '视频封面上传失败', 'error');
+            } finally {
+                e.target.value = '';
+            }
+        }
+
+        function setVideoPosterPreview(path, displayName) {
+            const wrap = document.getElementById('videoPosterPreview');
+            const img = document.getElementById('videoPosterPreviewImg');
+            const nameSpan = document.getElementById('videoPosterName');
             if (path) {
                 img.src = path;
                 wrap.style.display = 'block';
