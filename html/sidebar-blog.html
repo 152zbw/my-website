@@ -126,7 +126,7 @@
           <div class="blog-layout-main">
             <div class="row row-50 row-xxl-70" id="blogsContainer">
               <!-- 博客内容将通过JavaScript动态加载 -->
-              <div class="col-12"><p class="text-center">加载中...</p></div>
+              <div class="col-12"><p class="text-center">正在加载博客内容...</p></div>
             </div>
             <div class="pagination text-center text-sm-left">
               <div class="page-item active"><a class="page-link button-winona" href="#">1</a></div>
@@ -155,7 +155,7 @@
             </div>
             <div class="blog-layout-aside-item">
               <p class="blog-layout-aside-title">关于我们</p>
-              <p>我们是一支专业的商业专家团队，随时准备为您提供财务管理、会计、营销和其他商业相关领域的协助。</p>
+              <p>我们专注于为企业提供内容策划、品牌传播与咨询支持，帮助业务表达更清晰、传播更高效。</p>
             </div>
             <div class="blog-layout-aside-item" id="categoriesContainer">
               <p class="blog-layout-aside-title">分类</p>
@@ -175,9 +175,7 @@
             <div class="col-lg-9 cell-inner">
               <div class="section-lg">
                 <h3 class="wow-outer"><span class="wow slideInDown">联系我们</span></h3>
-                <!-- RD Mailform-->
-                <form class="rd-form rd-mailform" data-form-output="form-output-global" data-form-type="contact"
-                  method="post" action="bat/rd-mailform.php">
+                <form id="contactForm" action="javascript:void(0)" method="POST" novalidate onsubmit="return false;">
                   <div class="row row-10">
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
@@ -217,13 +215,14 @@
                   </div>
                   <div class="group group-middle">
                     <div class="wow-outer">
-                      <button class="button button-primary button-winona wow slideInRight" type="submit">发送消息</button>
+                      <button class="button button-primary button-winona wow slideInRight" type="submit" id="submitBtn">发送消息</button>
                     </div>
                     <p>或使用</p>
                     <div class="wow-outer"><a
                         class="button button-primary-outline button-icon button-icon-left button-winona wow slideInLeft"
                         href="#"><span class="icon text-primary mdi mdi-facebook-messenger"></span>信使</a></div>
                   </div>
+                  <div id="successMessage" style="display:none;margin-top:20px;padding:15px;background-color:#d4edda;color:#155724;border-radius:4px;">消息发送成功！我们会尽快与您联系。</div>
                 </form>
               </div>
             </div>
@@ -241,8 +240,7 @@
               alt="" width="167" height="23" srcset="images/logo-light-324x45.png 2x" /></a>
           <!-- Rights-->
           <p class="rights"><span data-footer-copyright>&copy;&nbsp;2024 保留所有权利。</span><span>&nbsp;</span><br
-              class="d-sm-none" /><a href="privacy-policy.html" data-footer-terms>使用条款</a><span> 和</span><span>&nbsp;</span><span data-footer-links><a href="privacy-policy.html">隐私政策</a> <a target="_blank" href="https://www.mobanwang.com/"
-              title="网站模板">网站模板</a></span></p>
+              class="d-sm-none" /><a href="privacy-policy.html" data-footer-terms>使用条款</a><span> 和</span><span>&nbsp;</span><span data-footer-links><a href="privacy-policy.html">隐私政策</a></span></p>
         </div>
       </div>
     </footer>
@@ -286,7 +284,7 @@
 
       try {
         // 显示加载中
-        blogsContainer.innerHTML = '<div class="col-12"><p class="text-center">加载中...</p></div>';
+        blogsContainer.innerHTML = '<div class="col-12"><p class="text-center">正在加载博客内容...</p></div>';
 
         // 从API获取博客数据
         const news = await window.API.News.getAll();
@@ -377,7 +375,7 @@
         }
       } catch (error) {
         console.error('加载博客失败:', error);
-        blogsContainer.innerHTML = `<div class="col-12"><p class="text-center" style="color: red;">加载博客失败: ${error.message || '请稍后重试'}</p></div>`;
+        blogsContainer.innerHTML = `<div class="col-12"><p class="text-center" style="color: red;">博客加载失败：${error.message || '请稍后重试'}</p></div>`;
       }
     }
 

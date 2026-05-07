@@ -149,7 +149,7 @@
                 <script>
                   // 初始化导航栏数据
                   function initNavigationData() {
-                    // 总是使用最新的导航栏数据，替换旧数据
+                    // 使用导航栏默认数据
                     const initialNavigation = {
                       groups: [
                         { id: 1, name: '首页', parentId: null },
@@ -270,7 +270,7 @@
                   </h2>
                 </div>
                 <div class="wow-outer p">
-                  <p class="custom-article wow fadeInDown" data-wow-delay=".2s" id="heroDescription">加载中...</p>
+                  <p class="custom-article wow fadeInDown" data-wow-delay=".2s" id="heroDescription">欢迎了解我们的咨询服务。</p>
                 </div><a class="button button-primary button-winona wow FadeIn" id="heroButton" href="contacts.html">了解更多</a>
               </div>
             </div>
@@ -369,7 +369,7 @@
             class="text-width-1 wow slideInDown">查看我们最近完成的一些项目案例。每个项目都经过了大量的研究和分析，以创造出卓越的解决方案。</span>
         </p>
         <div class="row row-20 offset-top-3 hoverdir" id="projectsContainer">
-          <p style="width:100%; text-align:center; color:#777;">加载中...</p>
+          <p style="width:100%; text-align:center; color:#777;">内容加载中...</p>
         </div>
       </div>
     </section>
@@ -503,7 +503,7 @@
                     </div>
                     <div class="wow-outer"><a
                         class="button button-primary-outline button-icon button-icon-left button-winona wow slideInLeft"
-                        href="#"><span class="icon text-primary mdi mdi-facebook-messenger"></span> 信使</a></div>
+                        href="contacts.html"><span class="icon text-primary mdi mdi-facebook-messenger"></span> 信使</a></div>
                   </div>
                   <div id="successMessage" style="display:none;margin-top:20px;padding:15px;background-color:#d4edda;color:#155724;border-radius:4px;">消息发送成功！我们会尽快与您联系。</div>
                 </form>
@@ -522,7 +522,7 @@
         <div class="footer-minimal-inner"><a class="brand" href="index.html"><img src="images/ce-logo.png"
               alt="CE International Group Co.,LTD" width="169" height="24" /></a>
           <!-- Rights-->
-          <p class="rights"><span data-footer-copyright>&copy;&nbsp;2024 笠偲咨询. 保留所有权利.</span><span>&nbsp;</span><br
+          <p class="rights"><span data-footer-copyright>&copy;&nbsp;2024 保留所有权利.</span><span>&nbsp;</span><br
               class="d-sm-none" /><a href="privacy-policy.html" data-footer-terms>隐私政策</a><span> 和</span><span>&nbsp;</span><span data-footer-links><a href="privacy-policy.html">隐私政策</a><span> | </span><a href="contacts.html">联系我们</a></span><br><span data-footer-brand style="display:block;margin-top:6px;"></span></p>
         </div>
       </div>
@@ -668,17 +668,17 @@
 
     // 页面加载时渲染所有动态内容
     document.addEventListener('DOMContentLoaded', async function () {
-      console.log('DOMContentLoaded事件触发，开始渲染动态内容');
+      console.log('DOMContentLoaded事件触发，开始渲染内容');
 
-      // 先清掉默认占位，避免刷新时闪旧数据
+      // 先清掉默认占位，避免刷新时闪内容
       const servicesContainer = document.getElementById('servicesContainer');
-      if (servicesContainer) servicesContainer.innerHTML = '<p>加载中...</p>';
+      if (servicesContainer) servicesContainer.innerHTML = '<p>内容加载中...</p>';
       const projectsContainer = document.getElementById('projectsContainer');
-      if (projectsContainer) projectsContainer.innerHTML = '<p style="width:100%; text-align:center; color:#777;">加载中...</p>';
+      if (projectsContainer) projectsContainer.innerHTML = '<p style="width:100%; text-align:center; color:#777;">内容加载中...</p>';
       const blogsContainer = document.getElementById('blogsContainer');
-      if (blogsContainer) blogsContainer.innerHTML = '<p>加载中...</p>';
+      if (blogsContainer) blogsContainer.innerHTML = '<p>内容加载中...</p>';
       const testimonialsContainer = document.getElementById('testimonialsContainer');
-      if (testimonialsContainer) testimonialsContainer.innerHTML = '<p>加载中...</p>';
+      if (testimonialsContainer) testimonialsContainer.innerHTML = '<p>内容加载中...</p>';
 
       // 加载网站信息
       await loadWebsiteInfo();
@@ -771,7 +771,7 @@
             `;
           }
           if (heroDescription) {
-            heroDescription.innerHTML = info.heroDescription || '加载中...';
+            heroDescription.innerHTML = info.heroDescription || '欢迎了解我们的咨询服务。';
           }
           if (aboutDescription) {
             aboutDescription.innerHTML = info.description || '';
