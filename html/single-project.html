@@ -254,17 +254,17 @@
       </div>
     </section>
     <!-- About This Project -->
-    <section class="section section-lg">
+    <section class="section section-lg" id="projectDetailsSection">
       <div class="container">
         <div class="row row-50 justify-content-center justify-content-lg-between flex-lg-row-reverse">
           <div class="col-md-10 col-lg-5 col-xl-4">
             <div class="inset-left-2">
               <h3>关于此项目</h3>
               <h4 class="h4-smaller" id="aboutProjectTitle"></h4>
-              <div id="aboutProjectText">
-                <!-- 内容将从API动态加载 -->
+              <div id="aboutProjectText" class="project-description">
+                <p class="text-muted">内容加载中...</p>
               </div>
-              <a class="button button-primary button-winona" href="#" style="min-width: 230px;">阅读更多</a>
+              <a class="button button-primary button-winona" href="#projectDetailsSection" style="min-width: 230px;">查看详情</a>
             </div>
           </div>
           <div class="col-md-10 col-lg-7">
@@ -293,219 +293,20 @@
     <section class="section section-lg text-center">
       <div class="container">
         <h3 class="wow-outer"><span class="wow slideInUp">我们的团队</span></h3>
-        <div class="row row-50 row-xxl-70 justify-content-center justify-content-lg-start">
-          <div class="col-md-10 col-lg-6 wow-outer">
-            <!-- Profile Creative-->
-            <article class="profile-creative wow slideInLeft">
-              <figure class="profile-creative-figure"><img class="profile-creative-image"
-                  src="images/team-1-270x273.jpg" alt="" width="270" height="273" />
-              </figure>
-              <div class="profile-creative-main">
-                <h5 class="profile-creative-title"><a href="#">周立</a></h5>
-                <p class="profile-creative-position">首席执行官，创始人</p>
-                <div class="profile-creative-contacts">
-                  <div class="object-inline"><span class="icon icon-md mdi mdi-phone"></span><a
-                      href="tel:#">1-800-1324-567</a></div>
-                </div>
-                <p>周立于2012年创立了公司，长期专注于帮助企业优化流程并提升经营效率。</p>
-              </div>
-            </article>
-          </div>
-          <div class="col-md-10 col-lg-6 wow-outer">
-            <!-- Profile Creative-->
-            <article class="profile-creative wow slideInLeft" data-wow-delay=".2s">
-              <figure class="profile-creative-figure"><img class="profile-creative-image"
-                  src="images/team-2-270x273.jpg" alt="" width="270" height="273" />
-              </figure>
-              <div class="profile-creative-main">
-                <h5 class="profile-creative-title"><a href="#">刘珊</a></h5>
-                <p class="profile-creative-position">项目经理</p>
-                <div class="profile-creative-contacts">
-                  <div class="object-inline"><span class="icon icon-md mdi mdi-phone"></span><a
-                      href="tel:#">1-800-1324-567</a></div>
-                </div>
-                <p>刘珊主要负责项目协调与客户沟通，确保各项工作按计划推进。</p>
-              </div>
-            </article>
-          </div>
-          <div class="col-md-10 col-lg-6 wow-outer">
-            <!-- Profile Creative-->
-            <article class="profile-creative wow slideInLeft">
-              <figure class="profile-creative-figure"><img class="profile-creative-image"
-                  src="images/team-3-270x273.jpg" alt="" width="270" height="273" />
-              </figure>
-              <div class="profile-creative-main">
-                <h5 class="profile-creative-title"><a href="#">布莱恩·佩恩</a></h5>
-                <p class="profile-creative-position">部门经理</p>
-                <div class="profile-creative-contacts">
-                  <div class="object-inline"><span class="icon icon-md mdi mdi-phone"></span><a
-                      href="tel:#">1-800-1324-567</a></div>
-                </div>
-                <p>布莱恩负责为客户提供项目推进与运营支持，协助团队做出更稳妥的业务决策。</p>
-              </div>
-            </article>
-          </div>
-          <div class="col-md-10 col-lg-6 wow-outer">
-            <!-- Profile Creative-->
-            <article class="profile-creative wow slideInLeft" data-wow-delay=".2s">
-              <figure class="profile-creative-figure"><img class="profile-creative-image"
-                  src="images/team-4-270x273.jpg" alt="" width="270" height="273" />
-              </figure>
-              <div class="profile-creative-main">
-                <h5 class="profile-creative-title"><a href="#">赵敏</a></h5>
-                <p class="profile-creative-position">营销经理</p>
-                <div class="profile-creative-contacts">
-                  <div class="object-inline"><span class="icon icon-md mdi mdi-phone"></span><a
-                      href="tel:#">1-800-1324-567</a></div>
-                </div>
-                <p>赵敏专注于品牌传播与营销执行，协助项目在内容和转化上取得更好的效果。</p>
-              </div>
-            </article>
-          </div>
+        <div class="row row-50 row-xxl-70 justify-content-center justify-content-lg-start" id="teamContainer">
+          <div class="col-12"><p class="text-center text-muted w-100">正在加载团队成员...</p></div>
         </div>
         <div class="wow-outer button-outer"><a class="button button-lg button-primary button-winona wow slideInUp"
-            href="#">查看所有团队成员</a></div>
+            href="team.html">查看所有团队成员</a></div>
       </div>
     </section>
     <!-- Testimonials-->
     <section class="section section-lg bg-gray-100 text-center">
       <div class="container">
         <h3>客户评价</h3>
-        <div class="slick-widget-testimonials wow fadeIn">
-          <div class="slick-slider carousel-child" id="child-carousel" data-for=".carousel-parent" data-arrows="true"
-            data-loop="true" data-dots="false" data-swipe="true" data-items="1" data-sm-items="3" data-md-items="5"
-            data-lg-items="5" data-xl-items="5" data-center-mode="true" data-slide-to-scroll="1">
-            <div class="item wow-outer"><img class="wow slideInLeft" src="images/testimonials-person-1-96x96.jpg" alt=""
-                width="96" height="96" />
-            </div>
-            <div class="item wow-outer"><img class="wow slideInLeft" src="images/testimonials-person-2-96x96.jpg" alt=""
-                width="96" height="96" />
-            </div>
-            <div class="item wow-outer"><img class="wow slideInLeft" src="images/testimonials-person-3-96x96.jpg" alt=""
-                width="96" height="96" />
-            </div>
-            <div class="item wow-outer"><img class="wow slideInLeft" src="images/testimonials-person-4-96x96.jpg" alt=""
-                width="96" height="96" />
-            </div>
-            <div class="item wow-outer"><img class="wow slideInLeft" src="images/testimonials-person-5-96x96.jpg" alt=""
-                width="96" height="96" />
-            </div>
-            <div class="item wow-outer"><img class="wow slideInLeft" src="images/testimonials-person-3-96x96.jpg" alt=""
-                width="96" height="96" />
-            </div>
-          </div>
-          <!-- Slick Carousel-->
-          <div class="slick-slider carousel-parent" data-arrows="false" data-loop="true" data-dots="false"
-            data-swipe="false" data-items="1" data-fade="true" data-child="#child-carousel" data-for="#child-carousel">
-            <div class="item">
-              <!-- Quote Light 1-->
-              <blockquote class="quote-light">
-                <cite class="quote-light-cite">李女士</cite>
-                <p class="quote-light-caption">科技公司 总经理</p>
-                <svg class="quote-light-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
-                  <path
-                    d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5                L7.539,10.206z">
-                  </path>
-                </svg>
-                <div class="quote-light-text">
-                  <p>项目执行过程中沟通顺畅，方案落地速度快，整体效果超出预期。</p>
-                </div>
-                <div class="quote-light-footer"><img class="quote-light-image" src="images/logo-the-oldbrand-83x64.png"
-                    alt="" width="83" height="64" />
-                </div>
-              </blockquote>
-            </div>
-            <div class="item">
-              <!-- Quote Light 2-->
-              <blockquote class="quote-light">
-                <cite class="quote-light-cite">王先生</cite>
-                <p class="quote-light-caption">制造企业 财务负责人</p>
-                <svg class="quote-light-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
-                  <path
-                    d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5                L7.539,10.206z">
-                  </path>
-                </svg>
-                <div class="quote-light-text">
-                  <p>服务过程专业高效，团队能快速理解需求并给出可执行的解决方案。</p>
-                </div>
-                <div class="quote-light-footer"><img class="quote-light-image" src="images/logo-havana-kabana-96x64.png"
-                    alt="" width="96" height="64" />
-                </div>
-              </blockquote>
-            </div>
-            <div class="item">
-              <!-- Quote Light 3-->
-              <blockquote class="quote-light">
-                <cite class="quote-light-cite">周先生</cite>
-                <p class="quote-light-caption">品牌增长负责人</p>
-                <svg class="quote-light-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
-                  <path
-                    d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5                L7.539,10.206z">
-                  </path>
-                </svg>
-                <div class="quote-light-text">
-                  <p>方案清晰、响应及时，帮助我们更快完成了项目目标。</p>
-                </div>
-                <div class="quote-light-footer"><img class="quote-light-image" src="images/logo-majestic-104x64.png"
-                    alt="" width="104" height="64" />
-                </div>
-              </blockquote>
-            </div>
-            <div class="item">
-              <!-- Quote Light 4 -->
-              <blockquote class="quote-light">
-                <cite class="quote-light-cite">陈女士</cite>
-                <p class="quote-light-caption">零售品牌 销售总监</p>
-                <svg class="quote-light-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
-                  <path
-                    d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5                L7.539,10.206z">
-                  </path>
-                </svg>
-                <div class="quote-light-text">
-                  <p>团队协作高效，能快速响应需求并给出清晰的执行建议。</p>
-                </div>
-                <div class="quote-light-footer"><img class="quote-light-image" src="images/logo-hillplan-84x64.png"
-                    alt="" width="84" height="64" />
-                </div>
-              </blockquote>
-            </div>
-            <div class="item">
-              <!-- Quote Light 5-->
-              <blockquote class="quote-light">
-                <cite class="quote-light-cite">比尔·华纳</cite>
-                <p class="quote-light-caption">Brownie 高级经理</p>
-                <svg class="quote-light-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
-                  <path
-                    d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5                L7.539,10.206z">
-                  </path>
-                </svg>
-                <div class="quote-light-text">
-                  <p>从策划到执行都很到位，最终结果也比较符合我们的预期。</p>
-                </div>
-                <div class="quote-light-footer"><img class="quote-light-image" src="images/logo-brownie-103x61.png"
-                    alt="" width="103" height="61" />
-                </div>
-              </blockquote>
-            </div>
-            <div class="item">
-              <!-- Quote Light 3-->
-              <blockquote class="quote-light">
-                <cite class="quote-light-cite">赵先生</cite>
-                <p class="quote-light-caption">项目经理</p>
-                <svg class="quote-light-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
-                  <path
-                    d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5                L7.539,10.206z">
-                  </path>
-                </svg>
-                <div class="quote-light-text">
-                  <p>整体合作体验顺畅，沟通及时，支持也很到位。</p>
-                </div>
-                <div class="quote-light-footer"><img class="quote-light-image" src="images/logo-majestic-104x64.png"
-                    alt="" width="104" height="64" />
-                </div>
-              </blockquote>
-            </div>
-          </div>
+        <div class="slick-widget-testimonials wow fadeIn" id="testimonialsContainer">
+          <p class="text-center text-muted">正在加载客户评价...</p>
+        </div>
         </div>
       </div>
     </section>
@@ -632,6 +433,8 @@
       const projectId = getUrlParameter('id');
       if (projectId) {
         await renderProjectDetails(projectId);
+        await renderProjectTeam();
+        await renderProjectTestimonials();
       } else {
         document.querySelector('.breadcrumbs-custom-title').textContent = '项目不存在';
       }
@@ -670,7 +473,7 @@
           }
 
           const projectDescription = document.getElementById('projectDescription');
-          if (projectDescription) projectDescription.innerHTML = project.content || ''; // 修改为 content
+          if (projectDescription) projectDescription.innerHTML = project.content || '<p>暂无项目详情内容</p>'; // 修改为 content
 
           const projectDuration = document.getElementById('projectDuration');
           if (projectDuration) {
@@ -716,6 +519,75 @@
       } catch (error) {
         console.error('加载项目详情失败:', error);
         document.querySelector('.breadcrumbs-custom-title').textContent = '项目加载失败';
+      }
+    }
+
+    async function renderProjectTeam() {
+      const container = document.getElementById('teamContainer');
+      if (!container || !window.API?.Team?.getAll) return;
+
+      try {
+        const list = await window.API.Team.getAll();
+        const items = Array.isArray(list)
+          ? list.filter(item => (item?.isActive ?? item?.is_active ?? 1)).slice(0, 4)
+          : [];
+        if (!items.length) {
+          container.innerHTML = '<div class="col-12"><p class="text-center text-muted">暂无团队成员</p></div>';
+          return;
+        }
+
+        container.innerHTML = items.map((item, idx) => `
+          <div class="col-md-10 col-lg-6 wow-outer">
+            <article class="profile-creative wow slideInLeft" data-wow-delay=".${(idx + 1) * 2}s">
+              <figure class="profile-creative-figure"><img class="profile-creative-image" src="${item.image || item.avatar || 'images/team-1-270x273.jpg'}" alt="${item.name || ''}" width="270" height="273" /></figure>
+              <div class="profile-creative-main">
+                <h5 class="profile-creative-title"><a href="#">${item.name || ''}</a></h5>
+                <p class="profile-creative-position">${item.position || item.title || ''}</p>
+                <p>${item.description || item.bio || ''}</p>
+              </div>
+            </article>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('加载团队成员失败:', error);
+        container.innerHTML = '<div class="col-12"><p class="text-center text-danger">加载团队成员失败</p></div>';
+      }
+    }
+
+    async function renderProjectTestimonials() {
+      const container = document.getElementById('testimonialsContainer');
+      if (!container || !window.API?.Testimonials?.getAll) return;
+
+      try {
+        const list = await window.API.Testimonials.getAll();
+        const items = Array.isArray(list)
+          ? list.filter(item => (item?.isActive ?? item?.is_active ?? 1)).slice(0, 5)
+          : [];
+        if (!items.length) {
+          container.innerHTML = '<p class="text-center text-muted">暂无客户评价</p>';
+          return;
+        }
+
+        container.innerHTML = items.map((item) => `
+          <div class="item">
+            <blockquote class="quote-light">
+              <cite class="quote-light-cite">${item.name || item.author || ''}</cite>
+              <p class="quote-light-caption">${item.company || item.position || ''}</p>
+              <svg class="quote-light-mark" x="0px" y="0px" width="35px" height="25px" viewbox="0 0 35 25">
+                <path d="M27.461,10.206h7.5v15h-15v-15L25,0.127h7.5L27.461,10.206z M7.539,10.206h7.5v15h-15v-15L4.961,0.127h7.5L7.539,10.206z"></path>
+              </svg>
+              <div class="quote-light-text">
+                <p>${item.content || item.quote || item.text || ''}</p>
+              </div>
+              <div class="quote-light-footer">
+                <img class="quote-light-image" src="${item.image || item.avatar || 'images/logo-majestic-104x64.png'}" alt="" width="104" height="64" />
+              </div>
+            </blockquote>
+          </div>
+        `).join('');
+      } catch (error) {
+        console.error('加载客户评价失败:', error);
+        container.innerHTML = '<p class="text-center text-danger">加载客户评价失败</p>';
       }
     }
   </script>

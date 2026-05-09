@@ -368,6 +368,7 @@
             try {
                 // 假设后端存在 AboutCompany API
                 await window.API.AboutCompany.update(payload);
+                localStorage.setItem('about-company-refresh-ts', String(Date.now()));
                 showMessage('保存成功','success');
             } catch (err) {
                 console.error('保存失败', err);

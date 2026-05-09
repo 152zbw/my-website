@@ -439,25 +439,7 @@
           <div class="col-lg-6">
             <h3 class="wow fadeInUp" data-wow-delay=".1s" id="companyTitle">公司简介</h3>
             <div class="about-content mt-4 wow fadeInUp" data-wow-delay=".2s" id="companyContent">
-              <p>我们是一家专业的咨询公司，致力于为客户提供高质量的商业咨询服务。我们拥有一支经验丰富、专业过硬的团队，能够为客户提供全方位的解决方案。</p>
-              <p>成立于2012年，我们已经为超过150家企业提供了专业的咨询服务，涵盖了多个行业和领域。我们始终坚持以客户为中心，以结果为导向，为客户创造最大的价值。</p>
-              <p>我们的服务范围包括：</p>
-              <div class="row">
-                <div class="col-md-6">
-                  <ul class="list-unstyled mt-3">
-                    <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>战略规划</li>
-                    <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>市场分析</li>
-                    <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>管理咨询</li>
-                  </ul>
-                </div>
-                <div class="col-md-6">
-                  <ul class="list-unstyled mt-3">
-                    <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>财务优化</li>
-                    <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>数字化转型</li>
-                    <li class="mb-2"><i class="fas fa-check text-primary mr-2"></i>组织发展</li>
-                  </ul>
-                </div>
-              </div>
+              <p class="text-muted">内容加载中...</p>
             </div>
           </div>
           <div class="col-lg-6 mt-6 mt-lg-0">
@@ -831,6 +813,10 @@
   <script>
     // 页面加载时从API加载公司简介数据
     document.addEventListener('DOMContentLoaded', function () {
+      const refreshTs = localStorage.getItem('about-company-refresh-ts');
+      if (refreshTs) {
+        localStorage.removeItem('about-company-refresh-ts');
+      }
       loadAboutCompanyInfo();
     });
 
@@ -860,31 +846,29 @@
           window.API?.Testimonials?.getAll?.().catch(() => [])
         ]);
 
-        const container = document.getElementById('aboutCompanyContent');
         const companyTitleElem = document.getElementById('companyTitle');
         const companyContentElem = document.getElementById('companyContent');
         const companyImageElem = document.getElementById('companyImage');
         const breadcrumbsTitle = document.querySelector('.breadcrumbs-custom-title');
 
         if (aboutCompany) {
-          // 更新页面标题
-          document.title = (aboutCompany.title || '公司简介') + ' - 咨询公司官网';
+          const titleText = aboutCompany.title || '公司简介';
+          const summaryHtml = aboutCompany.summary || aboutCompany.excerpt || '';
+          const contentHtml = aboutCompany.content || '';
+          const renderedContent = summaryHtml
+            ? `<p>${summaryHtml}</p>${contentHtml}`
+            : contentHtml;
 
-          // 更新面包屑导航标题
-          if (breadcrumbsTitle) {
-            breadcrumbsTitle.textContent = aboutCompany.title || '公司简介';
-          }
-
-          // 渲染公司简介内容
-          if (companyTitleElem) companyTitleElem.textContent = aboutCompany.title || '公司简介';
-          if (companyContentElem) companyContentElem.innerHTML = aboutCompany.content || ''; // 使用 innerHTML
+          document.title = `${titleText} - 咨询公司官网`;
+          if (breadcrumbsTitle) breadcrumbsTitle.textContent = titleText;
+          if (companyTitleElem) companyTitleElem.textContent = titleText;
+          if (companyContentElem) companyContentElem.innerHTML = renderedContent || '<p>暂无公司简介内容</p>';
           if (companyImageElem) companyImageElem.src = aboutCompany.image || 'images/services-1-570x368.jpg';
         } else {
-          // API 没有数据时，保持后台/页面原始内容，不再注入旧模板默认文案
-          if (breadcrumbsTitle) {
-            breadcrumbsTitle.textContent = '公司简介';
-          }
+          if (breadcrumbsTitle) breadcrumbsTitle.textContent = '公司简介';
           if (companyTitleElem) companyTitleElem.textContent = '公司简介';
+          if (companyContentElem) companyContentElem.innerHTML = '<p>暂无公司简介内容</p>';
+          if (companyImageElem) companyImageElem.src = 'images/services-1-570x368.jpg';
         }
 
         // 统计数据：来自网站信息（WebsiteInfo）
@@ -931,7 +915,7 @@
                 image: x?.image || x?.avatar || 'images/team-1-370x368.jpg'
               }))
           : [];
-        loadTeam(teamList.length ? teamList : getDefaultTeam());
+        loadTeam(teamList);
 
         // 客户评价：来自「客户评价」（只取激活）
         const testimonialsList = Array.isArray(testimonials)
@@ -953,8 +937,6 @@
 
       } catch (error) {
         console.error('Error loading about company info:', error);
-      }
-
         loadStatistics(buildStatisticsFromWebsiteInfo(null));
         loadCoreAdvantages(getDefaultCoreAdvantages());
         loadServices(getDefaultServices());
@@ -1002,11 +984,7 @@
     }
 
     function getDefaultTeam() {
-      return [
-        { name: '张总', position: '创始人 & 首席顾问', image: 'images/team-1-370x368.jpg' },
-        { name: '李经理', position: '战略咨询总监', image: 'images/team-2-370x368.jpg' },
-        { name: '王总监', position: '市场分析专家', image: 'images/team-3-370x368.jpg' }
-      ];
+      return [];
     }
 
     function getDefaultTestimonials() {
