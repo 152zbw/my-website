@@ -122,51 +122,64 @@
     <!-- Overview-->
     <section class="section section-sm bg-gray-100">
       <div class="container">
-        <!-- 项目详情卡片 - 纵向排列 -->
+        <!-- 项目详情卡片 - 横向一行 -->
         <div class="project-details-grid">
-          <div class="project-detail-item">
+          <div class="project-detail-item project-detail-item--accent">
             <h4>客户</h4>
-            <p class="text-primary" id="projectClient"></p>
+            <p class="text-primary project-detail-value" id="projectClient"></p>
           </div>
-          <div class="project-detail-item">
+          <div class="project-detail-item project-detail-item--accent">
             <h4>项目分类</h4>
-            <p id="projectCategory"></p>
+            <p class="project-detail-value" id="projectCategory"></p>
           </div>
-          <div class="project-detail-item">
+          <div class="project-detail-item project-detail-item--accent">
             <h4>服务内容</h4>
             <ul class="project-services-list" id="projectServices">
               <!-- 服务内容将从API动态加载 -->
             </ul>
           </div>
-          <div class="project-detail-item">
-            <h4>项目简介</h4>
-            <div class="project-description" id="projectDescription">
-              <!-- 项目简介将从API动态加载 -->
-            </div>
-          </div>
-          <div class="project-detail-item">
+          <div class="project-detail-item project-detail-item--accent">
             <h4>项目周期</h4>
-            <p id="projectDuration"></p>
+            <p class="project-detail-value" id="projectDuration"></p>
           </div>
+        </div>
+        <div class="project-detail-item project-detail-item--summary project-summary-panel" id="projectDetailsSection">
+          <div class="project-summary-badge">项目摘要</div>
+          <div class="project-description project-description-summary" id="projectDescription"></div>
         </div>
 
         <style>
           .project-details-grid {
             display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 22px;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
           }
 
           .project-detail-item {
             background: linear-gradient(180deg, #ffffff 0%, #fbfdff 100%);
             padding: 28px;
-            border-radius: 14px;
-            box-shadow: 0 10px 30px rgba(44, 62, 80, 0.08);
+            border-radius: 16px;
+            box-shadow: 0 12px 32px rgba(44, 62, 80, 0.08);
             border: 1px solid rgba(52, 152, 219, 0.08);
             min-height: 148px;
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
+            position: relative;
+            overflow: hidden;
+          }
+
+          .project-detail-item::after {
+            content: '';
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 4px;
+            background: linear-gradient(90deg, #3498db, #8e44ad);
+            opacity: 0.85;
+          }
+
+          .project-detail-item--accent {
+            background: linear-gradient(180deg, #ffffff 0%, #f9fcff 100%);
           }
 
           .project-detail-item h4 {
@@ -186,6 +199,11 @@
             border-radius: 50%;
             background: #3498db;
             display: inline-block;
+          }
+
+          .project-detail-value {
+            font-size: 16px;
+            font-weight: 600;
           }
 
           .project-detail-item p {
@@ -231,6 +249,104 @@
             font-size: 15px;
           }
 
+          .project-description-summary {
+            max-width: 100%;
+            margin: 0 auto;
+            text-align: left;
+            padding: 16px 22px;
+            background: #f8fbff;
+            border: 1px solid rgba(52, 152, 219, 0.12);
+            border-radius: 12px;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);
+          }
+
+          .project-summary-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            margin: 0 auto 14px;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: rgba(52, 152, 219, 0.1);
+            color: #2c3e50;
+            font-size: 12px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+          }
+
+          .project-description-summary p {
+            margin-bottom: 14px;
+            text-align: left;
+            text-indent: 0;
+          }
+
+          .project-description-summary h2,
+          .project-description-summary h3,
+          .project-description-summary h4,
+          .project-description-summary h5,
+          .project-description-summary h6 {
+            text-align: left;
+          }
+
+          .project-detail-item--summary {
+            min-height: 220px;
+            max-width: 100%;
+          }
+
+          .project-summary-panel {
+            margin-top: 18px;
+          }
+
+          .project-detail-item--summary .project-description-summary {
+            width: 100%;
+          }
+
+          .project-detail-item--full,
+          .project-detail-item--full-width {
+            grid-column: 1 / -1;
+            min-height: auto;
+          }
+
+          .project-hero-row {
+            align-items: center;
+          }
+
+          .project-hero-image-wrap {
+            border-radius: 18px;
+            overflow: hidden;
+            box-shadow: 0 14px 35px rgba(44, 62, 80, 0.12);
+            background: #f5f7fb;
+          }
+
+          .project-hero-image-inner {
+            width: 100%;
+          }
+
+          .project-hero-image {
+            width: 100%;
+            display: block;
+            object-fit: cover;
+            max-height: 420px;
+          }
+
+          .project-hero-summary {
+            max-width: 100%;
+            margin: 0 auto;
+          }
+
+          .project-hero-summary .project-description-summary {
+            max-width: 100%;
+            margin: 0;
+            text-align: left;
+            padding-left: 14px;
+            padding-right: 14px;
+          }
+
+          .project-hero-summary .button {
+            margin-top: 18px;
+          }
+
           .project-description h2 {
             font-size: 20px;
             margin-top: 20px;
@@ -272,38 +388,24 @@
         </style>
       </div>
     </section>
-    <!-- About This Project -->
-    <section class="section section-lg" id="projectDetailsSection">
+    <section class="section section-lg" id="projectHeroSection" style="padding-top: 0;">
       <div class="container">
-        <div class="row row-50 justify-content-center justify-content-lg-between flex-lg-row-reverse">
-          <div class="col-md-10 col-lg-5 col-xl-4">
-            <div class="inset-left-2">
-              <h3>关于此项目</h3>
-              <h4 class="h4-smaller" id="aboutProjectTitle"></h4>
-              <div id="aboutProjectText" class="project-description">
+        <div class="row row-40 align-items-center project-hero-row">
+          <div class="col-lg-6">
+            <div id="swiperWrapper" class="project-hero-image-wrap">
+              <p class="text-muted">正在加载项目封面...</p>
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="project-hero-summary text-left">
+              <div class="project-summary-badge">关于此项目</div>
+              <h3 class="mb-3" id="aboutProjectTitle"></h3>
+              <div id="aboutProjectText" class="project-description project-description-summary">
                 <p class="text-muted">内容加载中...</p>
               </div>
               <a class="button button-primary button-winona" href="#projectDetailsSection" style="min-width: 230px;">查看详情</a>
             </div>
           </div>
-          <div class="col-md-10 col-lg-7">
-            <div class="thumbnail-video-1 bg-gray-700" style="border-radius: 16px; overflow: hidden; box-shadow: 0 14px 35px rgba(0,0,0,.12);">
-              <div class="embed-responsive embed-responsive-16by9">
-                <iframe width="570" height="320" src="#" sandbox="" allowfullscreen=""></iframe>
-              </div>
-              <div class="thumbnail-video__overlay video-overlay"
-                style="background-image: url(images/video-preview-1-570x320.jpg)" id="projectVideoOverlay">
-                <div class="button-video button-video-lg"></div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <section class="section text-center" id="projectHeroSection" style="padding-top: 0; padding-bottom: 0;">
-      <div class="container-fluid px-0">
-        <div id="swiperWrapper" style="min-height: 420px; background: #f5f7fb; display:flex; align-items:center; justify-content:center; overflow:hidden;">
-          <p class="text-muted">正在加载项目封面...</p>
         </div>
       </div>
     </section>
@@ -492,7 +594,18 @@
           }
 
           const projectDescription = document.getElementById('projectDescription');
-          if (projectDescription) projectDescription.innerHTML = project.content || '<p>暂无项目详情内容</p>'; // 修改为 content
+          const summaryHtml = project.description || project.summary || '';
+          const fullContentHtml = project.content || '';
+          if (projectDescription) {
+            projectDescription.innerHTML = summaryHtml || fullContentHtml || '<p>暂无项目简介内容</p>';
+          }
+
+          const projectOverviewItems = document.querySelectorAll('.project-detail-item');
+          projectOverviewItems.forEach(item => {
+            if (item.querySelector('#projectDescription')) {
+              item.classList.add('project-detail-item--summary');
+            }
+          });
 
           const projectDuration = document.getElementById('projectDuration');
           if (projectDuration) {
@@ -505,15 +618,15 @@
 
           const aboutProjectText = document.getElementById('aboutProjectText');
           if (aboutProjectText) {
-            aboutProjectText.innerHTML = project.content || ''; // 修改为 content
+            aboutProjectText.innerHTML = project.content || '<p>暂无项目详细内容</p>';
           }
 
           const swiperWrapper = document.getElementById('swiperWrapper');
           if (swiperWrapper) {
             const imageUrl = project.image ? (project.image.startsWith('http') || project.image.startsWith('/') ? project.image : `/${project.image}`) : 'images/single-project-slide-1-1920x760.jpg';
             swiperWrapper.innerHTML = `
-              <div style="width:100%;max-width:1240px;position:relative;">
-                <img src="${imageUrl}" alt="${project.title || ''}" style="width:100%;max-height:420px;object-fit:cover;display:block;border-radius:0;" />
+              <div class="project-hero-image-inner">
+                <img src="${imageUrl}" alt="${project.title || ''}" class="project-hero-image" />
               </div>
             `;
           }
