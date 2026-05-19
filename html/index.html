@@ -90,6 +90,36 @@
     #heroImage {
       display: none !important;
     }
+
+    /* 手机端顶部显示品牌 Logo */
+    .mobile-brand {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      margin-left: 10px;
+      line-height: 1;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .mobile-brand img {
+      display: block;
+      width: auto;
+      max-width: 185px;
+      max-height: 28px;
+      object-fit: contain;
+    }
+
+    @media (max-width: 991.98px) {
+      .rd-navbar-panel {
+        display: flex;
+        align-items: center;
+      }
+
+      .mobile-brand {
+        display: flex;
+      }
+    }
   </style>
   <!--[if lt IE 10]>
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
@@ -118,8 +148,10 @@
                 <!-- RD Navbar Toggle-->
                 <button class="rd-navbar-toggle"
                   data-rd-navbar-toggle="#rd-navbar-nav-wrap-1, #rd-navbar-hidden-1"><span></span></button>
-                <!-- RD Navbar Brand--><a class="rd-navbar-brand" href="index.html"><img src="images/ce-logo.png"
-                    alt="CE International Group Co.,LTD" width="169" height="24" /></a>
+                <div class="mobile-brand">
+                  <a class="rd-navbar-brand" href="index.html"><img src="images/ce-logo.png"
+                      alt="CE International Group Co.,LTD" width="169" height="24" /></a>
+                </div>
                 <div class="rd-navbar-block" id="rd-navbar-hidden-1">
                   <div class="rd-navbar-collapse">
                     <ul class="list-inline-bordered rd-navbar-list">
@@ -936,6 +968,15 @@
       }
     }
 
+    function normalizePublicImagePath(path) {
+      if (!path) return '';
+      const value = String(path).trim();
+      if (!value) return '';
+      if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) return value;
+      if (value.startsWith('images/') || value.startsWith('uploads/')) return `/${value}`;
+      return value;
+    }
+
     // 渲染客户评价 - 从API获取
     async function renderTestimonials() {
       const testimonialsContainer = document.getElementById('testimonialsContainer');
@@ -959,7 +1000,7 @@
           `;
 
           homeTestimonials.forEach((testimonial) => {
-            const avatarUrl = testimonial.image || '';
+            const avatarUrl = normalizePublicImagePath(testimonial.image || testimonial.avatar || '');
             const positionText = testimonial.position ? 
               (testimonial.company ? `${testimonial.position} - ${testimonial.company}` : testimonial.position) : 
               (testimonial.company || '');
@@ -979,6 +1020,7 @@
                   <div class="quote-light-text">
                     <div class="testimonial-content-html">${testimonial.content || ''}</div>
                   </div>
+                  ${avatarUrl ? `<div style="display:none"><img src="${avatarUrl}" alt="客户头像" /></div>` : ''}
                   <div class="quote-light-footer">
                     <img class="quote-light-image" src="images/logo-majestic-104x64.png" alt="公司logo" width="104" height="64" />
                   </div>
