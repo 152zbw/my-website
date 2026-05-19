@@ -91,35 +91,102 @@
       display: none !important;
     }
 
-    /* 手机端顶部显示品牌 Logo */
-    .mobile-brand {
+    /* 手机端把 logo 移到顶部中间，只在小于 480px 时显示 */
+    .mobile-brand-center {
       display: none;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       align-items: center;
       justify-content: center;
-      margin-left: 10px;
-      line-height: 1;
-      flex: 1;
-      min-width: 0;
+      pointer-events: none;
+      z-index: 9999;
     }
 
-    .mobile-brand img {
+    .mobile-brand-center img {
       display: block;
       width: auto;
-      max-width: 185px;
-      max-height: 28px;
+      max-width: 128px;
+      max-height: 22px;
       object-fit: contain;
     }
 
-    @media (max-width: 991.98px) {
+    .rd-navbar-panel {
+      position: relative;
+    }
+
+    .rd-navbar-panel > .rd-navbar-brand,
+    .rd-navbar-nav-wrap > .rd-navbar-brand {
+      display: block;
+    }
+
+    .rd-navbar-panel #rd-navbar-hidden-1 {
+      position: static;
+    }
+
+    .language-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 12px;
+      padding: 6px 10px;
+      border: 1px solid rgba(53, 72, 121, 0.25);
+      border-radius: 999px;
+      background: #fff;
+      color: #354879;
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .language-toggle:hover {
+      background: #354879;
+      color: #fff;
+    }
+
+    @media (max-width: 479.98px) {
       .rd-navbar-panel {
-        display: flex;
-        align-items: center;
+        min-height: 56px;
       }
 
-      .mobile-brand {
-        display: flex;
+      .rd-navbar-panel > .rd-navbar-brand,
+      .rd-navbar-nav-wrap > .rd-navbar-brand {
+        display: none !important;
+      }
+
+      .rd-navbar-panel #rd-navbar-hidden-1 {
+        position: absolute;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
+      }
+
+      .language-toggle {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+
+      .mobile-brand-center {
+        display: none !important;
+      }
+
+      .rd-navbar-panel::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 128px;
+        height: 22px;
+        transform: translate(-50%, -50%);
+        background: url("images/ce-logo.png") center center / contain no-repeat;
+        z-index: 9999;
+        pointer-events: none;
       }
     }
+
   </style>
   <!--[if lt IE 10]>
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
@@ -144,23 +211,26 @@
               data-rd-navbar-toggle=".rd-navbar-collapse"><span></span></button>
             <div class="rd-navbar-main">
               <!-- RD Navbar Panel-->
-              <div class="rd-navbar-panel">
+              <div class="rd-navbar-panel" id="rd-navbar-panel-1">
                 <!-- RD Navbar Toggle-->
                 <button class="rd-navbar-toggle"
                   data-rd-navbar-toggle="#rd-navbar-nav-wrap-1, #rd-navbar-hidden-1"><span></span></button>
-                <div class="mobile-brand">
+                <a class="rd-navbar-brand" id="desktopBrand" href="index.html"><img src="images/ce-logo.png"
+                    alt="CE International Group Co.,LTD" width="169" height="24" /></a>
+                <div class="mobile-brand-center" id="mobileBrandCenter">
                   <a class="rd-navbar-brand" href="index.html"><img src="images/ce-logo.png"
                       alt="CE International Group Co.,LTD" width="169" height="24" /></a>
                 </div>
                 <div class="rd-navbar-block" id="rd-navbar-hidden-1">
                   <div class="rd-navbar-collapse">
                     <ul class="list-inline-bordered rd-navbar-list">
-                      <li><span class="icon mdi mdi-comment-text-outline"></span><a href="contacts.html">联系我们</a></li>
+                      <li><span class="icon mdi mdi-comment-text-outline"></span><a href="contacts.html" data-i18n="contactUs">联系我们</a></li>
                       <li><span class="icon mdi mdi-cellphone-android"></span><a href="tel:#" id="topPhone"></a></li>
                     </ul>
                   </div>
                   <button class="rd-navbar-search-toggle"
                     data-rd-navbar-toggle="#rd-navbar-search-1"><span></span></button>
+                  <button class="language-toggle" id="languageToggle" type="button" aria-label="Switch language">EN</button>
                 </div>
               </div>
               <!-- RD Navbar Search-->
@@ -168,7 +238,7 @@
                 <form class="rd-search" action="search-results.html" data-search-live="rd-search-results-live-1"
                   method="GET">
                   <div class="form-wrap">
-                    <label class="form-label" for="rd-navbar-search-form-input-1">搜索...</label>
+                    <label class="form-label" for="rd-navbar-search-form-input-1" data-i18n="search">搜索...</label>
                     <input class="form-input rd-navbar-search-form-input" id="rd-navbar-search-form-input-1" type="text"
                       name="s" autocomplete="off">
                     <div class="rd-search-results-live" id="rd-search-results-live-1"></div>
@@ -184,6 +254,32 @@
                 <!-- 动态导航栏脚本 -->
                 <script>
                   // 初始化导航栏数据
+                  function getCurrentLanguage() {
+                    return localStorage.getItem('siteLanguage') || 'zh';
+                  }
+
+                  const navigationTranslations = {
+                    '首页': 'Home',
+                    '服务': 'Services',
+                    '博客': 'Blog',
+                    '成功案例': 'Projects',
+                    '关于我们': 'About Us',
+                    '服务项目': 'Services',
+                    '联系我们': 'Contact Us',
+                    '案例展示': 'Case Studies',
+                    '案例详情': 'Project Details',
+                    '博客列表': 'Blog List',
+                    '博客详情': 'Blog Details',
+                    '公司简介': 'Company Profile',
+                    '个人简介': 'Personal Profile',
+                    '招贤纳士': 'Careers',
+                    '服务详情': 'Service Details'
+                  };
+
+                  function translateNavText(text) {
+                    return getCurrentLanguage() === 'en' ? (navigationTranslations[text] || text) : text;
+                  }
+
                   function initNavigationData() {
                     // 使用导航栏默认数据
                     const initialNavigation = {
@@ -251,7 +347,7 @@
                         // 有二级导航的一级导航
                         navbarHTML += `
                           <li class="rd-nav-item ${isActive}">
-                            <a class="rd-nav-link" href="${primaryNav.url}">${primaryNav.name}</a>
+                            <a class="rd-nav-link" href="${primaryNav.url}">${translateNavText(primaryNav.name)}</a>
                             <!-- RD Navbar Dropdown-->
                             <ul class="rd-menu rd-navbar-dropdown">
                         `;
@@ -260,7 +356,7 @@
                         children.forEach(child => {
                           navbarHTML += `
                             <li class="rd-dropdown-item">
-                              <a class="rd-dropdown-link" href="${child.url}">${child.name}</a>
+                              <a class="rd-dropdown-link" href="${child.url}">${translateNavText(child.name)}</a>
                             </li>
                           `;
                         });
@@ -273,7 +369,7 @@
                         // 没有二级导航的一级导航
                         navbarHTML += `
                           <li class="rd-nav-item ${isActive}">
-                            <a class="rd-nav-link" href="${primaryNav.url}">${primaryNav.name}</a>
+                            <a class="rd-nav-link" href="${primaryNav.url}">${translateNavText(primaryNav.name)}</a>
                           </li>
                         `;
                       }
@@ -307,7 +403,7 @@
                 </div>
                 <div class="wow-outer p">
                   <p class="custom-article wow fadeInDown" data-wow-delay=".2s" id="heroDescription">欢迎了解我们的咨询服务。</p>
-                </div><a class="button button-primary button-winona wow FadeIn" id="heroButton" href="contacts.html">了解更多</a>
+                </div><a class="button button-primary button-winona wow FadeIn" id="heroButton" href="contacts.html" data-i18n="learnMore">了解更多</a>
               </div>
             </div>
             <div class="col-md-6 col-lg-7 d-flex justify-content-center justify-content-md-end mt-5 mt-md-0">
@@ -329,9 +425,9 @@
     <!-- Advantages and Achievements-->
     <section class="section section-lg text-center">
       <div class="container">
-        <h3 class="wow-outer"><span class="wow slideInUp">我们的成就</span></h3>
+        <h3 class="wow-outer"><span class="wow slideInUp" data-i18n="achievementsTitle">我们的成就</span></h3>
         <p class="wow-outer"><span
-            class="text-width-1 wow slideInDown">自2016年成立以来，我们的团队取得了丰硕的成果。以下是关于我们咨询公司的一些统计数据和有趣事实。</span></p>
+            class="text-width-1 wow slideInDown" data-i18n="achievementsText">自2016年成立以来，我们的团队取得了丰硕的成果。以下是关于我们咨询公司的一些统计数据和有趣事实。</span></p>
         <div class="row row-50">
           <div class="col-6 col-md-3 wow-outer">
             <!-- Counter Minimal-->
@@ -340,7 +436,7 @@
               <div class="counter-minimal-main">
                 <div class="counter">12</div>
               </div>
-              <h5 class="counter-minimal-title">获得奖项</h5>
+              <h5 class="counter-minimal-title" data-i18n="awards">获得奖项</h5>
             </article>
           </div>
           <div class="col-6 col-md-3 wow-outer">
@@ -350,7 +446,7 @@
               <div class="counter-minimal-main">
                 <div class="counter">99</div><span class="value">%</span>
               </div>
-              <h5 class="counter-minimal-title">客户满意度</h5>
+              <h5 class="counter-minimal-title" data-i18n="satisfaction">客户满意度</h5>
             </article>
           </div>
           <div class="col-6 col-md-3 wow-outer">
@@ -360,7 +456,7 @@
               <div class="counter-minimal-main">
                 <div class="counter">15</div>
               </div>
-              <h5 class="counter-minimal-title">行业经验</h5>
+              <h5 class="counter-minimal-title" data-i18n="experience">行业经验</h5>
             </article>
           </div>
           <div class="col-6 col-md-3 wow-outer">
@@ -370,7 +466,7 @@
               <div class="counter-minimal-main">
                 <div class="counter">54</div>
               </div>
-              <h5 class="counter-minimal-title">专业顾问</h5>
+              <h5 class="counter-minimal-title" data-i18n="consultants">专业顾问</h5>
             </article>
           </div>
         </div>
@@ -382,9 +478,9 @@
         <div class="row justify-content-center">
           <div class="col-sm-10 col-md-12">
             <div class="box-cta-thin">
-              <h4 class="title wow-outer"><span class="wow slideInRight">助力全球企业成长</span></h4>
+              <h4 class="title wow-outer"><span class="wow slideInRight" data-i18n="globalGrowth">助力全球企业成长</span></h4>
               <div class="wow-outer button-outer"><a class="button button-white-outline button-winona wow slideInLeft"
-                  href="contacts.html">联系我们</a></div>
+                  href="contacts.html" data-i18n="contactUs">联系我们</a></div>
             </div>
           </div>
         </div>
@@ -393,16 +489,16 @@
     <!-- Services-->
     <section class="section section-lg bg-gray-100 text-center">
       <div class="container">
-        <h3 class="wow-outer"><span class="wow slideInUp">我们的服务</span></h3>
+        <h3 class="wow-outer"><span class="wow slideInUp" data-i18n="servicesTitle">我们的服务</span></h3>
         <div class="row row-30" id="servicesContainer"></div>
       </div>
     </section>
     <!-- Projects-->
     <section class="section section-md text-center">
       <div class="container">
-        <h3 class="wow-outer"><span class="wow slideInUp">成功案例</span></h3>
+        <h3 class="wow-outer"><span class="wow slideInUp" data-i18n="projectsTitle">成功案例</span></h3>
         <p class="wow-outer"><span
-            class="text-width-1 wow slideInDown">查看我们最近完成的一些项目案例。每个项目都经过了大量的研究和分析，以创造出卓越的解决方案。</span>
+            class="text-width-1 wow slideInDown" data-i18n="projectsText">查看我们最近完成的一些项目案例。每个项目都经过了大量的研究和分析，以创造出卓越的解决方案。</span>
         </p>
         <div class="row row-20 offset-top-3 hoverdir" id="projectsContainer">
           <p style="width:100%; text-align:center; color:#777;">内容加载中...</p>
@@ -416,10 +512,10 @@
           <div class="row">
             <div class="col-md-10 cell-inner">
               <div class="section-lg inset-right-2">
-                <h3 class="wow-outer"><span class="wow slideInDown">关于我们</span></h3>
+                <h3 class="wow-outer"><span class="wow slideInDown" data-i18n="aboutTitle">关于我们</span></h3>
                 <p class="wow fadeIn" id="aboutDescription"></p>
                 <div class="wow-outer button-outer"><a class="button button-primary button-winona wow slideInUp"
-                    href="about-me.html">了解更多</a></div>
+                    href="about-me.html" data-i18n="learnMore">了解更多</a></div>
               </div>
             </div>
           </div>
@@ -435,16 +531,16 @@
     <!-- Recent Blogs-->
     <section class="section section-lg text-center">
       <div class="container">
-        <h3 class="wow-outer"><span class="wow slideInDown">博客</span></h3>
+        <h3 class="wow-outer"><span class="wow slideInDown" data-i18n="blogTitle">博客</span></h3>
         <div class="row row-50" id="blogsContainer"></div>
         <div class="wow-outer button-outer offset-top-2"><a
-            class="button button-dark-outline button-winona wow slideInUp" href="sidebar-blog.html">查看所有博客</a></div>
+            class="button button-dark-outline button-winona wow slideInUp" href="sidebar-blog.html" data-i18n="viewAllBlogs">查看所有博客</a></div>
       </div>
     </section>
     <!-- Testimonials-->
     <section class="section section-lg bg-gray-100 text-center">
       <div class="container">
-        <h3 class="wow-outer"><span class="wow slideInDown">客户评价</span></h3>
+        <h3 class="wow-outer"><span class="wow slideInDown" data-i18n="testimonialsTitle">客户评价</span></h3>
         <div class="slick-widget-testimonials wow fadeIn" id="testimonialsContainer"></div>
       </div>
     </section>
@@ -462,9 +558,9 @@
         <div class="row justify-content-center">
           <div class="col-sm-10 col-md-12">
             <div class="box-cta-thin">
-              <h4 class="wow-outer"><span class="wow slideInRight">让我们讨论如何帮助您</span></h4>
+              <h4 class="wow-outer"><span class="wow slideInRight" data-i18n="discussHelp">让我们讨论如何帮助您</span></h4>
               <div class="wow-outer button-outer"><a class="button button-white-outline button-winona wow slideInLeft"
-                  href="#">免费咨询</a></div>
+                  href="#" data-i18n="freeConsultation">免费咨询</a></div>
             </div>
           </div>
         </div>
@@ -477,49 +573,49 @@
           <div class="row">
             <div class="col-lg-9 cell-inner">
               <div class="section-lg">
-                <h3 class="wow-outer"><span class="wow slideInDown">联系我们</span></h3>
+                <h3 class="wow-outer"><span class="wow slideInDown" data-i18n="contactUs">联系我们</span></h3>
                 <form id="contactForm" action="javascript:void(0)" method="POST" novalidate onsubmit="return false;">
                   <div class="row row-10">
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
-                        <label class="form-label-outside" for="contact-first-name">姓</label>
+                        <label class="form-label-outside" for="contact-first-name" data-i18n="firstName">姓</label>
                         <input class="form-input" id="contact-first-name" type="text" name="firstName" required>
                       </div>
                     </div>
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
-                        <label class="form-label-outside" for="contact-last-name">名</label>
+                        <label class="form-label-outside" for="contact-last-name" data-i18n="lastName">名</label>
                         <input class="form-input" id="contact-last-name" type="text" name="lastName" required>
                       </div>
                     </div>
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
-                        <label class="form-label-outside" for="contact-email">电子邮箱</label>
+                        <label class="form-label-outside" for="contact-email" data-i18n="email">电子邮箱</label>
                         <input class="form-input" id="contact-email" type="email" name="email" required>
                       </div>
                     </div>
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
-                        <label class="form-label-outside" for="contact-phone">电话</label>
+                        <label class="form-label-outside" for="contact-phone" data-i18n="phone">电话</label>
                         <input class="form-input" id="contact-phone" type="text" name="phone">
                       </div>
                     </div>
                     <div class="col-12 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
-                        <label class="form-label-outside" for="contact-message">留言内容</label>
+                        <label class="form-label-outside" for="contact-message" data-i18n="message">留言内容</label>
                         <textarea class="form-input" id="contact-message" name="message" required></textarea>
                       </div>
                     </div>
                   </div>
                   <div class="group group-middle">
                     <div class="wow-outer">
-                      <button class="button button-primary button-winona wow slideInRight" type="submit" id="submitBtn">发送消息</button>
+                      <button class="button button-primary button-winona wow slideInRight" type="submit" id="submitBtn" data-i18n="sendMessage">发送消息</button>
                     </div>
                     <div class="wow-outer"><a
                         class="button button-primary-outline button-icon button-icon-left button-winona wow slideInLeft"
-                        href="contacts.html"><span class="icon text-primary mdi mdi-facebook-messenger"></span> 信使</a></div>
+                        href="contacts.html"><span class="icon text-primary mdi mdi-facebook-messenger"></span> <span data-i18n="messenger">信使</span></a></div>
                   </div>
-                  <div id="successMessage" style="display:none;margin-top:20px;padding:15px;background-color:#d4edda;color:#155724;border-radius:4px;">消息发送成功！我们会尽快与您联系。</div>
+                  <div id="successMessage" data-i18n="successMessage" style="display:none;margin-top:20px;padding:15px;background-color:#d4edda;color:#155724;border-radius:4px;">消息发送成功！我们会尽快与您联系。</div>
                 </form>
               </div>
             </div>
@@ -1119,7 +1215,7 @@
   <script src="js/map.js?v=6"></script>
   <script src="js/contact-form.js?v=1"></script>
   <script src="js/footer.js?v=1"></script>
-  <script src="js/footer.js?v=1"></script>
+  <script src="js/i18n.js?v=1"></script>
 </body>
 
 </html>
