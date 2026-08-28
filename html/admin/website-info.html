@@ -438,7 +438,7 @@
                 <li><a href="projects.html"><i class="fa fa-briefcase"></i>成功案例</a></li>
                 <li><a href="news.html"><i class="fa fa-newspaper-o"></i>博客/新闻</a></li>
                 <li><a href="testimonials.html"><i class="fa fa-comments"></i>客户评价</a></li>
-                <li><a href="partners.html"><i class="fa fa-handshake-o"></i>合作伙伴</a></li>
+                <li><a href="partners.html"><i class="fa fa-handshake-o"></i>合作伙伴</a></li><li><a href="business-distribution.html"><i class="fa fa-globe"></i>业务分布</a></li>
                 <li><a href="about-company.html"><i class="fa fa-info-circle"></i>关于我们</a></li>
                 <li><a href="about-me.html"><i class="fa fa-user"></i>个人简介</a></li>
                 <li><a href="team.html"><i class="fa fa-users"></i>团队成员</a></li>
@@ -575,24 +575,51 @@
                                     <input type="number" id="statExperience" name="statExperience" class="form-input" min="0">
                                 </div>
                                 <div>
-                                    <label for="statCases" class="form-label">成功案例</label>
-                                    <input type="number" id="statCases" name="statCases" class="form-input" min="0">
+                                    <label for="statAwards" class="form-label">获得奖项</label>
+                                    <input type="number" id="statAwards" name="statAwards" class="form-input" min="0">
                                 </div>
                                 <div>
                                     <label for="statConsultants" class="form-label">专业顾问</label>
                                     <input type="number" id="statConsultants" name="statConsultants" class="form-input" min="0">
                                 </div>
                                 <div>
-                                    <label for="statClients" class="form-label">满意客户</label>
-                                    <input type="number" id="statClients" name="statClients" class="form-input" min="0">
+                                    <label for="statSatisfaction" class="form-label">满意客户</label>
+                                    <input type="number" id="statSatisfaction" name="statSatisfaction" class="form-input" min="0">
                                 </div>
                             </div>
-                            </div>
+                        </div>
 
-                            <div class="form-actions">
+                        <h4>页脚管理</h4>
+
+                        <div class="form-group">
+                            <label for="footerBrandText" class="form-label">页脚品牌说明</label>
+                            <textarea id="footerBrandText" name="footerBrandText" class="form-textarea" rows="3" placeholder="例如：我们提供专业的咨询服务，帮助企业实现可持续发展。"></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="footerCopyright" class="form-label">页脚版权文案</label>
+                            <input type="text" id="footerCopyright" name="footerCopyright" class="form-input" placeholder="例如：© 2024 咨询公司. 保留所有权利.">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="footerIcp" class="form-label">页脚备案号</label>
+                            <input type="text" id="footerIcp" name="footerIcp" class="form-input" placeholder="例如：ICP备12345678号">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="footerTermsText" class="form-label">页脚条款说明</label>
+                            <input type="text" id="footerTermsText" name="footerTermsText" class="form-input" placeholder="例如：使用条款 | 隐私政策">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="footerLinksJson" class="form-label">页脚链接配置 JSON</label>
+                            <textarea id="footerLinksJson" name="footerLinksJson" class="form-textarea" rows="5" placeholder='[{"title":"快速链接","links":[{"label":"关于我们","href":"about.html"}]}]'></textarea>
+                        </div>
+
+                        <div class="form-actions">
                             <button type="reset" class="btn btn-secondary">重置</button>
-                                <button type="submit" class="btn btn-primary">保存更改</button>
-                            </div>
+                            <button type="submit" class="btn btn-primary">保存更改</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -807,9 +834,15 @@
                 document.getElementById('heroButtonLink').value = data.heroButtonLink || '';
 
                 document.getElementById('statExperience').value = data.statExperience ?? 0;
-                document.getElementById('statCases').value = data.statCases ?? data.statAwards ?? 0;
+                document.getElementById('statAwards').value = data.statAwards ?? data.statCases ?? 0;
                 document.getElementById('statConsultants').value = data.statConsultants ?? 0;
-                document.getElementById('statClients').value = data.statClients ?? data.statSatisfaction ?? 0;
+                document.getElementById('statSatisfaction').value = data.statSatisfaction ?? data.statClients ?? 0;
+
+                document.getElementById('footerBrandText').value = data.footerBrandText || '';
+                document.getElementById('footerCopyright').value = data.footerCopyright || '';
+                document.getElementById('footerIcp').value = data.footerIcp || '';
+                document.getElementById('footerTermsText').value = data.footerTermsText || '';
+                document.getElementById('footerLinksJson').value = data.footerLinksJson || '';
 
                 // 触发图片预览
                 if (data.logo) {
@@ -846,9 +879,14 @@
                 heroButtonText: document.getElementById('heroButtonText').value.trim(),
                 heroButtonLink: document.getElementById('heroButtonLink').value.trim(),
                 statExperience: parseInt(document.getElementById('statExperience').value || '0', 10),
-                statCases: parseInt(document.getElementById('statCases').value || '0', 10),
-                statConsultants: parseInt(document.getElementById('statConsultants').value || '0', 10)
-                ,statClients: parseInt(document.getElementById('statClients').value || '0', 10)
+                statAwards: parseInt(document.getElementById('statAwards').value || '0', 10),
+                statConsultants: parseInt(document.getElementById('statConsultants').value || '0', 10),
+                statSatisfaction: parseInt(document.getElementById('statSatisfaction').value || '0', 10),
+                footerBrandText: document.getElementById('footerBrandText').value.trim(),
+                footerCopyright: document.getElementById('footerCopyright').value.trim(),
+                footerIcp: document.getElementById('footerIcp').value.trim(),
+                footerTermsText: document.getElementById('footerTermsText').value.trim(),
+                footerLinksJson: document.getElementById('footerLinksJson').value.trim()
             };
 
             if (!data.title) {

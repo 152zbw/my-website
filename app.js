@@ -20,6 +20,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // 静态文件服务
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+app.use('/data', express.static(path.join(__dirname, 'data')));
 // 为根路径提供静态资源，确保 CSS/JS/图片可直接以相对路径加载
 app.use(express.static(path.join(__dirname, 'html')));
 // 兼容原有 /html 前缀

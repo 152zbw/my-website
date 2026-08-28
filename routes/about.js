@@ -33,11 +33,14 @@ router.get('/:id', async (req, res) => {
 // 创建关于我们信息
 router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { title, content, image } = req.body;
+        const { title, content, image, videoTitle, videoUrl, videoPoster } = req.body;
         const about = await About.create({
             title,
             content,
-            image
+            image,
+            videoTitle,
+            videoUrl,
+            videoPoster
         });
         res.status(201).json({ message: '关于我们信息创建成功', about });
     } catch (error) {
@@ -49,7 +52,7 @@ router.post('/', authenticateToken, authorizeAdmin, async (req, res) => {
 // 更新关于我们信息
 router.put('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
     try {
-        const { title, content, image } = req.body;
+        const { title, content, image, videoTitle, videoUrl, videoPoster } = req.body;
         const about = await About.findByPk(req.params.id);
         if (!about) {
             return res.status(404).json({ message: '关于我们信息不存在' });
@@ -57,7 +60,10 @@ router.put('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
         await about.update({
             title,
             content,
-            image
+            image,
+            videoTitle,
+            videoUrl,
+            videoPoster
         });
         res.json({ message: '关于我们信息更新成功', about });
     } catch (error) {

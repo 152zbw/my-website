@@ -116,19 +116,13 @@ const WebsiteInfo = sequelize.define('WebsiteInfo', {
         type: DataTypes.INTEGER,
         field: 'stat_awards',
         defaultValue: 12,
-        comment: '国际奖项数量'
-    },
-    statCases: {
-        type: DataTypes.INTEGER,
-        field: 'stat_cases',
-        defaultValue: 200,
-        comment: '成功案例数量'
+        comment: '获得奖项数量'
     },
     statSatisfaction: {
         type: DataTypes.INTEGER,
         field: 'stat_satisfaction',
         defaultValue: 99,
-        comment: '客户满意度百分比'
+        comment: '满意客户百分比'
     },
     statExperience: {
         type: DataTypes.INTEGER,
@@ -147,6 +141,31 @@ const WebsiteInfo = sequelize.define('WebsiteInfo', {
         field: 'stat_clients',
         defaultValue: 150,
         comment: '满意客户数量'
+    },
+    footerBrandText: {
+        type: DataTypes.TEXT,
+        field: 'footer_brand_text',
+        comment: '页脚品牌说明'
+    },
+    footerCopyright: {
+        type: DataTypes.STRING(255),
+        field: 'footer_copyright',
+        comment: '页脚版权文案'
+    },
+    footerIcp: {
+        type: DataTypes.STRING(255),
+        field: 'footer_icp',
+        comment: '页脚备案号'
+    },
+    footerTermsText: {
+        type: DataTypes.STRING(255),
+        field: 'footer_terms_text',
+        comment: '页脚条款说明'
+    },
+    footerLinksJson: {
+        type: DataTypes.TEXT,
+        field: 'footer_links_json',
+        comment: '页脚链接配置JSON'
     },
     updatedAt: {
         type: DataTypes.DATE,

@@ -8,7 +8,7 @@
     content="width=device-width height=device-height initial-scale=1.0 maximum-scale=1.0 user-scalable=0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset="utf-8">
-  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="images/wblogo.ico" type="image/x-icon">
   <!-- Stylesheets-->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700">
   <link rel="stylesheet" href="css/bootstrap.css">
@@ -208,8 +208,8 @@
         <div class="row row-50 justify-content-center justify-content-lg-between">
           <div class="col-md-10 col-lg-6 col-xl-5">
             <h3>关于我们</h3>
-            <p>我们是一支才华横溢的营销团队，热爱为客户创造聪明的想法。我们利用我们的创造力为客户提供最明智的解决方案。</p>
-            <p>我们拥有广泛的经验、专业知识和工具，可以创建和实施各种复杂程度的营销活动。</p><a class="button button-lg button-primary button-winona"
+            <p>我们专注于为企业提供咨询、策略与执行支持，帮助团队在不同阶段找到更合适的发展路径。</p>
+            <p>通过数据分析、流程优化和项目协作，我们致力于让方案更清晰、落地更高效。</p><a class="button button-lg button-primary button-winona"
               href="about-me.html">了解更多</a>
           </div>
           <div class="col-md-10 col-lg-6"><img class="img-responsive" src="images/services-1-570x368.jpg" alt="我们的团队"
@@ -222,7 +222,7 @@
     <section class="section-lg text-center">
       <div class="container">
         <h3>服务项目</h3>
-        <p><span class="text-width-1">作为最专业的商业服务提供商，我们提供各种解决方案，帮助您解决任何问题。</span></p>
+        <p><span class="text-width-1">我们围绕企业实际需求提供咨询与支持，帮助您把问题拆解得更清晰、执行得更高效。</span></p>
         <div class="row row-50 row-xxl-70 offset-top-2" id="servicesContainer"></div>
       </div>
     </section>
@@ -273,13 +273,13 @@
             <div class="box-2">
               <div class="wow-outer">
                 <div class="wow slideInUp">
-                  <h3>用户互动与指标详细报告</h3>
+                  <h3>欢迎了解更多服务</h3>
                 </div>
               </div>
               <div class="wow-outer offset-top-4">
                 <div class="wow slideInDown">
-                  <p>我们可以通过提供高质量的业务管理解决方案，使您的公司成为市场领导者。预约了解更多信息。</p><a class="button button-primary button-winona"
-                    href="#">发送消息</a>
+                  <p>我们提供定制化咨询与实施支持，帮助企业在不同阶段找到更适合的解决方案。</p><a class="button button-primary button-winona"
+                    href="contacts.html">发送消息</a>
                 </div>
               </div>
             </div>
@@ -352,9 +352,7 @@
             <div class="col-lg-9 cell-inner">
               <div class="section-lg">
                 <h3 class="wow-outer"><span class="wow slideInDown">联系我们</span></h3>
-                <!-- RD Mailform-->
-                <form class="rd-form rd-mailform" data-form-output="form-output-global" data-form-type="contact"
-                  method="post" action="bat/rd-mailform.php">
+                <form id="contactForm" action="javascript:void(0)" method="POST" novalidate onsubmit="return false;">
                   <div class="row row-10">
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
@@ -394,13 +392,14 @@
                   </div>
                   <div class="group group-middle">
                     <div class="wow-outer">
-                      <button class="button button-primary button-winona wow slideInRight" type="submit">发送消息</button>
+                      <button class="button button-primary button-winona wow slideInRight" type="submit" id="submitBtn">发送消息</button>
                     </div>
                     <p>或使用</p>
                     <div class="wow-outer"><a
                         class="button button-primary-outline button-icon button-icon-left button-winona wow slideInLeft"
                         href="#"><span class="icon text-primary mdi mdi-facebook-messenger"></span>信使</a></div>
                   </div>
+                  <div id="successMessage" style="display:none;margin-top:20px;padding:15px;background-color:#d4edda;color:#155724;border-radius:4px;">消息发送成功！我们会尽快与您联系。</div>
                 </form>
               </div>
             </div>
@@ -443,6 +442,7 @@
   <script src="js/api.js"></script>
   <script src="js/script.js"></script>
   <script src="js/map.js"></script>
+  <script src="js/i18n.js?v=1"></script>
 </body>
 
 </html>

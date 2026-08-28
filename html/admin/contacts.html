@@ -75,7 +75,7 @@
                 <li><a href="projects.html"><i class="fa fa-briefcase"></i>成功案例</a></li>
                 <li><a href="news.html"><i class="fa fa-newspaper-o"></i>博客/新闻</a></li>
                 <li><a href="testimonials.html"><i class="fa fa-comments"></i>客户评价</a></li>
-                <li><a href="partners.html"><i class="fa fa-handshake-o"></i>合作伙伴</a></li>
+                <li><a href="partners.html"><i class="fa fa-handshake-o"></i>合作伙伴</a></li><li><a href="business-distribution.html"><i class="fa fa-globe"></i>业务分布</a></li>
                 <li><a href="about-company.html"><i class="fa fa-info-circle"></i>公司简介</a></li>
                 <li><a href="about-me.html"><i class="fa fa-user"></i>个人简介</a></li>
                 <li><a href="team.html"><i class="fa fa-users"></i>团队成员</a></li>
@@ -208,7 +208,7 @@
                         <td>${item.email || ''}</td>
                         <td>${item.phone || ''}</td>
                         <td>${item.subject || ''}</td>
-                        <td>${item.created_at ? new Date(item.created_at).toLocaleString() : ''}</td>
+                        <td>${item.createdAt || item.created_at ? new Date(item.createdAt || item.created_at).toLocaleString() : ''}</td>
                         <td><span style="color:${statusColor};">${statusText}</span></td>
                         <td>
                             <button class="btn btn-primary btn-sm" onclick="viewContact(${item.id})">查看</button>
@@ -231,7 +231,7 @@
                     <div class="form-group"><label class="form-label">电话</label><input class="form-input" readonly value="${item.phone || ''}"></div>
                     <div class="form-group"><label class="form-label">主题</label><input class="form-input" readonly value="${item.subject || ''}"></div>
                     <div class="form-group"><label class="form-label">留言内容</label><textarea class="form-textarea" readonly>${item.message || ''}</textarea></div>
-                    <div class="form-group"><label class="form-label">提交时间</label><input class="form-input" readonly value="${item.created_at ? new Date(item.created_at).toLocaleString() : ''}"></div>
+                    <div class="form-group"><label class="form-label">提交时间</label><input class="form-input" readonly value="${item.createdAt || item.created_at ? new Date(item.createdAt || item.created_at).toLocaleString() : ''}"></div>
                     <div class="form-group"><label class="form-label">状态</label><input class="form-input" readonly value="${item.status ? '已处理' : '未处理'}"></div>
                 `;
                 document.getElementById('contactModal').style.display = 'block';

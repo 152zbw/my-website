@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>业务分布地图</title>
+  <link rel="icon" href="images/wblogo.ico" type="image/x-icon">
+  <link rel="stylesheet" href="css/bootstrap.css">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    body { background: #fff; }
+    .business-map-page { padding: 64px 0; background: #fff; }
+    .business-map-card { background:#fff; border-radius:18px; box-shadow:0 14px 40px rgba(53,72,121,.12); padding:28px; }
+    .business-map-title { color:#354879; margin-bottom:8px; }
+    .business-map-subtitle { color:#6f7d95; margin-bottom:22px; }
+    #businessMapChart { width:100%; height:560px; }
+    .business-map-legend { display:flex; gap:20px; flex-wrap:wrap; justify-content:center; margin-top:20px; color:#333; }
+    .legend-item { display:inline-flex; align-items:center; gap:8px; }
+    .legend-symbol { display:inline-block; width:12px; height:12px; }
+    .legend-symbol.headquarters { background:#e60012; border-radius:50%; }
+    .legend-symbol.branch { background:#14a04a; border-radius:2px; }
+    .legend-symbol.partner { width:0; height:0; border-left:7px solid transparent; border-right:7px solid transparent; border-bottom:13px solid #111; }
+    @media (max-width: 767.98px) { #businessMapChart { height:360px; } .business-map-card { padding:16px; } }
+  </style>
+</head>
+<body>
+  <main class="business-map-page">
+    <div class="container">
+      <div class="business-map-card">
+        <h2 class="business-map-title" id="businessMapTitle">业务分布</h2>
+        <p class="business-map-subtitle" id="businessMapSubtitle">全球业务网络与合作伙伴分布</p>
+        <div id="businessMapChart"></div>
+        <div class="business-map-legend">
+          <span class="legend-item"><span class="legend-symbol headquarters"></span>总部</span>
+          <span class="legend-item"><span class="legend-symbol branch"></span>分公司 / 分支机构</span>
+          <span class="legend-item"><span class="legend-symbol partner"></span>合作伙伴</span>
+        </div>
+      </div>
+    </div>
+  </main>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/business-map.js?v=2"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async function () {
+      try {
+        const data = await window.API.BusinessDistribution.get();
+        document.getElementById('businessMapTitle').textContent = data?.title || '业务分布';
+        document.getElementById('businessMapSubtitle').textContent = data?.subtitle || '全球业务网络与合作伙伴分布';
+        await window.BusinessWorldMap.render(document.getElementById('businessMapChart'), Array.isArray(data?.points) ? data.points : []);
+      } catch (error) {
+        console.error('加载业务分布地图失败:', error);
+        document.getElementById('businessMapChart').innerHTML = '<div style="padding:40px;text-align:center;color:#999;">地图加载失败，请稍后重试</div>';
+      }
+    });
+  </script>
+</body>
+</html>

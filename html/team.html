@@ -8,7 +8,7 @@
     content="width=device-width height=device-height initial-scale=1.0 maximum-scale=1.0 user-scalable=0">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta charset="utf-8">
-  <link rel="icon" href="images/favicon.ico" type="image/x-icon">
+  <link rel="icon" href="images/wblogo.ico" type="image/x-icon">
   <!-- Stylesheets-->
   <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto+Mono:300,400,500,700">
   <link rel="stylesheet" href="css/bootstrap.css">
@@ -113,7 +113,7 @@
               <div class="footer-corporate-brand">
                 <a class="brand" href="index.html"><img src="images/logo-default-169x24.png" alt="咨询公司logo" width="169"
                     height="24" srcset="images/logo-default-324x45.png 2x" /></a>
-                <p class="footer-corporate-text">我们提供专业的咨询服务，帮助企业实现可持续发展。</p>
+                <p class="footer-corporate-text" data-footer-brand>我们提供专业的咨询服务，帮助企业实现可持续发展。</p>
               </div>
             </div>
             <div class="col-sm-6 col-md-4 col-xl-3">
@@ -162,7 +162,7 @@
                   <div class="unit unit-spacing-xs">
                     <div class="unit-left"><span class="icon icon-xs mdi mdi-facebook"></span></div>
                     <div class="unit-body">
-                      <p><a href="#">Facebook</a></p>
+                      <p><a href="#">微信</a></p>
                     </div>
                   </div>
                 </li>
@@ -170,7 +170,7 @@
                   <div class="unit unit-spacing-xs">
                     <div class="unit-left"><span class="icon icon-xs mdi mdi-twitter"></span></div>
                     <div class="unit-body">
-                      <p><a href="#">Twitter</a></p>
+                      <p><a href="#">微博</a></p>
                     </div>
                   </div>
                 </li>
@@ -178,7 +178,7 @@
                   <div class="unit unit-spacing-xs">
                     <div class="unit-left"><span class="icon icon-xs mdi mdi-instagram"></span></div>
                     <div class="unit-body">
-                      <p><a href="#">Instagram</a></p>
+                      <p><a href="#">小红书</a></p>
                     </div>
                   </div>
                 </li>
@@ -186,7 +186,7 @@
                   <div class="unit unit-spacing-xs">
                     <div class="unit-left"><span class="icon icon-xs mdi mdi-linkedin"></span></div>
                     <div class="unit-body">
-                      <p><a href="#">LinkedIn</a></p>
+                      <p><a href="#">抖音</a></p>
                     </div>
                   </div>
                 </li>
@@ -197,10 +197,10 @@
         <div class="footer-corporate-line">
           <div class="row row-30">
             <div class="col-sm-6">
-              <p class="footer-corporate-copy">© 2024 咨询公司. 保留所有权利.</p>
+              <p class="footer-corporate-copy" data-footer-copyright>© 2024 保留所有权利.</p>
             </div>
             <div class="col-sm-6 text-sm-right">
-              <p class="footer-corporate-terms">
+              <p class="footer-corporate-terms" data-footer-links>
                 <a href="privacy-policy.html">隐私政策</a>
                 <span>|</span>
                 <a href="contacts.html">联系我们</a>
@@ -214,8 +214,8 @@
   <!-- JavaScript-->
   <script src="js/core.min.js"></script>
   <script src="js/script.js"></script>
-  <script src="../js/common.js"></script>
   <script src="js/api.js"></script> <!-- 引入api.js -->
+  <script src="js/footer.js?v=1"></script>
   <script>
     // 页面加载时从API加载团队成员数据
     document.addEventListener('DOMContentLoaded', function () {
@@ -249,10 +249,10 @@
                     <h6 class="card-subtitle mb-3">${member.position}</h6>
                     ${member.bio ? `<p class="card-text">${member.bio}</p>` : ''} <!-- 使用 innerHTML 渲染 bio -->
                     <div class="mt-3">
-                      <a href="#" class="icon icon-sm icon-creative mdi mdi-facebook"></a>
-                      <a href="#" class="icon icon-sm icon-creative mdi mdi-twitter"></a>
+                      <a href="#" class="icon icon-sm icon-creative mdi mdi-wechat"></a>
+                      <a href="#" class="icon icon-sm icon-creative mdi mdi-sina-weibo"></a>
                       <a href="#" class="icon icon-sm icon-creative mdi mdi-instagram"></a>
-                      <a href="#" class="icon icon-sm icon-creative mdi mdi-linkedin"></a>
+                      <a href="#" class="icon icon-sm icon-creative mdi mdi-douyin"></a>
                     </div>
                   </div>
                 </div>

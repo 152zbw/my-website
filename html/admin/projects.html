@@ -434,11 +434,32 @@
             display: none; /* Old element, hidden now */
         }
 
+        #projectDescription,
         #editor-container {
-            height: 250px; /* Quill editor height */
-            border: 1px solid #ddd;
-            border-radius: 4px;
+            min-height: 220px;
+            border: 1px solid #cfd8e3;
+            border-radius: 8px;
             font-size: 14px;
+            background: #fff;
+            overflow: hidden;
+        }
+        #projectDescription .ql-toolbar,
+        #editor-container .ql-toolbar {
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            background: #f8fbff;
+            border-color: #cfd8e3;
+        }
+        #projectDescription .ql-container,
+        #editor-container .ql-container {
+            border-color: #cfd8e3;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            min-height: 170px;
+        }
+        #projectDescription .ql-editor,
+        #editor-container .ql-editor {
+            min-height: 170px;
         }
 
         @media (max-width: 768px) {
@@ -471,7 +492,7 @@
                 <li><a href="projects.html" class="active"><i class="fa fa-briefcase"></i>成功案例</a></li>
                 <li><a href="news.html"><i class="fa fa-newspaper-o"></i>博客/新闻</a></li>
                 <li><a href="testimonials.html"><i class="fa fa-comments"></i>客户评价</a></li>
-                <li><a href="partners.html"><i class="fa fa-handshake-o"></i>合作伙伴</a></li>
+                <li><a href="partners.html"><i class="fa fa-handshake-o"></i>合作伙伴</a></li><li><a href="business-distribution.html"><i class="fa fa-globe"></i>业务分布</a></li>
                 <li><a href="about.html"><i class="fa fa-building"></i>关于我们</a></li>
                 <li><a href="about-company.html"><i class="fa fa-info-circle"></i>公司简介</a></li>
                 <li><a href="about-me.html"><i class="fa fa-user"></i>个人简介</a></li>
@@ -563,7 +584,7 @@
                 </div>
                 <div class="form-group">
                     <label for="projectDescription" class="form-label">描述</label>
-                    <textarea id="projectDescription" class="form-textarea"></textarea>
+                    <div id="projectDescription" style="min-height: 140px; background:#fff;"></div>
                 </div>
                 <div class="form-group">
                     <label for="projectContent" class="form-label">详细内容</label>
@@ -618,7 +639,8 @@
 
     <script>
         let projectToDelete = null;
-        let quill = null; // Declare quill globally or in a scope accessible by edit/save functions
+        let quill = null;
+        let descriptionQuill = null;
 
         document.addEventListener('DOMContentLoaded', async function () {
             const user = localStorage.getItem('adminUser');
@@ -633,6 +655,18 @@
             await loadProjects();
 
             // Initialize Quill editor
+            descriptionQuill = new Quill('#projectDescription', {
+                theme: 'snow',
+                placeholder: '输入项目描述...',
+                modules: {
+                    toolbar: [
+                        ['bold', 'italic', 'underline'],
+                        [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                        ['link'],
+                        ['clean']
+                    ]
+                }
+            });
             quill = new Quill('#editor-container', {
                 theme: 'snow',
                 placeholder: '输入详细内容...',
@@ -776,7 +810,7 @@
                 document.getElementById('projectCategory').value = project.category || '';
                 document.getElementById('projectImage').value = project.image || '';
                 document.getElementById('projectClient').value = project.client || '';
-                document.getElementById('projectDescription').value = project.description || '';
+                if (descriptionQuill) descriptionQuill.root.innerHTML = project.description || '';
                 document.getElementById('projectServices').value = project.services ? JSON.stringify(project.services, null, 2) : '[]'; // Populate services
                 document.getElementById('projectDuration').value = project.duration || ''; // Populate duration
                 document.getElementById('projectSortOrder').value = project.sortOrder ?? project.sort_order ?? 0;
@@ -868,7 +902,7 @@
             const category = document.getElementById('projectCategory').value.trim();
             const image = document.getElementById('projectImage').value.trim();
             const client = document.getElementById('projectClient').value.trim();
-            const description = document.getElementById('projectDescription').value.trim();
+            const description = descriptionQuill ? descriptionQuill.root.innerHTML.trim() : '';
             const content = quill ? quill.root.innerHTML.trim() : '';
 
             const servicesRaw = document.getElementById('projectServices').value.trim();

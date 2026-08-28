@@ -89,7 +89,7 @@
                 <li><a href="projects.html"><i class="fa fa-briefcase"></i>成功案例</a></li>
                 <li><a href="news.html"><i class="fa fa-newspaper-o"></i>博客/新闻</a></li>
                 <li><a href="testimonials.html" class="active"><i class="fa fa-comments"></i>客户评价</a></li>
-                <li><a href="partners.html"><i class="fa fa-handshake-o"></i>合作伙伴</a></li>
+                <li><a href="partners.html"><i class="fa fa-handshake-o"></i>合作伙伴</a></li><li><a href="business-distribution.html"><i class="fa fa-globe"></i>业务分布</a></li>
                 <li><a href="about.html"><i class="fa fa-building"></i>关于我们</a></li>
                 <li><a href="about-company.html"><i class="fa fa-info-circle"></i>公司简介</a></li>
                 <li><a href="about-me.html"><i class="fa fa-user"></i>个人简介</a></li>
@@ -138,6 +138,7 @@
                                 <th>ID</th>
                                 <th>姓名</th>
                                 <th>职位</th>
+                                <th>展示位置</th>
                                 <th>评价内容</th>
                                 <th>头像</th>
                                 <th>排序</th>
@@ -174,13 +175,13 @@
                     <div id="testimonial-editor-container" style="height: 150px;"></div>
                 </div>
                 <div class="form-group">
-                    <label for="testimonialAvatar" class="form-label">头像</label>
-                    <div class="image-upload">
-                        <button type="button" class="image-upload-btn" onclick="document.getElementById('testimonialAvatarFile').click()">
+                    <label for="testimonialAvatarFile" class="form-label">头像</label>
+                    <div class="image-upload" style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+                        <label for="testimonialAvatarFile" class="btn btn-secondary" style="cursor:pointer; display:inline-flex; align-items:center; gap:8px;">
                             <i class="fas fa-upload"></i> 选择头像
-                        </button>
-                        <input type="file" id="testimonialAvatarFile" name="avatar" accept="image/*"
-                            onchange="previewImage(this, 'testimonialAvatarPreview')">
+                        </label>
+                        <input type="file" id="testimonialAvatarFile" accept="image/*" style="display:none;" onchange="previewImage(this, 'testimonialAvatarPreview')">
+                        <span id="testimonialAvatarFileName" style="color:#666; font-size:14px;">未选择文件</span>
                     </div>
                     <img id="testimonialAvatarPreview" class="image-preview" src="" alt="头像预览" style="display: none; margin-top: 10px; max-width: 100px; max-height: 100px; border: 1px solid #ddd; border-radius: 4px;">
                     <input type="hidden" id="testimonialAvatar" name="avatar" value="">
@@ -188,6 +189,13 @@
                 <div class="form-group">
                     <label for="testimonialSortOrder" class="form-label">排序</label>
                     <input type="number" id="testimonialSortOrder" class="form-input" min="1">
+                </div>
+                <div class="form-group">
+                    <label for="testimonialScope" class="form-label">展示位置</label>
+                    <select id="testimonialScope" class="form-input">
+                        <option value="home">首页评价</option>
+                        <option value="about-me">个人简介页评价</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label class="form-label">状态</label>
@@ -262,25 +270,32 @@
             });
         });
 
+        function normalizePublicImagePath(path) {
+            if (!path) return '';
+            const value = String(path).trim();
+            if (!value) return '';
+            if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) return value;
+            if (value.startsWith('images/') || value.startsWith('uploads/')) return `/${value}`;
+            return value;
+        }
+
         function previewImage(input, previewId) {
             const preview = document.getElementById(previewId);
             const file = input.files[0];
-            const reader = new FileReader();
-
-            reader.onload = function (e) {
-                preview.src = e.target.result;
-                preview.style.display = 'block';
-                document.getElementById('testimonialAvatar').value = e.target.result; // Store base64 or path
-            }
+            const fileName = document.getElementById('testimonialAvatarFileName');
 
             if (file) {
-                // For actual file upload, we usually send the file via FormData.
-                // Here we store a temporary DataURL for preview. The actual upload logic should be in saveTestimonial.
+                if (fileName) fileName.textContent = file.name;
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                };
                 reader.readAsDataURL(file);
             } else {
+                if (fileName) fileName.textContent = '未选择文件';
                 preview.src = '';
                 preview.style.display = 'none';
-                document.getElementById('testimonialAvatar').value = '';
             }
         }
 
@@ -302,7 +317,7 @@
 
         async function loadTestimonials() {
             const tableBody = document.getElementById('testimonialsTableBody');
-            tableBody.innerHTML = '<tr><td colspan="8">加载中...</td></tr>';
+            tableBody.innerHTML = '<tr><td colspan="9">加载中...</td></tr>';
             try {
                 const testimonials = await window.API.Testimonials.getAll(); // 从公共接口获取激活的评价
                 renderTestimonialsTable(testimonials || []);
@@ -316,7 +331,7 @@
                     }
                     return;
                 }
-                tableBody.innerHTML = '<tr><td colspan="8">加载失败，请稍后重试</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="9">加载失败，请稍后重试</td></tr>';
                 showMessage('加载客户评价失败', 'error');
             }
         }
@@ -326,17 +341,19 @@
             tableBody.innerHTML = '';
 
             if (!testimonials || testimonials.length === 0) {
-                tableBody.innerHTML = '<tr><td colspan="8">暂无客户评价</td></tr>';
+                tableBody.innerHTML = '<tr><td colspan="9">暂无客户评价</td></tr>';
                 return;
             }
 
             testimonials.forEach(testimonial => {
                 const tr = document.createElement('tr');
                 const avatarSrc = testimonial.image && testimonial.image !== '' ? (testimonial.image.startsWith('http') || testimonial.image.startsWith('/') ? testimonial.image : `../${testimonial.image}`) : `../images/testimonials-person-1-96x96.jpg`;
+                const scopeLabel = testimonial.scope === 'about-me' ? '个人简介页评价' : '首页评价';
                 tr.innerHTML = `
                     <td>${testimonial.id}</td>
                     <td>${testimonial.name}</td>
                     <td>${testimonial.position}</td>
+                    <td>${scopeLabel}</td>
                     <td><div style="max-height: 100px; overflow-y: auto;">${testimonial.content || ''}</div></td>
                     <td>
                         <img src="${avatarSrc}" alt="${testimonial.name}" class="avatar-img">
@@ -397,6 +414,10 @@
             preview.src = '';
             preview.style.display = 'none';
             document.getElementById('testimonialAvatar').value = '';
+            const fileName = document.getElementById('testimonialAvatarFileName');
+            if (fileName) fileName.textContent = '未选择文件';
+            const fileInput = document.getElementById('testimonialAvatarFile');
+            if (fileInput) fileInput.value = '';
 
             modalTitle.textContent = '添加客户评价';
             modal.style.display = 'block';
@@ -420,12 +441,18 @@
                 if (testimonialQuill) {
                     testimonialQuill.root.innerHTML = testimonial.content || '';
                 }
-                document.getElementById('testimonialAvatar').value = testimonial.image || '';
+                const normalizedImage = normalizePublicImagePath(testimonial.image || '');
+                document.getElementById('testimonialAvatar').value = normalizedImage;
                 document.getElementById('testimonialSortOrder').value = testimonial.sortOrder ?? 0;
+                document.getElementById('testimonialScope').value = testimonial.scope || 'home';
 
-                if (testimonial.image) {
+                const fileName = document.getElementById('testimonialAvatarFileName');
+                const fileInput = document.getElementById('testimonialAvatarFile');
+                if (fileInput) fileInput.value = '';
+                if (fileName) fileName.textContent = normalizedImage ? (normalizedImage.split('/').pop() || '已选择文件') : '未选择文件';
+                if (normalizedImage) {
                     const preview = document.getElementById('testimonialAvatarPreview');
-                    preview.src = testimonial.image.startsWith('http') || testimonial.image.startsWith('/') ? testimonial.image : `../${testimonial.image}`;
+                    preview.src = normalizedImage;
                     preview.style.display = 'block';
                 } else {
                     document.getElementById('testimonialAvatarPreview').style.display = 'none';
@@ -462,27 +489,48 @@
             let image = document.getElementById('testimonialAvatar').value.trim();
             const sortOrder = parseInt(document.getElementById('testimonialSortOrder').value || '0', 10);
             const isActive = document.getElementById('testimonialActive').checked ? 1 : 0;
+            const scope = document.getElementById('testimonialScope').value;
 
             if (!name || !position || !content) {
                 showMessage('请填写完整的客户评价信息', 'error');
                 return;
             }
 
-            // 如果有新的文件被选择，则执行上传
             const avatarFile = document.getElementById('testimonialAvatarFile').files[0];
             if (avatarFile) {
                 try {
                     const uploadResponse = await window.API.Upload.uploadSingle(avatarFile);
-                    image = uploadResponse.filePath; // 更新为上传后的文件路径
+                    console.log('头像上传接口返回：', uploadResponse);
+                    const uploadedPath = uploadResponse?.file?.path
+                        || uploadResponse?.filePath
+                        || uploadResponse?.path
+                        || uploadResponse?.url
+                        || uploadResponse?.image
+                        || uploadResponse?.imageUrl
+                        || uploadResponse?.file_url
+                        || uploadResponse?.data?.file?.path
+                        || uploadResponse?.data?.filePath
+                        || uploadResponse?.data?.path
+                        || uploadResponse?.data?.url
+                        || uploadResponse?.data?.image
+                        || uploadResponse?.data?.imageUrl
+                        || uploadResponse?.data?.file_url
+                        || (typeof uploadResponse === 'string' ? uploadResponse : '');
+                    image = normalizePublicImagePath(uploadedPath);
+                    if (!image) {
+                        throw new Error('上传成功但未返回文件路径');
+                    }
                     showMessage('头像上传成功', 'success');
                 } catch (uploadError) {
                     console.error('头像上传失败:', uploadError);
                     showMessage(`头像上传失败: ${uploadError.message}`, 'error');
                     return;
                 }
+            } else {
+                image = normalizePublicImagePath(image);
             }
 
-            const payload = { name, position, content, image, sortOrder, isActive };
+            const payload = { name, position, content, image, sortOrder, isActive, scope };
 
             try {
                 if (id) {
@@ -506,6 +554,15 @@
                 }
                 showMessage('保存失败，请稍后重试', 'error');
             }
+        }
+
+        function normalizePublicImagePath(path) {
+            if (!path) return '';
+            const value = String(path).trim();
+            if (!value) return '';
+            if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) return value;
+            if (value.startsWith('images/') || value.startsWith('uploads/')) return `/${value}`;
+            return value;
         }
 
         function deleteTestimonial(id) {

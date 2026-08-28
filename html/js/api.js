@@ -210,6 +210,13 @@ const UsersAPI = {
     changeMyPassword: (data) => apiRequest('/users/me/password', { method: 'PUT', body: JSON.stringify(data) })
 };
 
+// 业务分布API
+const BusinessDistributionAPI = {
+    get: () => apiRequest('/business-distribution'),
+    getAdmin: () => apiRequest('/business-distribution/admin'),
+    update: (data) => apiRequest('/business-distribution', { method: 'PUT', body: JSON.stringify(data) })
+};
+
 // 文件上传API
 const UploadAPI = {
     // 单文件上传
@@ -295,5 +302,6 @@ window.API = {
     HomeFeatures: HomeFeaturesAPI, // 注册新的首页特色模块API
     Careers: CareersAPI, // 招贤纳士职位API
     Users: UsersAPI, // 用户管理API
+    BusinessDistribution: BusinessDistributionAPI, // 业务分布API
     Upload: UploadAPI
 };
