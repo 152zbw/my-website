@@ -18,6 +18,8 @@
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
     <script src="js/html5shiv.min.js"></script>
     <![endif]-->
+  <script src="js/i18n-catalog.js?v=2"></script>
+  <script src="js/i18n.js?v=2"></script>
 </head>
 
 <body>
@@ -263,7 +265,6 @@
   <script src="js/script.js"></script>
   <script src="js/map.js"></script>
   <script src="js/footer.js?v=1"></script>
-  <script src="js/i18n.js?v=1"></script>
   <script>
     // 页面加载时渲染博客
     document.addEventListener('DOMContentLoaded', async function () {
@@ -326,11 +327,12 @@
           sortedNews.forEach((item, index) => {
             const imageUrl = item.image || `images/sidebar-blog-${(index % 6) + 1}-370x264.jpg`;
             const date = item.createdAt || item.date || new Date().toISOString();
-            const category = item.category || '新闻';
+            const isEnglish = window.SiteI18n?.isEnglish();
+            const category = item.category || (isEnglish ? 'Insights' : '新闻');
             
             // 格式化日期
             const dateObj = new Date(date);
-            const formattedDate = dateObj.toLocaleDateString('zh-CN', {
+            const formattedDate = dateObj.toLocaleDateString(isEnglish ? 'en-US' : 'zh-CN', {
               year: 'numeric',
               month: 'long',
               day: 'numeric',
@@ -386,7 +388,10 @@
       const archivesMap = new Map();
       news.forEach(item => {
         const date = new Date(item.createdAt || item.date || Date.now());
-        const yearMonth = `${date.getFullYear()}年${date.getMonth() + 1}月`;
+        const yearMonth = date.toLocaleDateString(window.SiteI18n?.isEnglish() ? 'en-US' : 'zh-CN', {
+          year: 'numeric',
+          month: 'long'
+        });
         if (!archivesMap.has(yearMonth)) {
           archivesMap.set(yearMonth, 0);
         }
@@ -409,7 +414,7 @@
       // 更新分类
       const categoriesMap = new Map();
       news.forEach(item => {
-        const category = item.category || '未分类';
+        const category = item.category || (window.SiteI18n?.isEnglish() ? 'Uncategorized' : '未分类');
         categoriesMap.set(category, (categoriesMap.get(category) || 0) + 1);
       });
 
