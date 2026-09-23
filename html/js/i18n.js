@@ -94,10 +94,12 @@
     const style = document.createElement('style');
     style.id = 'site-language-styles';
     style.textContent = `
-      .language-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:42px;min-height:34px;padding:6px 11px;border:1px solid rgba(53,72,121,.35);border-radius:999px;background:#fff;color:#354879;font:700 13px/1 Arial,sans-serif;cursor:pointer;transition:.2s}
+      .language-toggle{position:relative;z-index:20;display:inline-flex;flex:0 0 auto;align-items:center;justify-content:center;min-width:42px;min-height:34px;padding:6px 11px;border:1px solid rgba(53,72,121,.35);border-radius:999px;background:#fff;color:#354879;font:700 13px/1 Arial,sans-serif;cursor:pointer;transition:.2s}
       .language-toggle:hover,.language-toggle:focus-visible{background:#354879;border-color:#354879;color:#fff;outline:none}
       .rd-nav-item-language{display:flex;align-items:center}
       .site-language-floating{position:fixed;top:16px;right:16px;z-index:10000;box-shadow:0 4px 18px rgba(26,39,72,.18)}
+      html[lang="en"] .rd-navbar-list{min-width:0}
+      html[lang="en"] #topPhone{max-width:310px;white-space:normal;line-height:1.35;letter-spacing:0}
     `;
     document.head.appendChild(style);
   }
@@ -109,8 +111,11 @@
     toggle.id = 'languageToggle';
     toggle.type = 'button';
     toggle.className = 'language-toggle';
+    const stableHeader = document.querySelector('#rd-navbar-hidden-1, .rd-navbar-block');
     const nav = document.querySelector('.rd-navbar-nav');
-    if (nav) {
+    if (stableHeader) {
+      stableHeader.appendChild(toggle);
+    } else if (nav) {
       const item = document.createElement('li');
       item.className = 'rd-nav-item rd-nav-item-language';
       item.appendChild(toggle);
@@ -171,8 +176,7 @@
           translateTree(node);
         }
       }));
-      const toggle = document.getElementById('languageToggle');
-      if (toggle) updateToggle(toggle);
+      bindToggle();
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }

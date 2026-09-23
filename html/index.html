@@ -76,9 +76,8 @@
       opacity: 0 !important;
     }
 
-    /* 首页首屏不显示右侧人物图，直接保留空白蓝底区域 */
-    #heroSection,
-    #heroImage {
+    /* 首页首屏蓝色背景 */
+    #heroSection {
       background-color: #d9eef9;
       background-image: none !important;
       background-position: center center;
@@ -86,9 +85,31 @@
       background-size: cover;
     }
 
-    /* 直接隐藏图片区域，避免任何人物图露出 */
-    #heroImage {
-      display: none !important;
+    #heroRightImage {
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+    }
+
+    html[lang="en"] #heroTitle {
+      font-size: clamp(42px, 3.35vw, 58px);
+      line-height: 1.12;
+    }
+
+    html[lang="en"] #heroDescription {
+      font-family: Arial, "Helvetica Neue", sans-serif;
+      font-size: 15px;
+      line-height: 1.55;
+      letter-spacing: 0;
+    }
+
+    html[lang="en"] #heroDescription ul {
+      margin-bottom: 0;
+      padding-left: 20px;
+    }
+
+    html[lang="en"] #heroDescription li + li {
+      margin-top: 8px;
     }
 
     /* 手机端把 logo 移到顶部中间，只在小于 480px 时显示 */
@@ -353,8 +374,8 @@
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
     <script src="js/html5shiv.min.js"></script>
     <![endif]-->
-  <script src="js/i18n-catalog.js?v=2"></script>
-  <script src="js/i18n.js?v=2"></script>
+  <script src="js/i18n-catalog.js?v=3"></script>
+  <script src="js/i18n.js?v=3"></script>
 </head>
 
 <body>
@@ -1048,14 +1069,23 @@
               }
             });
           }
-          // 不再使用首页头图图片，始终保持空白蓝底
+          // 首页头图使用服务端实时缩放的 WebP，避免下载后台上传的大原图。
           const heroSection = document.getElementById('heroSection');
           const heroRightImage = document.getElementById('heroRightImage');
           if (heroSection) {
             heroSection.style.backgroundImage = 'none';
           }
-          // 右侧头图区域当前被设计为隐藏，不再下载后台大图。
-          if (heroRightImage) heroRightImage.style.backgroundImage = 'none';
+          if (heroRightImage) {
+            const heroImageUrl = getOptimizedImageUrl(info.heroRightImage, 1200);
+            if (heroImageUrl) {
+              heroRightImage.style.backgroundImage = `url("${heroImageUrl}")`;
+              heroRightImage.style.opacity = '1';
+              heroRightImage.setAttribute('aria-label', info.heroTitle || '首页图片');
+            } else {
+              heroRightImage.style.backgroundImage = 'none';
+              heroRightImage.removeAttribute('aria-label');
+            }
+          }
           // 更新首页文案
           const heroTitle = document.getElementById('heroTitle');
           const heroDescription = document.getElementById('heroDescription');
