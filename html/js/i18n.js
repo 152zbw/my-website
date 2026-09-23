@@ -216,7 +216,13 @@
     });
 
     const favicon = document.querySelector('link[rel="icon"]');
-    if (favicon && data.favicon) favicon.href = data.favicon;
+    if (favicon && data.favicon) {
+      // The legacy template favicon is not part of the Lisi brand. Keep old
+      // database values from replacing the branded browser-tab icon.
+      favicon.href = /(^|\/)images\/favicon\.ico(?:[?#]|$)/i.test(data.favicon)
+        ? 'images/wblogo.ico'
+        : data.favicon;
+    }
 
     setContactLink(document.getElementById('topPhone'), data.phone, 'phone');
     setContactLink(document.getElementById('contactPhoneMain'), data.phone, 'phone');
