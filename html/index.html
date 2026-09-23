@@ -377,8 +377,8 @@
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
     <script src="js/html5shiv.min.js"></script>
     <![endif]-->
-  <script src="js/i18n-catalog.js?v=3"></script>
-  <script src="js/i18n.js?v=3"></script>
+  <script src="js/i18n-catalog.js?v=4"></script>
+  <script src="js/i18n.js?v=4"></script>
 </head>
 
 <body>
@@ -412,7 +412,7 @@
                   <div class="rd-navbar-collapse">
                     <ul class="list-inline-bordered rd-navbar-list">
                       <li><span class="icon mdi mdi-comment-text-outline"></span><a href="contacts.html" data-i18n="contactUs">联系我们</a></li>
-                      <li><span class="icon mdi mdi-cellphone-android"></span><a href="tel:#" id="topPhone"></a></li>
+                      <li><span class="icon mdi mdi-cellphone-android"></span><a id="topPhone">更多请关注“笠偌咨询”公众号</a></li>
                     </ul>
                   </div>
                   <button class="rd-navbar-search-toggle"
@@ -610,12 +610,12 @@
                   </h2>
                 </div>
                 <div class="wow-outer p">
-                  <p class="custom-article wow fadeInDown" data-wow-delay=".2s" id="heroDescription">欢迎了解我们的咨询服务。</p>
+                  <div class="custom-article wow fadeInDown" data-wow-delay=".2s" id="heroDescription"><ul><li>一家全球化专业咨询服务公司，在烟台、香港、深圳、上海、济南、美国、匈牙利、墨西哥等多个国家及地区设有分支机构。</li><li>国际化运营、本土化服务、独立化自主交付，致力于成为客户依赖、员工自豪，具备全球视野的企业管理咨询综合服务商。</li><li>整合全球优势的咨询资源，强调结合中国本土企业气候土壤的自主专业化交付及伴随式的落地服务，针对中国企业面临的产业升级及创新转型所遇到的管理问题提供全方位的一体化解决方案。</li></ul></div>
                 </div><a class="button button-primary button-winona wow FadeIn" id="heroButton" href="contacts.html" data-i18n="learnMore">了解更多</a>
               </div>
             </div>
             <div class="col-md-6 col-lg-7 d-flex justify-content-center justify-content-md-end mt-5 mt-md-0">
-              <div id="heroRightImage" class="wow fadeInRight hero-image-placeholder" aria-hidden="true" style="width: 100%; min-height: 420px; border-radius: 18px; background-color: #eef5ff; background-image: linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.45) 37%, rgba(255,255,255,0.2) 63%); background-size: 400% 100%; background-position: 100% 0; background-repeat: no-repeat; box-shadow: 0 14px 40px rgba(53, 72, 121, 0.12); transition: opacity 0.35s ease, background-image 0.35s ease; opacity: 0.85;"></div>
+              <div id="heroRightImage" class="wow fadeInRight" aria-hidden="true" style="width:100%;aspect-ratio:16/9;border-radius:18px;background-color:#eef5ff;background-image:url('/uploads/file-1790129226616-253929898.webp?w=1200');background-size:cover;background-position:center;background-repeat:no-repeat;box-shadow:0 14px 40px rgba(53,72,121,.12);transition:opacity .35s ease;opacity:1;"></div>
             </div>
           </div>
         </div>
@@ -1057,20 +1057,15 @@
           if (topPhone) {
             if (info.phone) {
               topPhone.textContent = info.phone;
-              topPhone.setAttribute('href', `tel:${info.phone}`);
+              if (/^[+\d][\d\s().-]{5,}$/.test(info.phone.trim())) {
+                topPhone.setAttribute('href', `tel:${info.phone.replace(/\s+/g, '')}`);
+              } else {
+                topPhone.removeAttribute('href');
+              }
             } else {
               topPhone.textContent = '';
-              topPhone.setAttribute('href', 'tel:#');
+              topPhone.removeAttribute('href');
             }
-          }
-          if (info.phone) {
-            const phoneLinks = document.querySelectorAll('a[href^="tel:"]');
-            phoneLinks.forEach(link => {
-              if (link !== topPhone) {
-                link.textContent = info.phone;
-                link.setAttribute('href', `tel:${info.phone}`);
-              }
-            });
           }
           // 首页头图使用服务端实时缩放的 WebP，避免下载后台上传的大原图。
           const heroSection = document.getElementById('heroSection');
@@ -1525,9 +1520,9 @@
   </script>
   <!-- Javascript-->
   <script src="js/core.min.js?v=6"></script>
-  <script src="js/api.js?v=6"></script>
+  <script src="js/api.js?v=7"></script>
   <script src="js/script.js?v=6"></script>
-  <script src="js/map.js?v=6"></script>
+  <script src="js/map.js?v=7"></script>
   <script src="js/contact-form.js?v=1"></script>
   <script src="js/business-map.js?v=2"></script>
   <script src="js/footer.js?v=1"></script>

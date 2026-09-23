@@ -18,8 +18,8 @@
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
     <script src="js/html5shiv.min.js"></script>
     <![endif]-->
-  <script src="js/i18n-catalog.js?v=3"></script>
-  <script src="js/i18n.js?v=3"></script>
+  <script src="js/i18n-catalog.js?v=4"></script>
+  <script src="js/i18n.js?v=4"></script>
 </head>
 
 <body>
@@ -55,7 +55,7 @@
                       <!-- RD Navbar Dropdown-->
                       <ul class="rd-menu rd-navbar-dropdown">
                         <li class="rd-dropdown-item"><a class="rd-dropdown-link" href="sidebar-blog.html">博客列表</a></li>
-                        <li class="rd-dropdown-item"><a class="rd-dropdown-link" href="single-blog-post.html">单篇博客</a>
+                        <li class="rd-dropdown-item"><a class="rd-dropdown-link" href="sidebar-blog.html">单篇博客</a>
                         </li>
                       </ul>
                     </li>
@@ -63,7 +63,7 @@
                       <!-- RD Navbar Dropdown-->
                       <ul class="rd-menu rd-navbar-dropdown">
                         <li class="rd-dropdown-item"><a class="rd-dropdown-link" href="grid-gallery.html">案例展示</a></li>
-                        <li class="rd-dropdown-item"><a class="rd-dropdown-link" href="single-project.html">案例详情</a>
+                        <li class="rd-dropdown-item"><a class="rd-dropdown-link" href="grid-gallery.html">案例详情</a>
                         </li>
                       </ul>
                     </li>
@@ -128,21 +128,20 @@
             <div class="layout-bordered-item-inner wow slideInUp">
               <div class="icon icon-lg mdi mdi-phone text-primary"></div>
               <ul class="list-0" id="contactPhoneList">
-                <li><a class="link-default" id="contactPhoneMain" href="tel:#">400-1234-678</a></li>
-                <li id="contactPhoneAltWrapper" style="display:none;"><a class="link-default" id="contactPhoneAlt" href="tel:#">400-9876-098</a></li>
+                <li><a class="link-default" id="contactPhoneMain">更多请关注“笠偌咨询”公众号</a></li>
               </ul>
             </div>
           </div>
           <div class="layout-bordered-item wow-outer">
             <div class="layout-bordered-item-inner wow slideInUp">
               <div class="icon icon-lg mdi mdi-email text-primary"></div><a class="link-default"
-                id="contactEmail" href="mailto:#">info@demolink.org</a>
+                id="contactEmail" href="mailto:winniehan@ec-in.com">winniehan@ec-in.com</a>
             </div>
           </div>
           <div class="layout-bordered-item wow-outer">
             <div class="layout-bordered-item-inner wow slideInUp">
               <div class="icon icon-lg mdi mdi-map-marker text-primary"></div>
-              <p class="link-default" id="contactAddress" style="margin:0;">上海市浦东新区张江高科技园区科苑路88号</p>
+              <p class="link-default" id="contactAddress" style="margin:0;">山东省烟台市莱山区蓝海路蓝海软件园B座</p>
             </div>
           </div>
         </div>
@@ -201,9 +200,6 @@
                       <button class="button button-primary button-winona wow slideInRight" type="submit"
                         id="submitBtn">发送消息</button>
                     </div>
-                    <div class="wow-outer"><a
-                        class="button button-primary-outline button-icon button-icon-left button-winona wow slideInLeft"
-                        href="#"><span class="icon text-primary mdi mdi-facebook-messenger"></span>信使</a></div>
                   </div>
                   <!-- Success Message -->
                   <div id="successMessage"
@@ -246,8 +242,9 @@
   <div class="snackbars" id="form-output-global"></div>
   <!-- Javascript-->
   <script src="js/core.min.js?v=4"></script>
-  <script src="js/api.js?v=4"></script>
-  <script src="js/map.js?v=4"></script>
+  <script src="js/api.js?v=7"></script>
+  <script src="js/script.js?v=1"></script>
+  <script src="js/map.js?v=7"></script>
   <script>
     function hidePreloader() {
       const preloader = document.querySelector('.preloader');
@@ -289,7 +286,11 @@
         if (info.phone) {
           const phoneMain = document.getElementById('contactPhoneMain');
           phoneMain.textContent = info.phone;
-          phoneMain.href = `tel:${info.phone}`;
+          if (/^[+\d][\d\s().-]{5,}$/.test(info.phone.trim())) {
+            phoneMain.href = `tel:${info.phone.replace(/\s+/g, '')}`;
+          } else {
+            phoneMain.removeAttribute('href');
+          }
           const altWrap = document.getElementById('contactPhoneAltWrapper');
           if (altWrap) altWrap.style.display = 'none';
         }

@@ -110,18 +110,18 @@
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="city">城市</label>
-                            <input id="city" class="form-input" placeholder="例如：上海市 / 杭州市">
+                            <input id="city" class="form-input" placeholder="例如：烟台市">
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="addressDetail">详细地址</label>
-                            <input id="addressDetail" class="form-input" placeholder="例如：张江高科技园区科苑路88号">
+                            <input id="addressDetail" class="form-input" placeholder="例如：莱山区蓝海路蓝海软件园B座">
                         </div>
                         <div class="form-group">
                             <button type="button" class="btn btn-secondary" onclick="autoFillLatLng()">根据上面地址自动获取经纬度</button>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="address">完整地址（可自动生成，也可手动修改）</label>
-                            <input id="address" class="form-input" placeholder="例如：上海市浦东新区张江高科技园区科苑路88号" required>
+                            <input id="address" class="form-input" placeholder="例如：山东省烟台市莱山区蓝海路蓝海软件园B座" required>
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="lat">纬度</label>
@@ -200,14 +200,14 @@
 
         async function loadData() {
             const data = await getData() || {
-                mapAddress: '上海市浦东新区张江高科技园区科苑路88号',
-                mapLat: 31.224361,
-                mapLng: 121.537021,
+                mapAddress: '山东省烟台市莱山区蓝海路蓝海软件园B座',
+                mapLat: 37.461219,
+                mapLng: 121.488077,
                 mapZoom: 15,
                 mapDesc: '欢迎前来咨询！',
-                mapProvince: '上海市',
-                mapCity: '上海市',
-                mapAddressDetail: '浦东新区张江高科技园区科苑路88号'
+                mapProvince: '山东省',
+                mapCity: '烟台市',
+                mapAddressDetail: '莱山区蓝海路蓝海软件园B座'
             };
             document.getElementById('province').value = data.mapProvince || '';
             document.getElementById('city').value = data.mapCity || '';

@@ -72,7 +72,15 @@ function handleAuthExpired() {
 
 // 网站信息API
 const WebsiteInfoAPI = {
-    get: () => apiRequest('/website-info'),
+    get: async () => {
+        const sharedRequest = window.SiteWebsiteInfoPromise;
+        const data = sharedRequest ? await sharedRequest : await apiRequest('/website-info');
+        if (!data) return apiRequest('/website-info');
+        if (window.SiteI18n?.localizeApiResponse) {
+            return window.SiteI18n.localizeApiResponse('/website-info', data, { method: 'GET' });
+        }
+        return data;
+    },
     update: (data) => apiRequest('/website-info', {
         method: 'PUT',
         body: JSON.stringify(data)

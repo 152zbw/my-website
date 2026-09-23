@@ -98,22 +98,51 @@
       .language-toggle:hover,.language-toggle:focus-visible{background:#354879;border-color:#354879;color:#fff;outline:none}
       .rd-nav-item-language{display:flex;align-items:center}
       .site-language-floating{position:fixed;top:16px;right:16px;z-index:10000;box-shadow:0 4px 18px rgba(26,39,72,.18)}
+      .preloader{display:none!important;visibility:hidden!important;opacity:0!important}
+      .breadcrumbs-custom.bg-image{background-image:linear-gradient(135deg,#263760 0%,#4f7197 58%,#8ab2cb 100%)!important;background-color:#354879}
+      .footer-minimal .brand,.footer-corporate-brand .brand{display:inline-flex;align-items:center;padding:6px 8px;border-radius:6px;background:#fff}
+      .footer-minimal .brand img,.footer-corporate-brand .brand img{width:auto;max-width:190px;height:auto;max-height:48px;object-fit:contain}
+      .layout-bordered .link-default{overflow-wrap:anywhere}
       html[lang="en"] .rd-navbar-list{min-width:0}
       html[lang="en"] #topPhone{max-width:310px;white-space:normal;line-height:1.35;letter-spacing:0}
+      @media(max-width:767.98px){
+        .breadcrumbs-custom-inner{padding-top:72px;padding-bottom:52px}
+        .breadcrumbs-custom-title{font-size:34px;line-height:1.2}
+        .layout-bordered-item-inner{padding-left:12px;padding-right:12px}
+        .footer-minimal-inner{gap:20px}
+      }
+      @media(max-width:991.98px){
+        .rd-navbar-minimal .rd-navbar-panel>.rd-navbar-brand{position:absolute;left:50%;top:50%;width:132px;transform:translate(-50%,-50%);margin:0}
+        .rd-navbar-minimal .rd-navbar-panel>.rd-navbar-brand img{display:block;width:100%;height:auto;max-height:38px;object-fit:contain}
+        .rd-navbar-panel>.site-language-panel{position:absolute;right:10px;top:50%;z-index:1090;transform:translateY(-50%);margin:0}
+        .rd-navbar-minimal .rd-navbar-search-toggle.rd-navbar-fixed-element-2{display:none!important}
+        .wow{visibility:visible!important;animation:none!important;opacity:1!important;transform:none!important}
+      }
     `;
     document.head.appendChild(style);
   }
 
   function ensureLanguageToggle() {
     let toggle = document.getElementById('languageToggle');
-    if (toggle) return toggle;
+    const compactHeader = window.matchMedia('(max-width: 991.98px)').matches;
+    const headerBlock = document.querySelector('#rd-navbar-hidden-1, .rd-navbar-block');
+    const headerPanel = document.querySelector('.rd-navbar-panel');
+    if (toggle) {
+      if (!headerBlock && compactHeader && headerPanel && toggle.parentElement !== headerPanel) {
+        toggle.closest('.rd-nav-item-language')?.remove();
+        toggle.classList.add('site-language-panel');
+        headerPanel.appendChild(toggle);
+      }
+      return toggle;
+    }
     toggle = document.createElement('button');
     toggle.id = 'languageToggle';
     toggle.type = 'button';
     toggle.className = 'language-toggle';
-    const stableHeader = document.querySelector('#rd-navbar-hidden-1, .rd-navbar-block');
+    const stableHeader = headerBlock || (compactHeader ? headerPanel : null);
     const nav = document.querySelector('.rd-navbar-nav');
     if (stableHeader) {
+      if (stableHeader === headerPanel) toggle.classList.add('site-language-panel');
       stableHeader.appendChild(toggle);
     } else if (nav) {
       const item = document.createElement('li');
@@ -157,6 +186,125 @@
     translateTree(document.body);
   }
 
+  function localizedWebsiteInfo(data) {
+    if (!data || getLanguage() !== ENGLISH) return data;
+    return mergeEntity(data, catalog.entities?.['website-info']);
+  }
+
+  function isPhoneNumber(value) {
+    return /^[+\d][\d\s().-]{5,}$/.test(String(value || '').trim());
+  }
+
+  function setContactLink(element, value, type) {
+    if (!element || !value) return;
+    element.textContent = value;
+    if (element.tagName !== 'A') return;
+    if (type === 'email') element.href = `mailto:${value}`;
+    else if (type === 'phone' && isPhoneNumber(value)) element.href = `tel:${value.replace(/\s+/g, '')}`;
+    else if (type === 'phone') element.removeAttribute('href');
+  }
+
+  function hydrateWebsiteInfo(rawData) {
+    if (!rawData || !document.body) return;
+    const data = localizedWebsiteInfo(rawData);
+    const logo = data.logo || 'images/ce-logo.png';
+
+    document.querySelectorAll('.rd-navbar-brand img, .preloader-logo img, .footer-minimal .brand img, .footer-corporate-brand .brand img').forEach((image) => {
+      image.src = logo;
+      image.removeAttribute('srcset');
+      image.alt = data.title || 'CE International Group Co.,LTD';
+    });
+
+    const favicon = document.querySelector('link[rel="icon"]');
+    if (favicon && data.favicon) favicon.href = data.favicon;
+
+    setContactLink(document.getElementById('topPhone'), data.phone, 'phone');
+    setContactLink(document.getElementById('contactPhoneMain'), data.phone, 'phone');
+    setContactLink(document.getElementById('contactEmail'), data.email, 'email');
+    const contactAddress = document.getElementById('contactAddress');
+    if (contactAddress && data.address) contactAddress.textContent = data.address;
+
+    document.querySelectorAll('.footer-corporate-list .mdi-phone').forEach((icon) => {
+      setContactLink(icon.closest('li')?.querySelector('a'), data.phone, 'phone');
+    });
+    document.querySelectorAll('.footer-corporate-list .mdi-email').forEach((icon) => {
+      setContactLink(icon.closest('li')?.querySelector('a'), data.email, 'email');
+    });
+    document.querySelectorAll('.footer-corporate-list .mdi-map-marker').forEach((icon) => {
+      const target = icon.closest('li')?.querySelector('a, p');
+      if (target && data.address) target.textContent = data.address;
+    });
+    document.querySelectorAll('.privacy-link').forEach((link) => setContactLink(link, data.email, 'email'));
+
+    document.querySelectorAll('[data-footer-brand], .footer-corporate-text').forEach((element) => {
+      if (data.footerBrandText) element.textContent = data.footerBrandText;
+    });
+    document.querySelectorAll('[data-footer-copyright], .footer-corporate-copy').forEach((element) => {
+      if (data.footerCopyright) element.textContent = data.footerCopyright;
+    });
+
+    document.documentElement.classList.add('site-info-ready');
+    document.dispatchEvent(new CustomEvent('site-info-ready', { detail: data }));
+  }
+
+  function removeTemplateResidue() {
+    // 内页残留的模板邮件表单会提交到不存在的 PHP 地址，统一移除。
+    const isContactPage = location.pathname.endsWith('/contacts.html');
+    document.querySelectorAll('form.rd-mailform, form#contactForm').forEach((form) => {
+      const section = form.closest('section');
+      if (section && !isContactPage) {
+        section.hidden = true;
+        section.style.display = 'none';
+        section.setAttribute('aria-hidden', 'true');
+      }
+    });
+    document.querySelectorAll('a[href*="mobanwang.com"]').forEach((link) => link.remove());
+    document.querySelectorAll('a[href="#"] .mdi-facebook-messenger').forEach((icon) => {
+      const wrapper = icon.closest('.wow-outer, a');
+      if (wrapper) wrapper.hidden = true;
+    });
+    document.querySelectorAll('p').forEach((paragraph) => {
+      if (paragraph.textContent.trim().toLowerCase() === 'or use') paragraph.hidden = true;
+    });
+    document.querySelectorAll('.profile-modern .group a[href="#"]').forEach((link) => {
+      const group = link.closest('.group');
+      if (group) group.hidden = true;
+    });
+
+    if (location.pathname.endsWith('/about-company.html')) {
+      ['coreAdvantagesContainer', 'servicesContainer', 'teamContainer', 'testimonialsContainer'].forEach((id) => {
+        const container = document.getElementById(id);
+        if (container) {
+          container.setAttribute('aria-busy', 'true');
+          container.innerHTML = '<div class="col-12 text-center text-muted">内容加载中...</div>';
+        }
+      });
+    }
+  }
+
+  let latestWebsiteInfo = null;
+  try {
+    latestWebsiteInfo = JSON.parse(sessionStorage.getItem('siteWebsiteInfo') || 'null');
+  } catch (_) {}
+
+  const websiteInfoPromise = fetch('/api/website-info', { headers: { Accept: 'application/json' } })
+    .then((response) => {
+      if (!response.ok) throw new Error(`Website info request failed: ${response.status}`);
+      return response.json();
+    })
+    .then((data) => {
+      latestWebsiteInfo = data;
+      try { sessionStorage.setItem('siteWebsiteInfo', JSON.stringify(data)); } catch (_) {}
+      if (document.body) hydrateWebsiteInfo(data);
+      return data;
+    })
+    .catch((error) => {
+      console.warn('站点公共信息加载失败:', error);
+      return latestWebsiteInfo;
+    });
+
+  window.SiteWebsiteInfoPromise = websiteInfoPromise;
+
   function observeDocumentTitle() {
     if (getLanguage() !== ENGLISH || !document.head) return;
     const observer = new MutationObserver(() => {
@@ -181,7 +329,7 @@
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
-  window.SiteI18n = { getLanguage, isEnglish: () => getLanguage() === ENGLISH, t: translateText, apply: applyLanguage, localizeApiResponse };
+  window.SiteI18n = { getLanguage, isEnglish: () => getLanguage() === ENGLISH, t: translateText, apply: applyLanguage, localizeApiResponse, hydrateWebsiteInfo };
   window.translateNavText = translateText;
   window.applySiteLanguage = applyLanguage;
   const nativeAlert = window.alert.bind(window);
@@ -189,6 +337,8 @@
   injectStyles();
 
   document.addEventListener('DOMContentLoaded', () => {
+    removeTemplateResidue();
+    if (latestWebsiteInfo) hydrateWebsiteInfo(latestWebsiteInfo);
     bindToggle();
     applyLanguage();
     observeDocumentTitle();
