@@ -86,9 +86,12 @@
     }
 
     #heroRightImage {
-      background-position: center;
+      width: 100%;
+      min-height: 0 !important;
+      aspect-ratio: 16 / 9;
+      background-position: center !important;
       background-repeat: no-repeat;
-      background-size: cover;
+      background-size: cover !important;
     }
 
     html[lang="en"] #heroTitle {
@@ -1078,9 +1081,19 @@
           if (heroRightImage) {
             const heroImageUrl = getOptimizedImageUrl(info.heroRightImage, 1200);
             if (heroImageUrl) {
-              heroRightImage.style.backgroundImage = `url("${heroImageUrl}")`;
-              heroRightImage.style.opacity = '1';
-              heroRightImage.setAttribute('aria-label', info.heroTitle || '首页图片');
+              const heroImageLoader = new Image();
+              heroImageLoader.decoding = 'async';
+              heroImageLoader.onload = () => {
+                if (heroImageLoader.naturalWidth && heroImageLoader.naturalHeight) {
+                  heroRightImage.style.aspectRatio = `${heroImageLoader.naturalWidth} / ${heroImageLoader.naturalHeight}`;
+                }
+                heroRightImage.style.backgroundImage = `url("${heroImageUrl}")`;
+                heroRightImage.style.backgroundSize = 'cover';
+                heroRightImage.style.backgroundPosition = 'center';
+                heroRightImage.style.opacity = '1';
+                heroRightImage.setAttribute('aria-label', info.heroTitle || '首页图片');
+              };
+              heroImageLoader.src = heroImageUrl;
             } else {
               heroRightImage.style.backgroundImage = 'none';
               heroRightImage.removeAttribute('aria-label');
