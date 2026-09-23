@@ -44,6 +44,10 @@ async function apiRequest(endpoint, options = {}) {
             throw new Error(data.message || `请求失败 (${response.status})`);
         }
         
+        if (window.SiteI18n?.localizeApiResponse) {
+            return window.SiteI18n.localizeApiResponse(endpoint, data, config);
+        }
+
         return data;
     } catch (error) {
         console.error('API请求错误:', {

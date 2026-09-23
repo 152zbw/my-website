@@ -18,6 +18,8 @@
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
     <script src="js/html5shiv.min.js"></script>
     <![endif]-->
+  <script src="js/i18n-catalog.js?v=2"></script>
+  <script src="js/i18n.js?v=2"></script>
 </head>
 
 <body>
@@ -298,7 +300,6 @@ height="24" />
 <script src="js/script.js"></script>
 <script src="js/map.js"></script>
 <script src="js/footer.js?v=1"></script>
-<script src="js/i18n.js?v=1"></script>
 <script>
     // 页面加载时渲染服务详情和价格表（从后端API获取）
     document.addEventListener('DOMContentLoaded', async function () {
@@ -397,7 +398,9 @@ function updateServiceContent(service) {
       const aboutServiceTitle = document.querySelector('.section.section-lg h3');
       console.log('关于此服务标题元素:', aboutServiceTitle);
       if (aboutServiceTitle && service.title) {
-        aboutServiceTitle.textContent = `关于${service.title}`;
+        aboutServiceTitle.textContent = window.SiteI18n?.isEnglish()
+          ? `About ${service.title}`
+          : `关于${service.title}`;
         console.log('已更新"关于此服务"标题');
       }
 

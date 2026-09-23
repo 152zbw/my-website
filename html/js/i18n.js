@@ -1,150 +1,194 @@
 (function () {
-  const navTranslations = {
-    '首页': 'Home',
-    '服务': 'Services',
-    '服务项目': 'Services',
-    '服务详情': 'Service Details',
-    '博客': 'Blog',
-    '博客列表': 'Blog List',
-    '博客详情': 'Blog Details',
-    '单篇博客': 'Blog Post',
-    '成功案例': 'Case Studies',
-    '案例展示': 'Case Studies',
-    '案例详情': 'Project Details',
-    '关于我们': 'About Us',
-    '公司简介': 'Company Profile',
-    '个人简介': 'Personal Profile',
-    '招贤纳士': 'Careers',
-    '团队成员': 'Team',
-    '联系我们': 'Contact Us',
-    '隐私政策': 'Privacy Policy',
-    '快速链接': 'Quick Links',
-    '关注我们': 'Follow Us',
-    '查看详情': 'View Details',
-    '了解更多': 'Learn More',
-    '查看所有博客': 'View All Blogs',
-    '免费咨询': 'Free Consultation',
-    '发送消息': 'Send Message',
-    '电子邮箱': 'Email',
-    '电话': 'Phone',
-    '留言内容': 'Message',
-    '姓': 'First Name',
-    '名': 'Last Name',
-    '信使': 'Messenger',
-    '客户评价': 'Testimonials',
-    '我们的服务': 'Our Services',
-    '我们的成就': 'Our Achievements',
-    '获得奖项': 'Awards',
-    '客户满意度': 'Client Satisfaction',
-    '行业经验': 'Industry Experience',
-    '专业顾问': 'Professional Consultants',
-    '合作伙伴': 'Partners',
-    '搜索...': 'Search...'
-  };
+  'use strict';
 
-  const phraseTranslations = {
-    '自2016年成立以来，我们的团队取得了丰硕的成果。以下是关于我们咨询公司的一些统计数据和有趣事实。': 'Since our establishment in 2016, our team has achieved fruitful results. Here are some statistics and facts about our consulting company.',
-    '助力全球企业成长': 'Helping Global Businesses Grow',
-    '查看我们最近完成的一些项目案例。每个项目都经过了大量的研究和分析，以创造出卓越的解决方案。': 'View some of our recently completed projects. Each project involved extensive research and analysis to create outstanding solutions.',
-    '让我们讨论如何帮助您': 'Let’s discuss how we can help you',
-    '消息发送成功！我们会尽快与您联系。': 'Message sent successfully! We will contact you as soon as possible.',
-    '我们提供专业的咨询服务，帮助企业实现可持续发展。': 'We provide professional consulting services to help businesses achieve sustainable growth.',
-    '© 2024 咨询公司. 保留所有权利.': '© 2024 Consulting Company. All rights reserved.',
-    '认识我们的公司、团队与服务理念。': 'Learn about our company, team, and service philosophy.',
-    '了解我们的公司历史、使命和愿景。': 'Learn about our company history, mission, and vision.',
-    '认识我们的创始人和核心团队成员，了解他们的专业背景和行业经验。': 'Meet our founder and core team members, and learn about their professional background and industry experience.',
-    '内容加载中...': 'Loading content...',
-    '正在加载合作伙伴...': 'Loading partners...',
-    '暂无首页客户评价': 'No homepage testimonials yet',
-    '加载客户评价失败，请稍后重试': 'Failed to load testimonials. Please try again later.'
-  };
-
-  const zhCache = new WeakMap();
-
-  function getDictionary() {
-    return { ...navTranslations, ...phraseTranslations };
-  }
+  const LANGUAGE_KEY = 'siteLanguage';
+  const ENGLISH = 'en';
+  const CHINESE = 'zh';
+  const catalog = window.SiteI18nCatalog || { text: {}, entities: {} };
 
   function getLanguage() {
-    return localStorage.getItem('siteLanguage') || 'zh';
+    return localStorage.getItem(LANGUAGE_KEY) === ENGLISH ? ENGLISH : CHINESE;
   }
 
-  function translateText(text, lang) {
-    const normalized = String(text || '').trim();
-    if (!normalized) return text;
-    if (lang === 'zh') return text;
-    return getDictionary()[normalized] || text;
+  function translateText(value) {
+    if (getLanguage() !== ENGLISH || typeof value !== 'string') return value;
+    const normalized = value.trim();
+    if (!normalized) return value;
+    const canonical = normalized.replace(/\s+/g, ' ');
+    if (catalog.text[normalized] || catalog.text[canonical]) return catalog.text[normalized] || catalog.text[canonical];
+    const titleSuffix = ' - 咨询公司官网';
+    if (normalized.endsWith(titleSuffix)) {
+      const prefix = normalized.slice(0, -titleSuffix.length);
+      return `${catalog.text[prefix] || catalog.text[prefix.replace(/\s+/g, ' ')] || prefix} — Lisi Consulting`;
+    }
+    return value;
   }
 
-  function shouldTranslateElement(element) {
-    if (!element || element.children.length > 0) return false;
-    const tag = element.tagName;
-    return ['A', 'SPAN', 'H1', 'H2', 'H3', 'H4', 'H5', 'P', 'LABEL', 'BUTTON', 'DIV'].includes(tag);
+  function translatePreservingWhitespace(value) {
+    if (typeof value !== 'string') return value;
+    const normalized = value.trim();
+    if (!normalized) return value;
+    const translated = translateText(normalized);
+    if (translated === normalized) return value;
+    const leading = value.match(/^\s*/)?.[0] || '';
+    const trailing = value.match(/\s*$/)?.[0] || '';
+    return `${leading}${translated}${trailing}`;
   }
 
-  function applyLanguage(lang) {
-    document.documentElement.lang = lang === 'en' ? 'en' : 'zh-CN';
+  function mergeEntity(item, translations) {
+    if (!item || typeof item !== 'object') return item;
+    const translated = translations?.[String(item.id)] || translations?.[item.id];
+    if (!translated) return item;
+    const result = { ...item, ...translated };
+    if (Array.isArray(item.points) && Array.isArray(translated.points)) {
+      result.points = item.points.map((point, index) => ({ ...point, ...(translated.points[index] || {}) }));
+    }
+    return result;
+  }
 
-    document.querySelectorAll('[data-i18n]').forEach((element) => {
-      const key = element.getAttribute('data-i18n');
-      if (!zhCache.has(element)) zhCache.set(element, element.textContent);
-      const source = zhCache.get(element);
-      element.textContent = lang === 'en' ? translateText(source, 'en') : source;
+  function localizeApiResponse(endpoint, data, options) {
+    if (getLanguage() !== ENGLISH) return data;
+    const method = String(options?.method || 'GET').toUpperCase();
+    if (method !== 'GET' || endpoint.includes('/admin')) return data;
+    const resource = endpoint.split('?')[0].split('/').filter(Boolean)[0];
+    const translations = catalog.entities[resource];
+    if (!translations) return data;
+    if (Array.isArray(data)) return data.map((item) => mergeEntity(item, translations));
+    return mergeEntity(data, translations);
+  }
+
+  function shouldSkipNode(node) {
+    const parent = node.parentElement;
+    return !parent || ['SCRIPT', 'STYLE', 'NOSCRIPT', 'TEXTAREA', 'CODE', 'PRE'].includes(parent.tagName) || Boolean(parent.closest('[data-i18n-skip]'));
+  }
+
+  function translateAttributes(root) {
+    const elements = [];
+    if (root.nodeType === Node.ELEMENT_NODE) elements.push(root);
+    if (root.querySelectorAll) elements.push(...root.querySelectorAll('[placeholder], [title], [aria-label]'));
+    elements.forEach((element) => {
+      ['placeholder', 'title', 'aria-label'].forEach((attribute) => {
+        if (!element.hasAttribute?.(attribute)) return;
+        const current = element.getAttribute(attribute);
+        const translated = translateText(current);
+        if (translated !== current) element.setAttribute(attribute, translated);
+      });
     });
+  }
 
-    document.querySelectorAll('a, span, h1, h2, h3, h4, h5, p, label, button').forEach((element) => {
-      if (!shouldTranslateElement(element)) return;
-      if (!zhCache.has(element)) zhCache.set(element, element.textContent);
-      const source = zhCache.get(element);
-      const translated = lang === 'en' ? translateText(source, 'en') : source;
-      if (translated !== element.textContent) element.textContent = translated;
+  function translateTree(root) {
+    if (getLanguage() !== ENGLISH || !root) return;
+    translateAttributes(root);
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach((node) => {
+      if (shouldSkipNode(node)) return;
+      const translated = translatePreservingWhitespace(node.nodeValue);
+      if (translated !== node.nodeValue) node.nodeValue = translated;
     });
+  }
 
-    document.querySelectorAll('.form-label').forEach((element) => {
-      if (!zhCache.has(element)) zhCache.set(element, element.textContent);
-      const source = zhCache.get(element);
-      element.textContent = lang === 'en' ? translateText(source, 'en') : source;
-    });
-
-    const toggle = document.getElementById('languageToggle');
-    if (toggle) toggle.textContent = lang === 'en' ? '中' : 'EN';
+  function injectStyles() {
+    if (document.getElementById('site-language-styles')) return;
+    const style = document.createElement('style');
+    style.id = 'site-language-styles';
+    style.textContent = `
+      .language-toggle{display:inline-flex;align-items:center;justify-content:center;min-width:42px;min-height:34px;padding:6px 11px;border:1px solid rgba(53,72,121,.35);border-radius:999px;background:#fff;color:#354879;font:700 13px/1 Arial,sans-serif;cursor:pointer;transition:.2s}
+      .language-toggle:hover,.language-toggle:focus-visible{background:#354879;border-color:#354879;color:#fff;outline:none}
+      .rd-nav-item-language{display:flex;align-items:center}
+      .site-language-floating{position:fixed;top:16px;right:16px;z-index:10000;box-shadow:0 4px 18px rgba(26,39,72,.18)}
+    `;
+    document.head.appendChild(style);
   }
 
   function ensureLanguageToggle() {
-    if (document.getElementById('languageToggle')) return;
+    let toggle = document.getElementById('languageToggle');
+    if (toggle) return toggle;
+    toggle = document.createElement('button');
+    toggle.id = 'languageToggle';
+    toggle.type = 'button';
+    toggle.className = 'language-toggle';
     const nav = document.querySelector('.rd-navbar-nav');
-    if (!nav) return;
-    const li = document.createElement('li');
-    li.className = 'rd-nav-item rd-nav-item-language';
-    li.innerHTML = '<button class="language-toggle" id="languageToggle" type="button" aria-label="Switch language">EN</button>';
-    nav.appendChild(li);
+    if (nav) {
+      const item = document.createElement('li');
+      item.className = 'rd-nav-item rd-nav-item-language';
+      item.appendChild(toggle);
+      nav.appendChild(item);
+    } else {
+      toggle.classList.add('site-language-floating');
+      document.body.appendChild(toggle);
+    }
+    return toggle;
+  }
+
+  function updateToggle(toggle) {
+    const isEnglish = getLanguage() === ENGLISH;
+    const label = isEnglish ? '中' : 'EN';
+    const accessibleLabel = isEnglish ? '切换到中文' : 'Switch to English';
+    if (toggle.textContent !== label) toggle.textContent = label;
+    if (toggle.getAttribute('aria-label') !== accessibleLabel) toggle.setAttribute('aria-label', accessibleLabel);
+    if (toggle.getAttribute('title') !== accessibleLabel) toggle.setAttribute('title', accessibleLabel);
   }
 
   function bindToggle() {
-    const toggle = document.getElementById('languageToggle');
-    if (!toggle || toggle.dataset.i18nBound) return;
+    const toggle = ensureLanguageToggle();
+    updateToggle(toggle);
+    if (toggle.dataset.i18nBound === '1') return;
     toggle.dataset.i18nBound = '1';
-    toggle.addEventListener('click', function () {
-      const nextLanguage = getLanguage() === 'en' ? 'zh' : 'en';
-      localStorage.setItem('siteLanguage', nextLanguage);
-      applyLanguage(nextLanguage);
+    toggle.addEventListener('click', () => {
+      const nextLanguage = getLanguage() === ENGLISH ? CHINESE : ENGLISH;
+      localStorage.setItem(LANGUAGE_KEY, nextLanguage);
+      document.documentElement.lang = nextLanguage === ENGLISH ? 'en' : 'zh-CN';
+      window.location.reload();
     });
   }
 
-  window.translateNavText = function (text) {
-    return translateText(text, getLanguage());
-  };
+  function applyLanguage() {
+    const language = getLanguage();
+    document.documentElement.lang = language === ENGLISH ? 'en' : 'zh-CN';
+    if (language !== ENGLISH) return;
+    document.title = translateText(document.title);
+    translateTree(document.body);
+  }
+
+  function observeDocumentTitle() {
+    if (getLanguage() !== ENGLISH || !document.head) return;
+    const observer = new MutationObserver(() => {
+      const translated = translateText(document.title);
+      if (translated !== document.title) document.title = translated;
+    });
+    observer.observe(document.head, { childList: true, characterData: true, subtree: true });
+  }
+
+  function observeDynamicContent() {
+    if (getLanguage() !== ENGLISH || !document.body) return;
+    const observer = new MutationObserver((mutations) => {
+      mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
+        if (node.nodeType === Node.TEXT_NODE) {
+          if (!shouldSkipNode(node)) node.nodeValue = translatePreservingWhitespace(node.nodeValue);
+        } else if (node.nodeType === Node.ELEMENT_NODE) {
+          translateTree(node);
+        }
+      }));
+      const toggle = document.getElementById('languageToggle');
+      if (toggle) updateToggle(toggle);
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+  }
+
+  window.SiteI18n = { getLanguage, isEnglish: () => getLanguage() === ENGLISH, t: translateText, apply: applyLanguage, localizeApiResponse };
+  window.translateNavText = translateText;
   window.applySiteLanguage = applyLanguage;
+  const nativeAlert = window.alert.bind(window);
+  window.alert = (message) => nativeAlert(translateText(String(message)));
+  injectStyles();
 
-  document.addEventListener('DOMContentLoaded', function () {
-    ensureLanguageToggle();
+  document.addEventListener('DOMContentLoaded', () => {
     bindToggle();
-    applyLanguage(getLanguage());
-
-    setTimeout(function () {
-      ensureLanguageToggle();
-      bindToggle();
-      applyLanguage(getLanguage());
-    }, 500);
+    applyLanguage();
+    observeDocumentTitle();
+    observeDynamicContent();
+    window.setTimeout(() => { bindToggle(); applyLanguage(); }, 600);
   });
 })();

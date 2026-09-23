@@ -351,6 +351,8 @@
     <div style="background: #212121; padding: 10px 0; box-shadow: 3px 3px 5px 0 rgba(0,0,0,.3); clear: both; text-align:center; position: relative; z-index:1;"><a href="http://windows.microsoft.com/en-US/internet-explorer/"><img src="images/ie8-panel/warning_bar_0000_us.jpg" border="0" height="42" width="820" alt="You are using an outdated browser. For a faster, safer browsing experience, upgrade for free today."></a></div>
     <script src="js/html5shiv.min.js"></script>
     <![endif]-->
+  <script src="js/i18n-catalog.js?v=2"></script>
+  <script src="js/i18n.js?v=2"></script>
 </head>
 
 <body>
@@ -814,7 +816,6 @@
   <script src="js/script.js"></script>
   <script src="js/api.js"></script> <!-- 引入api.js -->
   <script src="js/footer.js?v=1"></script>
-  <script src="js/i18n.js?v=1"></script>
   <script>
     // 页面加载时从API加载公司简介数据
     document.addEventListener('DOMContentLoaded', function () {
@@ -864,7 +865,9 @@
             ? `<p>${summaryHtml}</p>${contentHtml}`
             : contentHtml;
 
-          document.title = `${titleText} - 咨询公司官网`;
+          document.title = window.SiteI18n?.isEnglish()
+            ? 'Company Profile — Lisi Consulting'
+            : `${titleText} - 咨询公司官网`;
           if (breadcrumbsTitle) breadcrumbsTitle.textContent = titleText;
           if (companyTitleElem) companyTitleElem.textContent = titleText;
           if (companyContentElem) companyContentElem.innerHTML = renderedContent || '<p>暂无公司简介内容</p>';
