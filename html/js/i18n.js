@@ -108,10 +108,6 @@
 
     const toggle = document.getElementById('languageToggle');
     if (toggle) toggle.textContent = lang === 'en' ? '中' : 'EN';
-
-    if (typeof window.generateNavbar === 'function') {
-      window.generateNavbar();
-    }
   }
 
   function ensureLanguageToggle() {

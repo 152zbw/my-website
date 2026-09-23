@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>业务分布管理 - 后台管理系统</title>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+  <script src="../js/api.js"></script>
+  <script src="../js/business-map.js?v=2"></script>
+  <link rel="stylesheet" href="../css/fonts.css">
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;} body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#f5f7fa;color:#333;line-height:1.6;} .main-container{display:flex;min-height:100vh;} .sidebar{width:280px;background:linear-gradient(180deg,#354879 0%,#28334f 100%);color:#fff;padding:20px 0;box-shadow:2px 0 10px rgba(0,0,0,.1);position:fixed;height:100vh;overflow-y:auto;z-index:1000;} .sidebar-header{text-align:center;padding:20px 0;border-bottom:1px solid rgba(255,255,255,.1);margin-bottom:20px;} .sidebar-header h3{font-size:24px;font-weight:600;margin:0;} .nav-menu{list-style:none;padding:0;} .nav-menu a{display:flex;align-items:center;padding:15px 20px;color:rgba(255,255,255,.9);text-decoration:none;transition:all .3s ease;border-left:3px solid transparent;} .nav-menu a:hover,.nav-menu a.active{background:rgba(255,255,255,.15);border-left-color:#fff;color:#fff;} .nav-menu a i{margin-right:15px;font-size:18px;width:20px;text-align:center;} .content{margin-left:280px;flex:1;} .top-nav{background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.1);padding:15px 20px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:999;} .page-title{font-size:20px;font-weight:600;color:#354879;} .logout-btn{background:#dc0000;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;} .main-content{padding:20px;} .card{background:#fff;border-radius:8px;box-shadow:0 2px 4px rgba(0,0,0,.1);padding:22px;margin-bottom:20px;} .content-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;gap:12px;} .content-title{font-size:24px;font-weight:600;color:#354879;} .form-group{margin-bottom:14px;} .form-label{display:block;margin-bottom:6px;font-weight:600;color:#354879;} .form-input,.form-select,.form-textarea{width:100%;padding:10px;border:1px solid #ddd;border-radius:4px;font-size:14px;} .form-textarea{min-height:76px;resize:vertical;} .btn{display:inline-block;padding:10px 18px;border:none;border-radius:4px;cursor:pointer;font-size:14px;font-weight:500;text-decoration:none;} .btn-primary{background:#354879;color:#fff;} .btn-secondary{background:#95a5a6;color:#fff;} .btn-danger{background:#e74c3c;color:#fff;} .btn-sm{padding:6px 10px;font-size:12px;} .message{padding:14px;border-radius:4px;position:fixed;top:80px;right:20px;z-index:1002;min-width:240px;box-shadow:0 2px 10px rgba(0,0,0,.1);} .message.success{background:#d4edda;color:#155724;border:1px solid #c3e6cb;} .message.error{background:#f8d7da;color:#721c24;border:1px solid #f5c6cb;} .help-text{font-size:12px;color:#777;margin-top:8px;}
+    .editor-layout{display:grid;grid-template-columns:minmax(520px,1fr) 380px;gap:20px;align-items:start;} #mapEditor{display:block;width:100%;height:430px;min-height:430px;border:1px solid #d8deea;border-radius:14px;background:#fff;} .selected-panel{border:1px solid #e5e8ef;border-radius:8px;padding:16px;background:#fbfcff;} .empty-selected{padding:36px 16px;text-align:center;color:#8994aa;border:1px dashed #cdd5e4;border-radius:8px;background:#fbfcff;} .logo-row{display:flex;gap:6px;margin-bottom:8px;align-items:center;} .logo-row .form-input{padding:8px;} .points-table{width:100%;border-collapse:collapse;margin-top:15px;} .points-table th,.points-table td{padding:10px;border-bottom:1px solid #eee;text-align:left;vertical-align:middle;} .points-table th{background:#f8f9fa;color:#354879;} .points-table tr.selected{background:#eef3ff;} .logo-count{display:inline-block;padding:2px 8px;background:#eef3ff;border-radius:999px;color:#354879;font-size:12px;} .preview-modal{position:fixed;inset:0;background:rgba(0,0,0,.48);display:none;align-items:center;justify-content:center;z-index:2000;padding:24px;} .preview-card{width:min(1100px,96vw);background:#fff;border-radius:14px;padding:22px;box-shadow:0 16px 50px rgba(0,0,0,.25);} #previewMap{border:1px solid #d8deea;border-radius:14px;} @media(max-width:1100px){.editor-layout{grid-template-columns:1fr;}.content{margin-left:0}.sidebar{display:none;}} @media(max-width:768px){.logo-row{flex-direction:column;align-items:stretch;}}
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <aside class="sidebar">
+      <div class="sidebar-header"><h3>后台管理</h3></div>
+      <ul class="nav-menu">
+        <li><a href="dashboard-new.html"><i class="fa fa-dashboard"></i>仪表盘</a></li><li><a href="website-info.html"><i class="fa fa-info-circle"></i>网站信息</a></li><li><a href="navigation.html"><i class="fa fa-bars"></i>导航管理</a></li><li><a href="services.html"><i class="fa fa-bell"></i>服务项目</a></li><li><a href="projects.html"><i class="fa fa-briefcase"></i>成功案例</a></li><li><a href="news.html"><i class="fa fa-newspaper-o"></i>博客/新闻</a></li><li><a href="testimonials.html"><i class="fa fa-comments"></i>客户评价</a></li><li><a href="partners.html"><i class="fa fa-handshake-o"></i>合作伙伴</a></li><li><a href="business-distribution.html" class="active"><i class="fa fa-globe"></i>业务分布</a></li><li><a href="about-company.html"><i class="fa fa-info-circle"></i>公司简介</a></li><li><a href="about-me.html"><i class="fa fa-user"></i>个人简介</a></li><li><a href="team.html"><i class="fa fa-users"></i>团队成员</a></li><li><a href="careers.html"><i class="fa fa-suitcase"></i>招贤纳士</a></li><li><a href="pricing.html"><i class="fa fa-dollar"></i>价格表</a></li><li><a href="home-features.html"><i class="fa fa-star"></i>首页特色模块</a></li><li><a href="contacts.html"><i class="fa fa-envelope"></i>联系我们</a></li><li><a href="map-settings.html"><i class="fa fa-map-marker"></i>地图管理</a></li>
+      </ul>
+    </aside>
+    <main class="content">
+      <header class="top-nav"><h2 class="page-title">业务分布管理</h2><button class="logout-btn" onclick="logout()">退出登录</button></header>
+      <div class="main-content">
+        <div class="content-header"><h3 class="content-title">首页业务分布模块</h3><button class="btn btn-primary" onclick="saveSettings()">保存配置</button></div>
+        <div class="card">
+          <div class="form-group"><label class="form-label">模块标题</label><input class="form-input" id="title" value="业务分布"></div>
+          <div class="form-group"><label class="form-label">底部说明文案</label><textarea class="form-textarea" id="subtitle"></textarea></div>
+          <div class="form-group"><label class="form-label">是否显示</label><select class="form-select" id="isActive"><option value="1">显示</option><option value="0">隐藏</option></select></div>
+        </div>
+        <div class="card">
+          <div class="content-header"><h3 class="content-title">可视化点位管理</h3><div><button class="btn btn-secondary" onclick="previewFrontend()">预览前台效果</button> <button class="btn btn-primary" onclick="createPointAtCenter()">添加点位</button></div></div>
+          <div class="editor-layout">
+            <div>
+              <div id="mapEditor" aria-label="业务分布真实地图编辑器"></div>
+              <div class="help-text">后台编辑地图复用前台同一个真实地图组件。点击地图新增点位；拖拽点位可调整位置；右下角显示当前鼠标 X% / Y%。</div>
+            </div>
+            <div id="pointEditor" class="selected-panel"></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="content-header"><h3 class="content-title">点位列表</h3></div>
+          <table class="points-table"><thead><tr><th>名称</th><th>类型</th><th>X%</th><th>Y%</th><th>说明</th><th>Logo</th><th>操作</th></tr></thead><tbody id="pointsBody"></tbody></table>
+        </div>
+      </div>
+    </main>
+  </div>
+  <div class="preview-modal" id="previewModal"><div class="preview-card"><div class="content-header"><h3 class="content-title">前台效果预览</h3><button class="btn btn-secondary" onclick="closePreview()">关闭</button></div><div id="previewMap"></div></div></div>
+  <script>
+    let points = [];
+    let selectedIndex = -1;
+    let mapInstance = null;
+    let previewInstance = null;
+
+    document.addEventListener('DOMContentLoaded', async () => {
+      const user = localStorage.getItem('adminUser');
+      const token = localStorage.getItem('adminToken');
+      if (!user || !token) { window.location.href = 'index.html'; return; }
+      await loadSettings();
+    });
+
+    function logout(){ if(confirm('确定要退出登录吗？')){ localStorage.removeItem('adminUser'); localStorage.removeItem('adminToken'); window.location.href='index.html'; } }
+    function escapeAttr(str){ return String(str||'').replaceAll('&','&amp;').replaceAll('"','&quot;').replaceAll('<','&lt;').replaceAll('>','&gt;'); }
+    function formatNumber(value){ return (Math.round((Number(value)||0)*100)/100).toFixed(2); }
+    function clamp(value){ return Math.max(0, Math.min(100, value)); }
+    function extractUploadPath(result){ return result?.file?.path || result?.filePath || result?.path || result?.url || result?.data?.file?.path || result?.data?.path || ''; }
+
+    async function renderSharedMap(){
+      if (mapInstance?.destroy) mapInstance.destroy();
+      mapInstance = await window.BusinessDistributionMapCanvas.render(document.getElementById('mapEditor'), {
+        mode: 'edit',
+        points,
+        selectedPointId: selectedIndex,
+        onPointAdd: ({ x, y }) => {
+          points.push({ name:'新点位', type:'branch', x, y, description:'', logos:[] });
+          selectedIndex = points.length - 1;
+          renderAll();
+        },
+        onPointMove: (point, index, next) => {
+          points[index].x = next.x;
+          points[index].y = next.y;
+          selectedIndex = index;
+          renderPointEditor();
+          renderPointsTable();
+          renderSharedMap();
+        },
+        onPointSelect: (point, index) => {
+          selectedIndex = index;
+          renderAll();
+        }
+      });
+    }
+
+    function createPointAtCenter(){
+      points.push({ name:'新点位', type:'branch', x:50, y:50, description:'', logos:[] });
+      selectedIndex = points.length - 1;
+      renderAll();
+    }
+
+    async function loadSettings(){
+      try{
+        const data=await window.API.BusinessDistribution.getAdmin();
+        document.getElementById('title').value=data.title||'业务分布';
+        document.getElementById('subtitle').value=data.subtitle||'';
+        document.getElementById('isActive').value=String(data.isActive ? 1 : 0);
+        points=Array.isArray(data.points)?data.points.map((p,i)=>({ id:p.id || `point-${Date.now()}-${i}`, name:p.name||'', type:p.type||'branch', x:Number(p.x)||50, y:Number(p.y)||50, description:p.description||'', logos:Array.isArray(p.logos)?p.logos:[] })):[];
+        selectedIndex = points.length ? 0 : -1;
+        renderAll();
+      }catch(err){ showMessage(err.message||'加载失败','error'); }
+    }
+
+    function selectPoint(index){ selectedIndex = index; renderAll(); }
+
+    function removePoint(index){
+      if(!confirm('确定要删除这个点位吗？')) return;
+      points.splice(index,1);
+      if(selectedIndex === index) selectedIndex = points.length ? Math.min(index, points.length - 1) : -1;
+      if(selectedIndex > index) selectedIndex -= 1;
+      renderAll();
+    }
+
+    function renderAll(){ renderSharedMap(); renderPointEditor(); renderPointsTable(); }
+
+    function renderPointEditor(){
+      const panel=document.getElementById('pointEditor');
+      if(selectedIndex < 0 || !points[selectedIndex]){ panel.innerHTML='<div class="empty-selected">请点击真实地图新增点位，或从列表选择一个点位</div>'; return; }
+      const p=points[selectedIndex];
+      if(!Array.isArray(p.logos)) p.logos=[];
+      panel.innerHTML=`
+        <h3 style="color:#354879;margin-bottom:14px;">当前点位</h3>
+        <div class="form-group"><label class="form-label">名称</label><input class="form-input" value="${escapeAttr(p.name)}" oninput="updatePointField('name', this.value)"></div>
+        <div class="form-group"><label class="form-label">类型</label><select class="form-select" onchange="updatePointField('type', this.value)"><option value="headquarters" ${p.type==='headquarters'?'selected':''}>总部</option><option value="branch" ${p.type==='branch'?'selected':''}>分公司 / 分支机构</option><option value="partner" ${p.type==='partner'?'selected':''}>合作伙伴</option></select></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;"><div class="form-group"><label class="form-label">X%</label><input class="form-input" type="number" min="0" max="100" step="0.01" value="${formatNumber(p.x)}" oninput="updatePointField('x', Number(this.value))"></div><div class="form-group"><label class="form-label">Y%</label><input class="form-input" type="number" min="0" max="100" step="0.01" value="${formatNumber(p.y)}" oninput="updatePointField('y', Number(this.value))"></div></div>
+        <div class="form-group"><label class="form-label">说明文字</label><textarea class="form-textarea" oninput="updatePointField('description', this.value)">${escapeAttr(p.description)}</textarea></div>
+        <div class="form-group"><label class="form-label">合作伙伴 Logo</label><div id="logosEditor">${p.logos.map((logo,j)=>logoRowHtml(j,logo)).join('')}</div><button class="btn btn-secondary btn-sm" type="button" onclick="addLogo()">添加 Logo</button></div>
+        <button class="btn btn-danger" type="button" onclick="removePoint(${selectedIndex})">删除当前点位</button>`;
+    }
+
+    function logoRowHtml(j, logo){
+      return `<div class="logo-row"><input class="form-input" placeholder="Logo名称" value="${escapeAttr(logo.name)}" oninput="updateLogo(${j}, 'name', this.value)"><input class="form-input" placeholder="Logo图片路径" value="${escapeAttr(logo.image)}" oninput="updateLogo(${j}, 'image', this.value)"><input type="file" id="pointLogo_${j}" accept="image/*" style="display:none" onchange="uploadLogo(${j}, this)"><button class="btn btn-secondary btn-sm" type="button" onclick="document.getElementById('pointLogo_${j}').click()">上传</button><button class="btn btn-danger btn-sm" type="button" onclick="removeLogo(${j})">删</button></div>`;
+    }
+
+    function updatePointField(field, value){
+      if(selectedIndex < 0) return;
+      if(field === 'x' || field === 'y') value = clamp(Number(value)||0);
+      points[selectedIndex][field] = value;
+      renderSharedMap();
+      renderPointsTable();
+    }
+
+    function addLogo(){ if(selectedIndex < 0) return; points[selectedIndex].logos.push({name:'', image:''}); renderPointEditor(); renderPointsTable(); }
+    function updateLogo(index, field, value){ if(selectedIndex < 0) return; points[selectedIndex].logos[index][field]=value; renderPointsTable(); }
+    function removeLogo(index){ if(selectedIndex < 0) return; points[selectedIndex].logos.splice(index,1); renderPointEditor(); renderPointsTable(); }
+    async function uploadLogo(index, input){
+      const file=input.files[0]; if(!file) return;
+      try{ showMessage('正在上传...', 'success'); const result=await window.API.Upload.uploadSingle(file); const path=extractUploadPath(result); if(!path) throw new Error('上传成功但未返回文件路径'); points[selectedIndex].logos[index].image=path; renderPointEditor(); renderPointsTable(); showMessage('上传成功','success'); }catch(err){ showMessage(err.message||'上传失败','error'); } finally { input.value=''; }
+    }
+
+    function renderPointsTable(){
+      const tbody=document.getElementById('pointsBody');
+      if(!points.length){ tbody.innerHTML='<tr><td colspan="7">暂无点位，请点击真实地图新增</td></tr>'; return; }
+      tbody.innerHTML=points.map((p,i)=>`<tr class="${selectedIndex===i?'selected':''}" onclick="selectPoint(${i})"><td>${escapeAttr(p.name||'新点位')}</td><td>${typeLabel(p.type)}</td><td>${formatNumber(p.x)}</td><td>${formatNumber(p.y)}</td><td>${escapeAttr(p.description||'')}</td><td><span class="logo-count">${Array.isArray(p.logos)?p.logos.length:0} 个</span></td><td><button class="btn btn-secondary btn-sm" onclick="event.stopPropagation();selectPoint(${i})">编辑</button> <button class="btn btn-danger btn-sm" onclick="event.stopPropagation();removePoint(${i})">删除</button></td></tr>`).join('');
+    }
+
+    function typeLabel(type){ if(type==='headquarters') return '总部'; if(type==='partner') return '合作伙伴'; return '分公司 / 分支机构'; }
+
+    async function previewFrontend(){
+      document.getElementById('previewModal').style.display='flex';
+      if (previewInstance?.destroy) previewInstance.destroy();
+      previewInstance = await window.BusinessDistributionMapCanvas.render(document.getElementById('previewMap'), { mode:'view', points });
+    }
+
+    function closePreview(){
+      document.getElementById('previewModal').style.display='none';
+      if (previewInstance?.destroy) previewInstance.destroy();
+      previewInstance = null;
+    }
+
+    async function saveSettings(){
+      try{
+        const payload={ title:document.getElementById('title').value.trim(), subtitle:document.getElementById('subtitle').value.trim(), isActive:document.getElementById('isActive').value==='1', points };
+        await window.API.BusinessDistribution.update(payload);
+        showMessage('保存成功，前台将使用最新点位数据','success');
+      }catch(err){ showMessage(err.message||'保存失败','error'); }
+    }
+
+    function showMessage(text,type){ const div=document.createElement('div'); div.className=`message ${type}`; div.textContent=text; document.body.appendChild(div); setTimeout(()=>div.remove(),3000); }
+  </script>
+</body>
+</html>

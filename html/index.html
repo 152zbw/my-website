@@ -147,6 +147,167 @@
       color: #fff;
     }
 
+    .business-distribution-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 14px 40px rgba(53, 72, 121, 0.12);
+      padding: 28px;
+    }
+
+    .business-distribution-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 20px;
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .business-map-wrap {
+      position: relative;
+      min-height: 420px;
+      border-radius: 14px;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .business-map-chart {
+      position: relative;
+      width: 100%;
+      min-height: 420px;
+    }
+
+    .business-logo-panel {
+      position: absolute;
+      left: 50%;
+      top: calc(100% + 10px);
+      transform: translateX(-50%);
+      display: none;
+      gap: 8px;
+      align-items: center;
+      padding: 8px;
+      background: rgba(255,255,255,0.96);
+      border-radius: 10px;
+      box-shadow: 0 8px 22px rgba(0,0,0,0.16);
+      z-index: 20;
+      white-space: nowrap;
+    }
+
+    .business-point:hover .business-logo-panel {
+      display: flex;
+    }
+
+    .business-partner-logo {
+      width: 64px;
+      height: 34px;
+      object-fit: contain;
+      border: 1px solid #e5e8ef;
+      border-radius: 6px;
+      background: #fff;
+      padding: 3px;
+    }
+
+    .business-point {
+      position: absolute;
+      left: var(--x);
+      top: var(--y);
+      transform: translate(-50%, -50%);
+      z-index: 3;
+    }
+
+    .business-marker {
+      display: block;
+      width: 14px;
+      height: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    .business-marker.headquarters {
+      width: 16px;
+      height: 16px;
+      background: #e60012;
+      border-radius: 50%;
+    }
+
+    .business-marker.branch {
+      background: #15a04a;
+      border-radius: 2px;
+    }
+
+    .business-marker.partner {
+      width: 0;
+      height: 0;
+      background: transparent;
+      border-left: 8px solid transparent;
+      border-right: 8px solid transparent;
+      border-bottom: 15px solid #111;
+      box-shadow: none;
+    }
+
+    .business-point-label {
+      position: absolute;
+      left: 18px;
+      top: 50%;
+      transform: translateY(-50%);
+      white-space: nowrap;
+      padding: 4px 8px;
+      background: rgba(255,255,255,0.92);
+      border-radius: 999px;
+      font-size: 12px;
+      color: #26324f;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.12);
+    }
+
+    .business-map-legend {
+      display: flex;
+      gap: 18px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+      justify-content: center;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .legend-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .legend-symbol {
+      display: inline-block;
+      width: 12px;
+      height: 12px;
+    }
+
+    .legend-symbol.headquarters { background: #e60012; border-radius: 50%; }
+    .legend-symbol.branch { background: #15a04a; border-radius: 2px; }
+    .legend-symbol.partner {
+      width: 0;
+      height: 0;
+      border-left: 7px solid transparent;
+      border-right: 7px solid transparent;
+      border-bottom: 13px solid #111;
+    }
+
+    .business-distribution-subtitle {
+      margin-top: 18px;
+      padding: 12px 18px;
+      background: #67839d;
+      color: #fff;
+      border-radius: 8px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 767.98px) {
+      .business-distribution-card { padding: 18px; }
+      .business-distribution-head { flex-direction: column; align-items: center; text-align: center; }
+      .business-map-wrap, .business-map-chart, .business-map-image, .business-map-placeholder { min-height: 280px; }
+      .business-point-label { display: none; }
+    }
+
     @media (max-width: 479.98px) {
       .rd-navbar-panel {
         min-height: 56px;
@@ -376,6 +537,27 @@
                     });
 
                     navbarContainer.innerHTML = navbarHTML;
+                    initHomeNavbarDropdowns();
+                  }
+
+                  function initHomeNavbarDropdowns() {
+                    const navbarContainer = document.getElementById('dynamicNavbar');
+                    if (!navbarContainer) return;
+                    navbarContainer.querySelectorAll('.rd-nav-item').forEach(item => {
+                      const link = item.querySelector(':scope > .rd-nav-link');
+                      const dropdown = item.querySelector(':scope > .rd-menu');
+                      if (!link || !dropdown) return;
+                      item.addEventListener('mouseenter', () => {
+                        dropdown.style.display = 'block';
+                        dropdown.style.opacity = '1';
+                        dropdown.style.visibility = 'visible';
+                      });
+                      item.addEventListener('mouseleave', () => {
+                        dropdown.style.display = '';
+                        dropdown.style.opacity = '';
+                        dropdown.style.visibility = '';
+                      });
+                    });
                   }
 
                   // 页面加载时生成导航栏
@@ -528,8 +710,27 @@
         </div>
       </div>
     </section>
+    <!-- Business Distribution-->
+    <section class="section section-lg text-center" id="businessDistributionSection" style="display:none;">
+      <div class="container">
+        <div class="business-distribution-card">
+          <div class="business-distribution-head">
+            <div>
+              <h3 class="wow-outer"><span class="wow slideInDown" id="businessDistributionTitle">业务分布</span></h3>
+            </div>
+          </div>
+          <div class="business-map-wrap" id="businessMapWrap"></div>
+          <div class="business-map-legend">
+            <span class="legend-item"><span class="legend-symbol headquarters"></span>总部</span>
+            <span class="legend-item"><span class="legend-symbol branch"></span>分公司/分支机构</span>
+            <span class="legend-item"><span class="legend-symbol partner"></span>合作伙伴</span>
+          </div>
+          <div class="business-distribution-subtitle" id="businessDistributionSubtitle"></div>
+        </div>
+      </div>
+    </section>
     <!-- Recent Blogs-->
-    <section class="section section-lg text-center">
+    <section class="section section-md text-center">
       <div class="container">
         <h3 class="wow-outer"><span class="wow slideInDown" data-i18n="blogTitle">博客</span></h3>
         <div class="row row-50" id="blogsContainer"></div>
@@ -538,7 +739,7 @@
       </div>
     </section>
     <!-- Testimonials-->
-    <section class="section section-lg bg-gray-100 text-center">
+    <section class="section section-md bg-gray-100 text-center">
       <div class="container">
         <h3 class="wow-outer"><span class="wow slideInDown" data-i18n="testimonialsTitle">客户评价</span></h3>
         <div class="slick-widget-testimonials wow fadeIn" id="testimonialsContainer"></div>
@@ -790,21 +991,23 @@
       const testimonialsContainer = document.getElementById('testimonialsContainer');
       if (testimonialsContainer) testimonialsContainer.innerHTML = '<p>内容加载中...</p>';
 
-      // 加载网站信息
-      await loadWebsiteInfo();
-      
-      // 渲染动态内容
-      await renderServices();
-      console.log('服务项目渲染完成，开始渲染成功案例');
-      await renderProjects();
-      console.log('成功案例渲染完成，开始渲染博客');
-      await renderBlogs();
-      console.log('博客渲染完成，开始渲染客户评价');
-      await renderTestimonials();
-      await renderPartners();
-      // 新增：渲染首页特色模块
-      await renderHomeFeatures();
-      console.log('所有动态内容渲染完成');
+      // 各模块互不依赖，并行请求，避免一个慢接口阻塞后续所有内容。
+      const results = await Promise.allSettled([
+        loadWebsiteInfo(),
+        renderServices(),
+        renderProjects(),
+        renderBlogs(),
+        renderTestimonials(),
+        renderPartners(),
+        renderHomeFeatures()
+      ]);
+      results.forEach((result) => {
+        if (result.status === 'rejected') console.error('首页模块加载失败:', result.reason);
+      });
+
+      // 地图资源较大，接近可视区域时再加载，不阻塞首页其他内容。
+      scheduleBusinessDistribution();
+      console.log('首页主要动态内容渲染完成');
     });
 
     // 加载网站信息
@@ -849,26 +1052,8 @@
           if (heroSection) {
             heroSection.style.backgroundImage = 'none';
           }
-          if (heroRightImage) {
-            heroRightImage.style.opacity = '0.85';
-            heroRightImage.style.backgroundImage = 'linear-gradient(90deg, rgba(255,255,255,0.2) 25%, rgba(255,255,255,0.45) 37%, rgba(255,255,255,0.2) 63%)';
-            heroRightImage.style.backgroundSize = '400% 100%';
-            heroRightImage.style.backgroundPosition = '100% 0';
-            if (info.heroRightImage) {
-              const img = new Image();
-              img.onload = () => {
-                heroRightImage.style.backgroundImage = `url(${info.heroRightImage})`;
-                heroRightImage.style.backgroundSize = 'cover';
-                heroRightImage.style.backgroundPosition = 'center center';
-                heroRightImage.style.opacity = '1';
-              };
-              img.onerror = () => {
-                heroRightImage.classList.add('hero-image-error');
-                heroRightImage.innerHTML = '<div style="display:flex;align-items:center;justify-content:center;height:100%;color:#666;padding:24px;text-align:center;">图片加载失败，请检查后台图片地址</div>';
-              };
-              img.src = info.heroRightImage;
-            }
-          }
+          // 右侧头图区域当前被设计为隐藏，不再下载后台大图。
+          if (heroRightImage) heroRightImage.style.backgroundImage = 'none';
           // 更新首页文案
           const heroTitle = document.getElementById('heroTitle');
           const heroDescription = document.getElementById('heroDescription');
@@ -932,11 +1117,11 @@
           const displayServices = services.slice(0, 3);
 
           displayServices.forEach((service, index) => {
-            const imageUrl = service.image || '';
+            const imageUrl = getOptimizedImageUrl(service.image || '', 740);
             const serviceHTML = `
               <div class="col-sm-6 col-lg-4 wow-outer">
                 <article class="box-creative wow slideInDown" data-wow-delay=".${index * 0.05}s">
-                  ${imageUrl ? `<div class="image-preview" style="margin-bottom: 16px; border-radius: 8px; overflow: hidden;"><img src="${imageUrl}" alt="${service.title || ''}" class="service-card-img"></div>` : ''}
+                  ${imageUrl ? `<div class="image-preview" style="margin-bottom: 16px; border-radius: 8px; overflow: hidden;"><img src="${imageUrl}" alt="${service.title || ''}" class="service-card-img" loading="lazy" decoding="async" width="740" height="440"></div>` : ''}
                   <h4 class="box-creative-title"><a href="single-service.html?id=${service.id}">${service.title || ''}</a></h4>
                   <p>${service.description || ''}</p>
                 </article>
@@ -964,12 +1149,12 @@
           container.innerHTML = '';
           
           projects.forEach((project) => {
-            const imageUrl = project.image || '';
+            const imageUrl = getOptimizedImageUrl(project.image || '', 740);
             const projectHTML = `
               <div class="col-sm-6 col-lg-4 wow-outer">
                 <div class="thumbnail-classic thumbnail-classic-sm">
                   <a href="single-project.html?id=${project.id}">
-                    ${imageUrl ? `<img class="thumbnail-classic-image" src="${imageUrl}" alt="${project.title || ''}" width="370" height="256">` : ''}
+                    ${imageUrl ? `<img class="thumbnail-classic-image" src="${imageUrl}" alt="${project.title || ''}" width="370" height="256" loading="lazy" decoding="async">` : ''}
                     <div class="thumbnail-classic-caption">
                       <p class="thumbnail-classic-title">${project.title || ''}</p>
                       <p class="thumbnail-classic-text">${project.category || ''}</p>
@@ -1001,13 +1186,13 @@
           const displayNews = news.slice(0, 4);
 
           displayNews.forEach((item) => {
-            const imageUrl = item.image || '';
+            const imageUrl = getOptimizedImageUrl(item.image || '', 540);
             const date = item.createdAt || new Date().toISOString();
             const blogHTML = `
               <div class="col-sm-6 col-md-4 col-lg-3 wow-outer">
                 <article class="post-tiny wow fadeSlideInDown">
                   <a class="post-tiny-media" href="single-blog-post.html?id=${item.id}">
-                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.title || ''}" width="270" height="184" />` : ''}
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${item.title || ''}" width="270" height="184" loading="lazy" decoding="async" />` : ''}
                   </a>
                   <h5 class="post-tiny-title">
                     <a href="single-blog-post.html?id=${item.id}">${item.title || ''}</a>
@@ -1042,14 +1227,14 @@
 
         if (displayPartners.length > 0) {
           partnersContainer.innerHTML = displayPartners.map((partner) => {
-            const imageUrl = partner.logo || partner.image || '';
+            const imageUrl = getOptimizedImageUrl(partner.logo || partner.image || '', 360);
             const website = partner.website || '#';
             const name = partner.name || '';
             return `
               <div class="col-6 col-sm-4 col-md-3 col-lg-2 wow-outer">
                 <div class="partner-item wow slideInUp">
                   <a class="link-image partner-link" href="${website}" target="_blank" rel="noopener noreferrer">
-                    ${imageUrl ? `<img src="${imageUrl}" alt="${name}" class="partner-logo" />` : `<span class="partner-name">${name}</span>`}
+                    ${imageUrl ? `<img src="${imageUrl}" alt="${name}" class="partner-logo" loading="lazy" decoding="async" />` : `<span class="partner-name">${name}</span>`}
                   </a>
                 </div>
               </div>
@@ -1071,6 +1256,26 @@
       if (value.startsWith('http://') || value.startsWith('https://') || value.startsWith('/')) return value;
       if (value.startsWith('images/') || value.startsWith('uploads/')) return `/${value}`;
       return value;
+    }
+
+    function getOptimizedImageUrl(path, width) {
+      const value = normalizePublicImagePath(path);
+      if (!value || !value.startsWith('/uploads/')) return value;
+      const separator = value.includes('?') ? '&' : '?';
+      return `${value}${separator}w=${Math.max(96, Math.min(1920, Number(width) || 1600))}`;
+    }
+
+    function escapeHtml(str) {
+      return String(str || '')
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#39;');
+    }
+
+    function escapeAttr(str) {
+      return escapeHtml(str);
     }
 
     // 渲染客户评价 - 从API获取
@@ -1096,13 +1301,13 @@
           `;
 
           homeTestimonials.forEach((testimonial) => {
-            const avatarUrl = normalizePublicImagePath(testimonial.image || testimonial.avatar || '');
+            const avatarUrl = getOptimizedImageUrl(testimonial.image || testimonial.avatar || '', 192);
             const positionText = testimonial.position ? 
               (testimonial.company ? `${testimonial.position} - ${testimonial.company}` : testimonial.position) : 
               (testimonial.company || '');
             
             childCarouselHTML += `
-              <div class="item">${avatarUrl ? `<img src="${avatarUrl}" alt="客户头像" width="96" height="96" />` : ''}</div>
+              <div class="item">${avatarUrl ? `<img src="${avatarUrl}" alt="客户头像" width="96" height="96" loading="lazy" decoding="async" />` : ''}</div>
             `;
 
             parentCarouselHTML += `
@@ -1116,7 +1321,7 @@
                   <div class="quote-light-text">
                     <div class="testimonial-content-html">${testimonial.content || ''}</div>
                   </div>
-                  ${avatarUrl ? `<div style="display:none"><img src="${avatarUrl}" alt="客户头像" /></div>` : ''}
+                  ${avatarUrl ? `<div style="display:none"><img src="${avatarUrl}" alt="客户头像" loading="lazy" decoding="async" /></div>` : ''}
                   <div class="quote-light-footer">
                     <img class="quote-light-image" src="images/logo-majestic-104x64.png" alt="公司logo" width="104" height="64" />
                   </div>
@@ -1176,6 +1381,71 @@
       }
     }
 
+    let businessDistributionStarted = false;
+
+    function ensureECharts() {
+      if (window.echarts) return Promise.resolve();
+      const existing = document.getElementById('echartsRuntime');
+      if (existing) {
+        return new Promise((resolve, reject) => {
+          existing.addEventListener('load', resolve, { once: true });
+          existing.addEventListener('error', reject, { once: true });
+        });
+      }
+      return new Promise((resolve, reject) => {
+        const script = document.createElement('script');
+        script.id = 'echartsRuntime';
+        script.src = 'https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js';
+        script.async = true;
+        script.onload = resolve;
+        script.onerror = () => reject(new Error('ECharts 加载失败'));
+        document.head.appendChild(script);
+      });
+    }
+
+    function scheduleBusinessDistribution() {
+      const section = document.getElementById('businessDistributionSection');
+      if (!section) return;
+      section.style.display = '';
+
+      const start = () => {
+        if (businessDistributionStarted) return;
+        businessDistributionStarted = true;
+        renderBusinessDistribution();
+      };
+
+      if (!('IntersectionObserver' in window)) return start();
+      const observer = new IntersectionObserver((entries) => {
+        if (entries.some(entry => entry.isIntersecting)) {
+          observer.disconnect();
+          start();
+        }
+      }, { rootMargin: '500px 0px' });
+      observer.observe(section);
+    }
+
+    async function renderBusinessDistribution() {
+      const section = document.getElementById('businessDistributionSection');
+      const mapWrap = document.getElementById('businessMapWrap');
+      if (!section || !mapWrap || !window.API?.BusinessDistribution?.get) return;
+
+      try {
+        const data = await window.API.BusinessDistribution.get();
+        if (!data) return;
+        section.style.display = '';
+        document.getElementById('businessDistributionTitle').textContent = data.title || '业务分布';
+        document.getElementById('businessDistributionSubtitle').textContent = data.subtitle || '';
+        mapWrap.innerHTML = '<div class="business-map-chart" id="businessMapChart"></div>';
+        const points = Array.isArray(data.points) ? data.points : [];
+        if (window.BusinessWorldMap?.render) {
+          await ensureECharts();
+          await window.BusinessWorldMap.render(document.getElementById('businessMapChart'), points);
+        }
+      } catch (error) {
+        console.error('加载业务分布失败:', error);
+      }
+    }
+
     // 渲染首页特色模块 - 从API获取
     async function renderHomeFeatures() {
       const homeFeaturesContainer = document.getElementById('homeFeaturesContainer');
@@ -1214,6 +1484,7 @@
   <script src="js/script.js?v=6"></script>
   <script src="js/map.js?v=6"></script>
   <script src="js/contact-form.js?v=1"></script>
+  <script src="js/business-map.js?v=2"></script>
   <script src="js/footer.js?v=1"></script>
   <script src="js/i18n.js?v=1"></script>
 </body>

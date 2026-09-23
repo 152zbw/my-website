@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
 
 // 文件类型验证
 const fileFilter = (req, file, cb) => {
-    const allowedTypes = /jpeg|jpg|png|gif|svg|pdf|doc|docx|xls|xlsx/;
+    const allowedTypes = /jpeg|jpg|png|webp|avif|gif|svg|pdf|doc|docx|xls|xlsx/;
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
     const mimetype = allowedTypes.test(file.mimetype);
 

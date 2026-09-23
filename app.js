@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const compression = require('compression');
 const bodyParser = require('body-parser');
 const path = require('path');
 const routes = require('./routes');
@@ -8,18 +9,28 @@ const Service = require('./models/Service');
 const Project = require('./models/Project');
 const News = require('./models/News');
 const Career = require('./models/Career');
+const optimizedUploads = require('./routes/optimizedUploads');
 require('dotenv').config();
 
 // 创建Express应用
 const app = express();
 
 // 配置中间件
+app.use(compression());
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// 静态文件服务
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// 上传图片优先按浏览器支持情况生成 WebP，并缓存生成结果。
+// 文件名本身是唯一的，因此可以安全使用长期 immutable 缓存。
+app.use('/uploads', optimizedUploads);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+    maxAge: '1y',
+    immutable: true
+}));
+app.use('/data', express.static(path.join(__dirname, 'data'), {
+    maxAge: '30d'
+}));
 // 为根路径提供静态资源，确保 CSS/JS/图片可直接以相对路径加载
 app.use(express.static(path.join(__dirname, 'html')));
 // 兼容原有 /html 前缀
