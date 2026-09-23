@@ -197,6 +197,16 @@ const HomeFeaturesAPI = {
     delete: (id) => apiRequest(`/homeFeatures/${id}`, { method: 'DELETE' })
 };
 
+// 价格计划API
+const PricingPlansAPI = {
+    getAll: () => apiRequest('/pricingPlans'),
+    getAllAdmin: () => apiRequest('/pricingPlans/admin'),
+    get: (id) => apiRequest(`/pricingPlans/${id}`),
+    create: (data) => apiRequest('/pricingPlans', { method: 'POST', body: JSON.stringify(data) }),
+    update: (id, data) => apiRequest(`/pricingPlans/${id}`, { method: 'PUT', body: JSON.stringify(data) }),
+    delete: (id) => apiRequest(`/pricingPlans/${id}`, { method: 'DELETE' })
+};
+
 // 招贤纳士职位API
 const CareersAPI = {
     // 前台：获取所有激活的职位
@@ -312,6 +322,7 @@ window.API = {
     Contacts: ContactsAPI,
     Navigation: NavigationAPI,
     HomeFeatures: HomeFeaturesAPI, // 注册新的首页特色模块API
+    PricingPlans: PricingPlansAPI,
     Careers: CareersAPI, // 招贤纳士职位API
     Users: UsersAPI, // 用户管理API
     BusinessDistribution: BusinessDistributionAPI, // 业务分布API
