@@ -21,6 +21,12 @@ app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// 个人简介页暂时不对外展示；保留源文件和后台编辑能力，方便后续恢复。
+app.get(['/about-me.html', '/html/about-me.html'], (req, res) => {
+    res.set('X-Robots-Tag', 'noindex, nofollow');
+    return res.redirect(302, '/about.html');
+});
+
 // 上传图片优先按浏览器支持情况生成 WebP，并缓存生成结果。
 // 文件名本身是唯一的，因此可以安全使用长期 immutable 缓存。
 app.use('/uploads', optimizedUploads);
@@ -74,6 +80,7 @@ app.get('/robots.txt', (req, res) => {
         [
             'User-agent: *',
             'Allow: /',
+            'Disallow: /about-me.html',
             `Sitemap: ${baseUrl}/sitemap.xml`,
             ''
         ].join('\n')
@@ -93,7 +100,6 @@ app.get('/sitemap.xml', async (req, res) => {
             '/news.html',
             '/about.html',
             '/about-company.html',
-            '/about-me.html',
             '/careers.html',
             '/contacts.html',
             '/sidebar-blog.html'

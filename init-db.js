@@ -264,7 +264,7 @@ async function initDatabase() {
                 { id: 10, name: '博客详情', url: 'single-blog-post.html', group: '3', parentId: 3, order: 2, status: 1 },
                 // 二级导航 - 关于我们（仅4项：关于我们、公司简介、个人简介、招贤纳士）
                 { id: 11, name: '公司简介', url: 'about-company.html', group: '5', parentId: 5, order: 2, status: 1 },
-                { id: 12, name: '个人简介', url: 'about-me.html', group: '5', parentId: 5, order: 3, status: 1 },
+                { id: 12, name: '个人简介', url: 'about-me.html', group: '5', parentId: 5, order: 3, status: 0 },
                 { id: 13, name: '关于我们', url: 'about.html', group: '5', parentId: 5, order: 1, status: 1 },
                 { id: 14, name: '招贤纳士', url: 'careers.html', group: '5', parentId: 5, order: 4, status: 1 },
                 // 二级导航 - 服务
@@ -283,5 +283,4 @@ async function initDatabase() {
 }
 
 initDatabase();
-
 

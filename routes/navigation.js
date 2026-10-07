@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const { Op } = require('sequelize');
 const Navigation = require('../models/Navigation');
 const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
 
@@ -7,7 +8,11 @@ const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
 router.get('/', async (req, res) => {
     try {
         const navigation = await Navigation.findAll({
-            where: { status: 1 },
+            // 个人简介页暂时隐藏，但数据库记录仍保留，便于之后恢复。
+            where: {
+                status: 1,
+                url: { [Op.notIn]: ['about-me.html', '/about-me.html'] }
+            },
             order: [['order', 'ASC'], ['id', 'ASC']]
         });
         res.json(navigation);
@@ -107,4 +112,3 @@ router.delete('/:id', authenticateToken, authorizeAdmin, async (req, res) => {
 });
 
 module.exports = router;
-
