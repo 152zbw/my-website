@@ -295,7 +295,8 @@ app.get('/sitemap.xml', async (req, res) => {
             urls.push({ loc: `${baseUrl}${p}`, lastmod: new Date(lastmod).toISOString() });
         }
 
-        for (const s of services) urls.push({ loc: `${baseUrl}/single-service.html?id=${s.id}`, lastmod: new Date(s.updatedAt).toISOString() });
+        const serviceRenderDate = Math.max(...['lib/seo-renderer.js', 'lib/service-topics.js', 'lib/domestic-service-topics.js', 'html/single-service.html'].map(file => fs.statSync(path.join(__dirname, file)).mtimeMs));
+        for (const s of services) urls.push({ loc: `${baseUrl}/single-service.html?id=${s.id}`, lastmod: new Date(Math.max(new Date(s.updatedAt).getTime(), serviceRenderDate)).toISOString() });
         for (const p of projects) urls.push({ loc: `${baseUrl}/single-project.html?id=${p.id}`, lastmod: new Date(p.updatedAt).toISOString() });
         for (const n of news) urls.push({ loc: `${baseUrl}/single-blog-post.html?id=${n.id}`, lastmod: new Date(n.updatedAt).toISOString() });
         for (const c of careers) urls.push({ loc: `${baseUrl}/single-job.html?id=${c.id}`, lastmod: new Date(c.updatedAt).toISOString() });

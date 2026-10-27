@@ -300,6 +300,7 @@ height="24" />
 
     // 根据URL参数加载服务详情
     async function loadServiceDetails() {
+      if (document.getElementById('serviceFeatureDescription')?.dataset.serverRendered) return;
       console.log('开始加载服务详情...');
       const urlParams = new URLSearchParams(window.location.search);
       const serviceId = parseInt(urlParams.get('id'));

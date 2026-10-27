@@ -234,3 +234,16 @@ for (const route of ['/','/services.html']) {
 }
 assert(iaesteGraph.find(x=>x['@type']==='Service').subjectOf.some(x=>x.url.includes('iaeste.org/member-countries/china-ecint')));
 console.log('IAESTE discovery, eligibility, matching evidence and source-linked service schema passed');
+
+// Metadata reflects each page and the service summary is also visible to visitors.
+const descriptions = ['/', '/about.html', '/about-company.html'].map(route => renderStaticPage(route).match(/<meta name="description" content="([^"]+)"/)[1]);
+assert.strictEqual(new Set(descriptions).size, 3);
+for (const [id,title,marker] of [[1,'海外管理咨询','IAESTE'],[2,'SaaS + AI','绩效 SaaS'],[3,'国内管理咨询','国企三项制度改革']]) {
+    const page = renderServicePage({id,title,description:'旧摘要',content:'<p>后台维护的原有正文</p>'});
+    const summary = page.match(/<meta name="description" content="([^"]+)"/)[1];
+    assert(summary.includes(marker));
+    assert(bodyText(page).includes(summary));
+    assert(bodyText(page).includes('后台维护的原有正文'));
+    assert(page.includes('id="serviceFeatureDescription" data-server-rendered="true"'));
+}
+console.log('Distinct page summaries, visible service scope and retained CMS content passed');
