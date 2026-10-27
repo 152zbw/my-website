@@ -397,6 +397,7 @@
             <div id="swiperWrapper" class="project-hero-image-wrap">
               <p class="text-muted">正在加载项目封面...</p>
             </div>
+            <p class="text-muted" style="font-size:13px;margin-top:12px">案例示意图</p>
           </div>
           <div class="col-lg-6">
             <div class="project-hero-summary text-left">
@@ -411,6 +412,7 @@
         </div>
       </div>
     </section>
+    <section class="section section-md bg-gray-100"><div class="container" id="caseDisclosure"></div></section>
     <section class="section section-lg text-center">
       <div class="container">
         <h3 class="wow-outer"><span class="wow slideInUp">我们的团队</span></h3>
@@ -419,32 +421,6 @@
         </div>
         <div class="wow-outer button-outer"><a class="button button-lg button-primary button-winona wow slideInUp"
             href="team.html">查看所有团队成员</a></div>
-      </div>
-    </section>
-    <!-- Testimonials-->
-    <section class="section section-lg bg-gray-100 text-center">
-      <div class="container">
-        <h3>客户评价</h3>
-        <div class="slick-widget-testimonials wow fadeIn" id="testimonialsContainer">
-          <div class="slick-slider carousel-child" id="project-testimonials-child" data-for="#project-testimonials-parent" data-arrows="true" data-loop="true" data-dots="false" data-swipe="true" data-items="1" data-sm-items="3" data-md-items="5" data-lg-items="5" data-xl-items="5" data-center-mode="true" data-slide-to-scroll="1">
-            <div class="item wow-outer"><p class="text-center text-muted">正在加载客户评价...</p></div>
-          </div>
-          <div class="slick-slider carousel-parent" id="project-testimonials-parent" data-arrows="false" data-loop="true" data-dots="false" data-swipe="false" data-items="1" data-fade="true" data-child="#project-testimonials-child" data-for="#project-testimonials-child"></div>
-        </div>
-      </div>
-    </section>
-    <section class="section section-xs bg-primary-darker text-center">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-sm-10 col-md-12">
-            <div class="box-cta-thin">
-              <h4 class="wow-outer"><span class="wow slideInRight">了解我们如何帮助 <span class="font-weight-bold">您的企业</span>
-                  持续成长。</span></h4>
-              <div class="wow-outer button-outer"><a class="button button-primary button-winona wow slideInLeft"
-                  href="services.html">查看所有服务</a></div>
-            </div>
-          </div>
-        </div>
       </div>
     </section>
     <!-- Map & contacts-->
@@ -569,7 +545,7 @@
       try {
         const project = await window.API.Projects.get(projectId);
         if (project) {
-          document.title = (project.title || '项目详情') + ' - 咨询公司官网';
+          document.title = (project.title || '项目详情') + '｜笠偲咨询案例';
 
           const breadcrumb = document.querySelector('.breadcrumbs-custom-title');
           if (breadcrumb) breadcrumb.textContent = project.title || '项目详情';
@@ -658,7 +634,7 @@
 
     async function renderProjectTeam() {
       const container = document.getElementById('teamContainer');
-      if (!container || !window.API?.Team?.getAll) return;
+      if (!container || container.dataset.serverRendered || !window.API?.Team?.getAll) return;
 
       try {
         const list = await window.API.Team.getAll();

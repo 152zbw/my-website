@@ -19,7 +19,7 @@
     <script src="js/html5shiv.min.js"></script>
     <![endif]-->
   <script src="js/i18n-catalog.js?v=4"></script>
-  <script src="js/i18n.js?v=5"></script>
+  <script src="js/i18n.js?v=contact-fix-1"></script>
 </head>
 
 <body>
@@ -156,42 +156,42 @@
               <div class="section-lg">
                 <h3 class="wow-outer"><span class="wow slideInDown">联系我们</span></h3>
                 <!-- Contact Form-->
-                <form id="contactForm" action="javascript:void(0)" method="POST" novalidate onsubmit="return false;">
+                <form id="contactForm" action="/api/contacts" method="POST" novalidate>
                   <div class="row row-10">
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
                         <label class="form-label-outside" for="contact-first-name">姓</label>
-                        <input class="form-input" id="contact-first-name" type="text" name="firstName" required>
+                        <input class="form-input" id="contact-first-name" type="text" name="firstName" maxlength="49">
                       </div>
                     </div>
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
                         <label class="form-label-outside" for="contact-last-name">名</label>
-                        <input class="form-input" id="contact-last-name" type="text" name="lastName" required>
+                        <input class="form-input" id="contact-last-name" type="text" name="lastName" maxlength="49">
                       </div>
                     </div>
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
                         <label class="form-label-outside" for="contact-email">电子邮箱</label>
-                        <input class="form-input" id="contact-email" type="email" name="email" required>
+                        <input class="form-input" id="contact-email" type="email" name="email" maxlength="100" required>
                       </div>
                     </div>
                   <div class="col-md-6 wow-outer">
                     <div class="form-wrap wow fadeSlideInUp">
                       <label class="form-label-outside" for="contact-subject">主题（可选）</label>
-                      <input class="form-input" id="contact-subject" type="text" name="subject" placeholder="咨询 / 商务合作等">
+                      <input class="form-input" id="contact-subject" type="text" name="subject" maxlength="255" placeholder="咨询 / 商务合作等">
                     </div>
                   </div>
                     <div class="col-md-6 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
                         <label class="form-label-outside" for="contact-phone">电话</label>
-                        <input class="form-input" id="contact-phone" type="text" name="phone">
+                        <input class="form-input" id="contact-phone" type="text" name="phone" maxlength="20">
                       </div>
                     </div>
                     <div class="col-12 wow-outer">
                       <div class="form-wrap wow fadeSlideInUp">
                         <label class="form-label-outside" for="contact-message">留言内容</label>
-                        <textarea class="form-input" id="contact-message" name="message" required></textarea>
+                        <textarea class="form-input" id="contact-message" name="message" maxlength="10000" required></textarea>
                       </div>
                     </div>
                   </div>
@@ -257,28 +257,10 @@
     document.addEventListener('DOMContentLoaded', () => {
       hidePreloader();
       loadWebsiteInfoToContact();
-      bindContactForm();
     });
 
     window.addEventListener('load', hidePreloader);
     setTimeout(hidePreloader, 3000);
-
-    // 强制让提交按钮始终走我们的 JS，不走任何默认跳转
-    const contactFormElement = document.getElementById('contactForm');
-    if (contactFormElement) {
-      contactFormElement.setAttribute('action', 'javascript:void(0)');
-      contactFormElement.setAttribute('method', 'POST');
-      contactFormElement.setAttribute('onsubmit', 'return false;');
-    }
-
-    // 额外拦截任何可能的默认提交行为，避免跳转到旧模板地址
-    document.addEventListener('submit', (event) => {
-      const form = event.target;
-      if (form && form.id === 'contactForm') {
-        event.preventDefault();
-        event.stopPropagation();
-      }
-    }, true);
 
     async function loadWebsiteInfoToContact() {
       try {
@@ -307,62 +289,9 @@
       }
     }
 
-    function showSuccess() {
-      const msg = document.getElementById('successMessage');
-      msg.style.display = 'block';
-      setTimeout(() => { msg.style.display = 'none'; }, 3000);
-    }
-
-    async function submitContactForm(payload) {
-      const timeout = new Promise((_, reject) => {
-        setTimeout(() => reject(new Error('请求超时，请检查服务器是否可用')), 15000);
-      });
-      return await Promise.race([
-        window.API.Contacts.create(payload),
-        timeout
-      ]);
-    }
-
-    function bindContactForm() {
-      const form = document.getElementById('contactForm');
-      const submitBtn = document.getElementById('submitBtn');
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const firstName = document.getElementById('contact-first-name').value.trim();
-        const lastName = document.getElementById('contact-last-name').value.trim();
-        const email = document.getElementById('contact-email').value.trim();
-        const phone = document.getElementById('contact-phone').value.trim();
-        const subject = document.getElementById('contact-subject').value.trim();
-        const message = document.getElementById('contact-message').value.trim();
-
-        const fullName = `${firstName} ${lastName}`.trim() || firstName || lastName || '访客';
-        const payload = {
-          name: fullName,
-          email,
-          phone,
-          subject: subject || '咨询',
-          message
-        };
-
-        submitBtn.disabled = true;
-        submitBtn.textContent = 'Sending...';
-
-        try {
-          const result = await submitContactForm(payload);
-          console.log('提交联系信息成功:', result);
-          showSuccess();
-          form.reset();
-        } catch (error) {
-          console.error('提交联系信息失败:', error);
-          alert(error.message || '提交失败，请稍后再试');
-        } finally {
-          submitBtn.disabled = false;
-          submitBtn.textContent = '发送消息';
-        }
-      });
-    }
   </script>
 
+  <script src="/js/contact-form.js?v=2" defer></script>
 </body>
 
 </html>

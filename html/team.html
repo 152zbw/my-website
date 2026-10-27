@@ -100,7 +100,7 @@
     <!-- Team Members Section-->
     <section class="section section-md">
       <div class="container">
-        <h3 class="text-center mb-5">我们的专业团队</h3>
+        <h1 class="heading-3 text-center mb-5">我们的专业团队</h1>
         <div class="row" id="teamMembersContainer">
           <!-- 团队成员将通过JavaScript动态生成 -->
         </div>
@@ -226,6 +226,7 @@
 
     // 从API加载团队成员数据
     async function loadTeamMembers() {
+      if (document.getElementById('teamMembersContainer')?.dataset.serverRendered ) return;
       const container = document.getElementById('teamMembersContainer');
       if (!container) return;
 

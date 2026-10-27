@@ -169,36 +169,26 @@ style="background-image: url(images/breadcrumbs-image-1.jpg);">
 <div id="serviceDetailDescription">
 我们专注于帮助企业在战略、流程、组织与数据分析方面建立更清晰的管理体系。
 </div>
-<a class="button button-lg button-primary button-winona" href="#">了解更多</a>
+<div id="serviceTopicLinks"></div>
+<a class="button button-lg button-primary button-winona" href="contacts.html">沟通咨询需求</a>
 </div>
 </div>
 <div class="col-lg-6">
-<div class="d3-chart-wrap">
-<div class="d3-chart" id="line-chart"></div>
+<div class="public-source" style="padding:28px;background:#eef4fb;border-radius:12px">
+<h3>如何开始沟通</h3><p>请说明业务背景、希望解决的问题、涉及团队及时间安排。我们将据此沟通服务范围与下一步工作。</p>
+<a href="contacts.html">联系笠偲咨询</a>
 </div>
 </div>
 </div>
 </div>
 </section>
 <!-- Pricing-->
-<div id="pricingPlansContainer"></div>
+
 <section class="section section-md bg-primary-darker text-center">
 <div class="container">
 <div class="box-cta-1">
 <h3>提供优质 <span class="font-weight-bold">商业支持</span></h3><a
 class="button button-lg button-primary button-winona" href="#">免费咨询</a>
-</div>
-</div>
-</section>
-<!-- Testimonials-->
-<section class="section section-lg text-center">
-<div class="container">
-<h3 class="wow-outer"><span class="wow slideInDown">客户评价</span></h3>
-<!-- Owl Carousel（后台可编辑，前台轮播展示） -->
-<!-- 注意：这里先不加 owl-carousel 类，避免脚本在“空内容”时自动初始化 -->
-<div id="testimonialsCarousel" class="wow fadeIn" data-items="1" data-md-items="1" data-lg-items="1"
-data-dots="true" data-nav="false" data-loop="true" data-autoplay="true" data-autoplay-timeout="5000"
-data-margin="30" data-stage-padding="0" data-mouse-drag="true">
 </div>
 </div>
 </section>
@@ -335,7 +325,7 @@ height="24" />
         console.log('获取到的服务数据:', service);
         
         if (service) {
-          document.title = `${service.title || ''} - 咨询公司官网`;
+          document.title = `${service.title || ''}｜笠偲咨询服务`;
           const titleEl = document.querySelector('.breadcrumbs-custom-title');
           if (titleEl) titleEl.textContent = service.title || '服务详情';
           updateServiceContent(service);
@@ -379,7 +369,7 @@ function updateServiceContent(service) {
       console.log('服务详情元素:', { serviceDetailTitle, serviceDetailDescription });
       
       if (serviceDetailTitle) {
-        serviceDetailTitle.textContent = service.title || '为您的企业提供完整的簿记解决方案，包括：银行对账、客户发票和收款等。';
+        serviceDetailTitle.textContent = service.title || '了解咨询服务的具体内容。';
         console.log('已更新服务详情标题:', service.title);
       } else {
         console.warn('未找到 serviceDetailTitle 元素');
@@ -387,7 +377,7 @@ function updateServiceContent(service) {
       
       if (serviceDetailDescription) {
         // 如果服务有content字段，使用content，否则使用description
-        const content = service.content || service.description || '此服务为您的所有会计需求提供完整解决方案，包括工资单、业务启动分析、审计、业务项目分析。我们专注于税务准备和小企业会计。';
+        const content = service.content || service.description || '具体服务范围请通过官方联系渠道沟通确认。';
         serviceDetailDescription.innerHTML = content;
         console.log('已更新服务详情描述，内容长度:', content.length);
       } else {
