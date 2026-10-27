@@ -217,11 +217,15 @@
 
     const favicon = document.querySelector('link[rel="icon"]');
     if (favicon && data.favicon) {
-      // The legacy template favicon is not part of the Lisi brand. Keep old
-      // database values from replacing the branded browser-tab icon.
-      favicon.href = /(^|\/)images\/favicon\.ico(?:[?#]|$)/i.test(data.favicon)
-        ? 'images/wblogo.ico'
-        : data.favicon;
+      // Both historic defaults now use the stable, crawlable brand icon URL.
+      let configured = new URL('/favicon.ico', location.href);
+      try { configured = new URL(data.favicon, location.href); } catch (_) { /* Keep the brand icon if the configured URL is invalid. */ }
+      const defaultIcon = configured.origin === location.origin && /^\/(?:html\/)?images\/(?:favicon|wblogo)\.ico$/i.test(configured.pathname);
+      favicon.href = defaultIcon ? '/favicon.ico' : configured.href;
+      if (!defaultIcon) {
+        favicon.removeAttribute('type');
+        favicon.removeAttribute('sizes');
+      }
     }
 
     setContactLink(document.getElementById('topPhone'), data.phone, 'phone');
