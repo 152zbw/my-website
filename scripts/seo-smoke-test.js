@@ -14,11 +14,18 @@ function assertCommonSeo(html, expectedTitlePart) {
     assert.match(html, /<link rel="canonical" href="https:\/\/www\.ec-int\.cn\/[^"]*">/);
     assert.match(html, /<meta name="robots" content="index,follow,max-image-preview:large">/);
     assert.strictEqual((html.match(/<h1\b/g) || []).length, 1);
+    assert.strictEqual((html.match(/rel="icon"/g) || []).length, 1);
+    assert.match(html, /rel="icon" href="\/favicon\.ico" type="image\/x-icon"/);
 }
 
 const home = renderStaticPage('/', {});
 assertCommonSeo(home, '笠偲咨询');
 assert.match(home, /"@type":"Organization"/);
+const website = JSON.parse(home.match(/data-seo-jsonld>([\s\S]*?)<\/script>/)[1])['@graph'].find(x=>x['@type']==='WebSite');
+assert.strictEqual(website.name, '笠偲咨询');
+assert.strictEqual(website.publisher['@id'], 'https://www.ec-int.cn/#organization');
+for (const section of website.hasPart) assert(home.includes(`href="${section.url.replace('https://www.ec-int.cn','')}"`));
+assert.deepStrictEqual(require('fs').readFileSync(require('path').join(__dirname,'../html/favicon.ico')), require('fs').readFileSync(require('path').join(__dirname,'../html/images/wblogo.ico')));
 
 const person = renderStaticPage('/about-me.html', {});
 assertCommonSeo(person, '辛笠');
