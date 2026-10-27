@@ -289,7 +289,7 @@ app.get('/sitemap.xml', async (req, res) => {
             const file = PAGE_SEO[p]?.file || 'index.html';
             const pageSources = [path.join(HTML_DIR, file), path.join(__dirname, 'lib/seo-renderer.js'), path.join(__dirname, 'lib/company-facts.js')];
             if (SERVICE_TOPICS[p]) pageSources.push(path.join(__dirname, 'lib/service-topics.js'));
-            if (SERVICE_TOPICS[p]?.parent) pageSources.push(path.join(__dirname, 'lib/domestic-service-topics.js'));
+            if (SERVICE_TOPICS[p]?.parent === '/organization-hr.html') pageSources.push(path.join(__dirname, 'lib/domestic-service-topics.js'));
             if (['/company-facts.html', '/expert-xin-li.html'].includes(p)) pageSources.push(path.join(__dirname, 'lib/company-facts.js'), path.join(__dirname, 'lib/seo-renderer.js'));
             const lastmod = new Date(Math.max(contentDates[p]?.getTime() || 0, ...pageSources.map(source => fs.statSync(source).mtimeMs)));
             urls.push({ loc: `${baseUrl}${p}`, lastmod: new Date(lastmod).toISOString() });

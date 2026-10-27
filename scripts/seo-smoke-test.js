@@ -100,7 +100,7 @@ assertCommonSeo(facts, '笠偲咨询');
 assert.match(bodyText(facts), /原 www\.ec-in\.cn 已停止使用/);
 assert.match(facts, /https:\/\/events\.sap\.cn\/hrconnect-qd-2025\//);
 const graph = JSON.parse(facts.match(/data-seo-jsonld>([\s\S]*?)<\/script>/)[1])['@graph'];
-assert.strictEqual(graph.find(x => x['@type'] === 'FAQPage').mainEntity.length, 7);
+assert.strictEqual(graph.find(x => x['@type'] === 'FAQPage').mainEntity.length, 8);
 const teamPage = renderStaticPage('/team.html', {}, { team: [{ name: 'xxxxx', bio: '不应公开的占位信息' }] });
 assert.match(bodyText(teamPage), /辛笠/);
 assert.doesNotMatch(bodyText(teamPage), /xxxxx|不应公开的占位信息/);
@@ -110,7 +110,7 @@ const { SERVICE_TOPICS } = require('../lib/service-topics');
 for (const [url, topic] of Object.entries(SERVICE_TOPICS)) {
     const html = renderStaticPage(url, {}, { projects: [] });
     assertCommonSeo(html, topic.name);
-    assert.match(bodyText(html), /咨询内容/);
+    assert(bodyText(html).includes(topic.scopeHeading || '咨询内容'));
     assert.match(bodyText(html), /交付方向/);
     assert.match(bodyText(html), /如何沟通项目需求/);
     assert.match(html, /"@type":"Service"/);
@@ -205,3 +205,25 @@ assert.match(bodyText(profile), /已有公司介绍保留/);
 const homeMain = home.match(/<main\b[^>]*>([\s\S]*?)<\/main>/)[1];
 assert(!homeMain.includes('href="/soe-reform.html"'), 'Do not add a domestic expertise block to the homepage');
 console.log('Domestic positioning, internal discovery, schema/body consistency and case relevance passed');
+
+// IAESTE has its own overseas service page and must not claim blanket employee eligibility.
+const iaeste = renderStaticPage('/iaeste-internship.html', {}, {projects:[
+    {id:91,title:'企业海外市场开发',category:'海外布局'},
+    {id:92,title:'海外实习生交换实践',category:'国际化人才培养'}
+]});
+assertCommonSeo(iaeste, 'IAESTE');
+for (const text of ['海外实习生接收','导师带教','海外发展型外派','项目如何开展','人员资格','Co-operating Institution']) assert(bodyText(iaeste).includes(text));
+assert(iaeste.includes('single-project.html?id=92'));
+assert(!iaeste.includes('single-project.html?id=91'));
+const iaesteGraph = JSON.parse(iaeste.match(/data-seo-jsonld>([\s\S]*?)<\/script>/)[1])['@graph'];
+for (const question of iaesteGraph.find(x=>x['@type']==='FAQPage').mainEntity) {
+    assert(bodyText(iaeste).includes(question.name));
+    assert(bodyText(iaeste).includes(question.acceptedAnswer.text));
+}
+for (const route of ['/services.html','/overseas-consulting.html','/company-facts.html']) assert(renderStaticPage(route).includes('href="/iaeste-internship.html"'));
+for (const route of ['/','/services.html']) {
+    const page = renderStaticPage(route, {}, {features:[{id:1,title:'海外管理咨询',description:'<div>爱因斯特国际交换生</div>'}]});
+    assert(page.includes('<a href="/iaeste-internship.html">爱因斯特国际交换生</a>'));
+}
+assert(iaesteGraph.find(x=>x['@type']==='Service').subjectOf.some(x=>x.url.includes('iaeste.org/member-countries/china-ecint')));
+console.log('IAESTE discovery, eligibility, matching evidence and source-linked service schema passed');

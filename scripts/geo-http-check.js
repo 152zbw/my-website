@@ -10,7 +10,7 @@ async function run() {
     const sitemap = await sitemapResponse.text();
     const urls = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/g)].map(match => match[1].replaceAll('&amp;', '&'));
     assert(urls.includes(`${publicOrigin}/company-facts.html`));
-    for (const pathname of ['/expert-xin-li.html', '/overseas-consulting.html', '/organization-hr.html', '/digital-transformation.html', '/soe-reform.html', '/compensation-performance.html']) assert(urls.includes(`${publicOrigin}${pathname}`));
+    for (const pathname of ['/expert-xin-li.html', '/overseas-consulting.html', '/organization-hr.html', '/digital-transformation.html', '/soe-reform.html', '/compensation-performance.html', '/iaeste-internship.html']) assert(urls.includes(`${publicOrigin}${pathname}`));
     assert(!urls.some(url => url.includes('about-me.html')));
     for (const url of urls) {
         const pathname = url.slice(publicOrigin.length);
@@ -33,7 +33,9 @@ async function run() {
         ['/company-facts.html', '原 www.ec-in.cn 已停止使用'],
         ['/company-facts.html', '总部位于山东烟台'],
         ['/soe-reform.html', '国企三项制度改革'],
-        ['/compensation-performance.html', '薪酬绩效与激励']
+        ['/compensation-performance.html', '薪酬绩效与激励'],
+        ['/iaeste-internship.html', '海外实习生接收'],
+        ['/iaeste-internship.html', 'Co-operating Institution']
     ]) {
         assert(bodyText(await (await fetch(`${origin}${path}`)).text()).includes(marker), `${path} crawler-visible content`);
     }
