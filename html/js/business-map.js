@@ -27,10 +27,10 @@
 
   function getCountryColor(feature) {
     const iso = getIsoA3(feature);
-    if (iso === 'CHN') return '#ef1b2d';
-    if (northAmerica.has(iso)) return '#20208c';
-    if (europe.has(iso)) return '#f5b23c';
-    return '#cfd7e6';
+    if (iso === 'CHN') return '#7eafb6';
+    if (northAmerica.has(iso)) return '#bccddd';
+    if (europe.has(iso)) return '#ddcdb3';
+    return '#e5ebf1';
   }
 
   function getPointColor(type) {
@@ -81,6 +81,13 @@
         })
         .then((geoJson) => {
           geoJson.features = (geoJson.features || []).filter((feature) => !excludeCountries.has(getIsoA3(feature)));
+          // Unwrap Fiji across the date line so its borders do not draw a line across the entire map.
+          const unwrap = coordinates => typeof coordinates[0] === 'number'
+            ? [coordinates[0] < -170 ? coordinates[0] + 360 : coordinates[0], ...coordinates.slice(1)]
+            : coordinates.map(unwrap);
+          geoJson.features.forEach(feature => {
+            if (feature.properties.name === 'Fiji' && feature.geometry?.coordinates) feature.geometry.coordinates = unwrap(feature.geometry.coordinates);
+          });
           return geoJson;
         })
         .catch((error) => {
@@ -134,6 +141,10 @@
     marker.style.setProperty('--x', `${Math.max(0, Math.min(100, Number(point.x) || 0))}%`);
     marker.style.setProperty('--y', `${Math.max(0, Math.min(100, Number(point.y) || 0))}%`);
     marker.dataset.index = String(index);
+    marker.dataset.type = type;
+    marker.tabIndex = 0;
+    marker.setAttribute("aria-label", point.name || type);
+    marker.title = point.name || type;
 
     const logos = Array.isArray(point.logos) ? point.logos : [];
     const logosHtml = logos.length
@@ -166,6 +177,11 @@
       });
     }
 
+    if (options.mode !== 'edit' && options.onPointSelect) {
+      marker.setAttribute('role','button');
+      marker.addEventListener('click', () => options.onPointSelect(point,index));
+      marker.addEventListener('keydown', event => {if(event.key==='Enter'||event.key===' '){event.preventDefault();options.onPointSelect(point,index);}});
+    }
     overlay.appendChild(marker);
   }
 
@@ -220,7 +236,7 @@
     setTimeout(() => chart.resize(), 0);
     chart.setOption({
       animation: false,
-      backgroundColor: '#ffffff',
+      backgroundColor: '#f9fbfd',
       tooltip: { show: false },
       geo: {
         map: 'businessWorld',
@@ -231,7 +247,7 @@
         left: 8,
         right: 8,
         itemStyle: {
-          areaColor: '#cfd7e6',
+          areaColor: '#e5ebf1',
           borderColor: '#ffffff',
           borderWidth: 0.8
         },

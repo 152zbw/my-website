@@ -1,0 +1,17 @@
+[
+  {"id":"yantai-hq","name":"笠偲咨询总部（烟台）","type":"headquarters","region":"china","x":81.58,"y":39.22,"description":"总部","logos":[]},
+  {"id":"shenzhen-office","name":"深圳分公司","type":"branch","region":"china","x":80.80,"y":44.33,"description":"分公司","logos":[]},
+  {"id":"hong-kong-office","name":"香港分公司","type":"branch","region":"china","x":81.15,"y":44.85,"description":"分公司","logos":[]},
+  {"id":"jinan-office","name":"济南分支机构","type":"branch","region":"china","x":80.70,"y":39.85,"description":"分支机构","logos":[]},
+  {"id":"shanghai-office","name":"上海分支机构","type":"branch","region":"china","x":82.25,"y":41.65,"description":"分支机构","logos":[]},
+  {"id":"bipo","name":"BIPO","type":"partner","region":"china","x":82.75,"y":42.2,"description":"合作伙伴","logos":[]},
+  {"id":"career-international","name":"科锐国际","type":"partner","region":"china","x":80.8,"y":37.0,"description":"合作伙伴","logos":[]},
+  {"id":"us-office","name":"美国分公司","type":"branch","region":"north-america","x":23,"y":34.5,"description":"国家区域位置示意","logos":[]},
+  {"id":"mexico-office","name":"墨西哥分公司","type":"branch","region":"north-america","x":23.8,"y":46.5,"description":"国家区域位置示意","logos":[]},
+  {"id":"missouri-state","name":"密苏里州立大学","type":"partner","region":"north-america","x":24.5,"y":36.2,"description":"合作伙伴，区域位置示意","logos":[]},
+  {"id":"aicc-la","name":"美国国际商会（洛杉矶）","type":"partner","region":"north-america","x":16.9,"y":39.3,"description":"合作伙伴，区域位置示意","logos":[]},
+  {"id":"cnbc","name":"CNBC","type":"partner","region":"north-america","x":28.5,"y":33.0,"description":"合作伙伴，区域位置示意","logos":[]},
+  {"id":"hungary-office","name":"匈牙利分公司","type":"branch","region":"europe","x":55.4,"y":31.1,"description":"国家区域位置示意","logos":[]},
+  {"id":"iaeste","name":"爱因斯特（IAESTE，卢森堡）","type":"partner","region":"europe","x":52.3,"y":29.2,"description":"合作伙伴，区域位置示意","logos":[]},
+  {"id":"miskolc","name":"米什科尔茨大学（匈牙利）","type":"partner","region":"europe","x":56.2,"y":29.9,"description":"合作伙伴，区域位置示意","logos":[]}
+]

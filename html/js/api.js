@@ -141,21 +141,16 @@ const AboutAPI = {
     delete: (id) => apiRequest(`/about/${id}`, { method: 'DELETE' })
 };
 
-// 公司简介API（基于 About 表，只使用第一条记录）
+// 公司简介 API（后端与个人简介分流）
 const AboutCompanyAPI = {
-    // 获取公司简介（如果没有记录，返回 null）
-    get: async () => {
-        const list = await AboutAPI.getAll();
-        return Array.isArray(list) && list.length ? list[0] : null;
-    },
-    // 更新公司简介：如果已有记录则更新第一条，否则创建新记录
-    update: async (data) => {
-        const list = await AboutAPI.getAll();
-        if (Array.isArray(list) && list.length && list[0].id) {
-            return AboutAPI.update(list[0].id, data);
-        }
-        return AboutAPI.create(data);
-    }
+    get: () => apiRequest('/about/company'),
+    update: (data) => apiRequest('/about/company', { method: 'PUT', body: JSON.stringify(data) })
+};
+
+// 个人简介 API（与公司简介分开，避免互相覆盖）
+const AboutProfileAPI = {
+    get: () => apiRequest('/about/profile'),
+    update: (data) => apiRequest('/about/profile', { method: 'PUT', body: JSON.stringify(data) })
 };
 
 // 团队成员API
@@ -318,6 +313,7 @@ window.API = {
     Partners: PartnersAPI,
     About: AboutAPI,
     AboutCompany: AboutCompanyAPI,
+    AboutProfile: AboutProfileAPI,
     Team: TeamAPI,
     Contacts: ContactsAPI,
     Navigation: NavigationAPI,

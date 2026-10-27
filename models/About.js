@@ -20,6 +20,22 @@ const About = sequelize.define('About', {
         type: DataTypes.STRING(255),
         comment: '图片'
     },
+    summary: {
+        type: DataTypes.TEXT,
+        comment: '公司简介摘要'
+    },
+    sortOrder: {
+        type: DataTypes.INTEGER,
+        field: 'sort_order',
+        defaultValue: 0,
+        comment: '排序顺序'
+    },
+    isActive: {
+        type: DataTypes.TINYINT,
+        field: 'is_active',
+        defaultValue: 1,
+        comment: '是否激活'
+    },
     videoTitle: {
         type: DataTypes.STRING(255),
         field: 'video_title',

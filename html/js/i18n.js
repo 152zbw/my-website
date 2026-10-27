@@ -209,7 +209,7 @@
     const data = localizedWebsiteInfo(rawData);
     const logo = data.logo || 'images/ce-logo.png';
 
-    document.querySelectorAll('.rd-navbar-brand img, .preloader-logo img, .footer-minimal .brand img, .footer-corporate-brand .brand img').forEach((image) => {
+    document.querySelectorAll('.rd-navbar-brand img, .preloader-logo img, .footer-minimal .brand img, .footer-corporate-brand .brand img, .refined-footer-brand img').forEach((image) => {
       image.src = logo;
       image.removeAttribute('srcset');
       image.alt = data.title || 'CE International Group Co.,LTD';
@@ -257,6 +257,7 @@
     // 内页残留的模板邮件表单会提交到不存在的 PHP 地址，统一移除。
     const isContactPage = location.pathname.endsWith('/contacts.html');
     document.querySelectorAll('form.rd-mailform, form#contactForm').forEach((form) => {
+      if (form.id === 'contactForm' && form.getAttribute('action') === '/api/contacts') return;
       const section = form.closest('section');
       if (section && !isContactPage) {
         section.hidden = true;
@@ -280,7 +281,7 @@
     if (location.pathname.endsWith('/about-company.html')) {
       ['coreAdvantagesContainer', 'servicesContainer', 'teamContainer', 'testimonialsContainer'].forEach((id) => {
         const container = document.getElementById(id);
-        if (container) {
+        if (container && !container.dataset.serverRendered) {
           container.setAttribute('aria-busy', 'true');
           container.innerHTML = '<div class="col-12 text-center text-muted">内容加载中...</div>';
         }

@@ -6,7 +6,7 @@
   "scripts": {
     "start": "node app.js",
     "dev": "nodemon app.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node scripts/seo-smoke-test.js",
     "start:pm2": "pm2 start app.js --name consulting-company",
     "stop:pm2": "pm2 stop consulting-company",
     "restart:pm2": "pm2 restart consulting-company",

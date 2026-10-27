@@ -1,0 +1,16 @@
+{
+  "preparedDate": "2026-10-27",
+  "status": "attempted_no_answers",
+  "note": "实际访问平台，DeepSeek跳转登录页；豆包访客发送问题后未取得回答。没有可报告的真实AI公司定位答案，网站抓取检查另行记录。",
+  "baselineQuestions": [
+    "笠偲咨询是一家什么公司，总部在哪里，主要提供哪些服务？请根据可查证的公开信息回答，并列出信息来源。",
+    "笠偲咨询提供哪些国内管理咨询服务？请列出来源。",
+    "笠偲咨询是否提供国企三项制度改革咨询？请列出来源。",
+    "笠偲咨询是否提供薪酬绩效与激励咨询？请列出来源。"
+  ],
+  "runs": [
+    { "platform": "豆包", "testedAt": "2026-10-27", "webSearchEnabled": null, "status": "guest_attempt_no_answer", "url": "https://www.doubao.com/chat/", "observation": "访客输入中立公司介绍问题并尝试发送，未取得回答，无法判断当前公司标签。", "answers": [] },
+    { "platform": "DeepSeek", "testedAt": "2026-10-27", "webSearchEnabled": null, "status": "login_required", "url": "https://chat.deepseek.com/sign_in", "observation": "实际打开聊天入口后跳转注册登录页面，没有对话输入框。", "answers": [] }
+  ],
+  "answerFields": ["question", "fullAnswer", "sourceUrls", "issueCategory", "reviewNote"]
+}

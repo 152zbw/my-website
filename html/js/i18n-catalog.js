@@ -109,6 +109,7 @@
     ['© 2024 咨询公司. 保留所有权利.','© 2024 Consulting Company. All rights reserved.'],['© 2024 保留所有权利.','© 2024 All rights reserved.'],
     ['&copy; 2024 保留所有权利.','© 2024 All rights reserved.'],['&copy; 2024 保留所有权利。','© 2024 All rights reserved.'],
     ['笠偲咨询 - 专业的商业咨询服务','Lisi Consulting — Professional Business Advisory Services'],
+    ['笠偲咨询 EC International｜企业出海与全球人力资源咨询','Lisi Consulting EC International — Global Expansion and HR Advisory'],
     ['公司简介 - 咨询公司官网','Company Profile — Lisi Consulting'],['关于我们 - 咨询公司官网','About Us — Lisi Consulting'],
     ['服务项目 - 咨询公司官网','Services — Lisi Consulting'],['服务详情 - 咨询公司官网','Service Details — Lisi Consulting'],
     ['案例展示 - 咨询公司官网','Case Studies — Lisi Consulting'],['案例详情 - 咨询公司官网','Project Details — Lisi Consulting'],
@@ -213,5 +214,37 @@
     }
   };
 
+  Object.assign(text, {'我们的业务':'Our expertise','从全球布局到组织效能，以咨询与技术支持企业发展。':'Consulting and technology for global expansion and organizational performance.','了解业务详情':'Explore our services'});
+  Object.assign(text, {
+    '海外管理咨询':'Overseas Management Consulting','国内管理咨询':'Domestic Management Consulting',
+    '专业服务，清晰匹配您的业务需求':'Professional services for your business needs',
+    '海外管理咨询、国内管理咨询与 SaaS + AI，三大业务方向协同支持企业发展。':'Overseas consulting, domestic consulting and SaaS + AI, working together to support your business.',
+    '全部服务':'All services','按业务方向了解服务':'Explore our service categories','查看服务详情':'Explore our services',
+    '不确定从哪项服务开始？':'Not sure where to start?',
+    '与我们沟通业务现状，明确适合的服务方向。':'Tell us about your business and find the right service.',
+    '沟通咨询需求':'Discuss your needs'
+  });
+  Object.assign(entities.homeFeatures[1], {title:'Overseas Management Consulting'});
+  Object.assign(entities.homeFeatures[2], {title:'Domestic Management Consulting'});
+  Object.assign(entities.services[1], {title:'Overseas Management Consulting'});
+  Object.assign(entities.services[2], {title:'SaaS + AI'});
+  Object.assign(entities.services[3], {title:'Domestic Management Consulting'});
+  Object.assign(text, {
+    '连接全球机遇':'Connecting global opportunities','释放组织潜能':'Unlocking organizational potential',
+    '海外管理咨询、国内管理咨询与 SaaS + AI，支持企业发展。':'Overseas consulting, domestic consulting and SaaS + AI to support your business.',
+    '关于笠偲':'About Lisi','了解公司':'About our company','精选案例':'Selected case studies',
+    '从业务问题出发，了解我们的咨询实践。':'Explore our consulting work through real business challenges.',
+    '查看全部案例':'All case studies','查看案例':'Explore case study',
+    '案例用于说明项目背景与咨询工作，匿名客户不作身份推断。':'Cases describe project context and consulting work. Anonymous client identities are not inferred.',
+    '业务分布':'Global presence','全球视野，本土服务，协同交付。':'Global perspective. Local service. Collaborative delivery.',
+    '总部':'Headquarters','分支机构':'Branch / Office','合作伙伴':'Partner',
+    '地图为区域位置示意，具体机构请查看清单。':'Regional locations are illustrative. See the directory for offices and partners.',
+    '全部':'All','中国':'China','北美':'North America','欧洲':'Europe','中国区':'China','北美区':'North America','欧洲区':'Europe',
+    '专业活动与公开来源':'Events and public sources','查看公司资料与原始来源':'Company information and sources',
+    '开启一次专业对话':'Start a professional conversation','微信公众号：笠偲咨询':'WeChat: Lisi Consulting',
+    '打开导航菜单':'Open navigation menu','原始来源':'Original sources','联系与资料':'Contact and resources'
+  });
+  Object.assign(entities['website-info'][1],{heroTitle:'Connecting global opportunities',heroSubtitle:'Unlocking organizational potential',heroButtonText:'Explore our services',heroButtonLink:'/services.html',heroDescription:'<p>A global consulting company with offices and branches in Yantai, Hong Kong, Shenzhen, Shanghai, Jinan, the United States, Hungary and Mexico. Combining international operations, local service and independent delivery, we aim to be a trusted management consulting partner for clients and a source of pride for our people. We bring together global consulting resources with practical local expertise to support industrial upgrading, innovation and transformation.</p>'});
+  delete entities['business-distribution'][1].points;
   window.SiteI18nCatalog = { text, entities };
 })();
