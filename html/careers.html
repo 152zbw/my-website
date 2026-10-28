@@ -20,6 +20,8 @@
     <![endif]-->
   <script src="js/i18n-catalog.js?v=4"></script>
   <script src="js/i18n.js?v=5"></script>
+  <link rel="stylesheet" href="/css/recruitment.css?v=20261027">
+  <script src="/js/careers-apply.js?v=20261027" defer></script>
 </head>
 
 <body>
@@ -112,7 +114,7 @@
         <div class="container breadcrumbs-custom-container">
           <div class="breadcrumbs-custom-main">
             <h6 class="breadcrumbs-custom-subtitle title-decorated">关于我们</h6>
-            <h1 class="breadcrumbs-custom-title">招贤纳士</h1>
+            <h1 class="breadcrumbs-custom-title">加入我们</h1>
           </div>
           <ul class="breadcrumbs-custom-path">
             <li><a href="index.html">首页</a></li>
@@ -122,116 +124,30 @@
         </div>
       </div>
     </section>
-    <!-- Working at the company-->
-    <section class="section section-lg">
-      <div class="container">
-        <div class="row row-50 justify-content-center justify-content-lg-between flex-lg-row-reverse">
-          <div class="col-md-10 col-lg-6 col-xl-5">
-            <h3>加入我们</h3>
-            <p>
-              我们正在寻找具备责任感、协作力与执行力的伙伴，一起参与咨询、运营与项目支持工作。如果你喜欢持续学习，也愿意在实际业务中快速成长，欢迎加入我们。
-            </p><a class="button button-lg button-primary button-winona" href="about-me.html">了解更多</a>
-          </div>
-          <div class="col-md-10 col-lg-6 col-xl-6"><img class="img-responsive" src="images/careers-1-570x368.jpg" alt=""
-              width="570" height="368" />
-          </div>
+    <main>
+      <section class="recruitment-hero">
+        <div class="container"><div><h2>与我们一起，解决企业的真实问题</h2><p>我们欢迎对企业管理、组织与人才发展有兴趣的伙伴。在研究、诊断与方案实施中积累经验，用专业工作回应客户需求。</p><div class="recruitment-actions"><a class="button button-primary" href="#careers">查看咨询岗位</a><a class="button button-primary-outline" href="#apply">提交个人资料</a></div></div><img src="/images/careers-1-570x368.jpg" width="570" height="368" alt="咨询团队工作场景示意"></div>
+      </section>
+      <section class="recruitment-section" id="careers"><div class="container"><h2>开放岗位</h2><p class="recruitment-lead">了解岗位职责与我们期待的能力。没有找到匹配岗位，也欢迎通过下方开放申请介绍自己。</p><div class="recruitment-jobs" id="careersList"></div></div></section>
+      <section class="recruitment-section" id="apply"><div class="container application-layout"><div><h2>让我们认识你</h2><p class="recruitment-lead">申请当前岗位，或为未来的机会留下资料。即使暂时没有开放岗位，这个入口也一直保留。</p><p class="application-note">提交后，我们会结合岗位需求与个人经历评估，合适时与你联系。请介绍你的专业方向、项目经验或希望参与的工作。</p><p class="application-note" id="applicationPrivacy">资料用于笠偲咨询的招聘评估、岗位匹配及后续招聘联系，由授权人员查看。如需更正或删除，请联系 <a href="mailto:winniehan@ec-in.com">winniehan@ec-in.com</a>。请勿提交身份证、银行卡等无关资料。</p></div>
+      <form class="application-form" id="applicationForm" action="/api/applications" method="post" enctype="multipart/form-data">
+        <div class="application-grid">
+          <label>姓名 *<input name="name" required maxlength="100" autocomplete="name"></label>
+          <label>电子邮箱 *<input name="email" type="email" required maxlength="150" autocomplete="email"></label>
+          <label>联系电话<input name="phone" type="tel" maxlength="30" autocomplete="tel"></label>
+          <label>所在城市<input name="city" maxlength="80" autocomplete="address-level2"></label>
+          <label>申请岗位<select id="applicationCareer" name="careerId"><option value="">开放申请 / 暂无匹配岗位</option></select></label>
+          <label>工作经验<select name="experience"><option value="">请选择（可选）</option><option>在校 / 应届</option><option>1—3年</option><option>3—5年</option><option>5年以上</option></select></label>
+          <label class="full">意向方向 *<input id="applicationDirection" name="direction" required maxlength="120" placeholder="例如：咨询顾问、薪酬绩效、国际化人才发展"></label>
+          <label class="full">个人经历与自我介绍 *<textarea name="profile" required minlength="20" maxlength="8000" placeholder="请介绍专业背景、项目经验及希望参与的工作，至少20字。"></textarea></label>
+          <label class="full">简历附件（可选）<input name="resume" type="file" accept=".pdf,application/pdf"><small>支持 PDF，最大 5MB。不上传附件也可以提交完整的文字资料。</small></label>
         </div>
-      </div>
-    </section>
-    <!-- Available Vacancies-->
-    <section class="section section-lg bg-gray-100 text-center">
-      <div class="container">
-        <h3>当前职位空缺</h3>
-        <!-- 职位列表容器：将由后台数据动态渲染 -->
-        <div class="row row-45" id="careersList">
-          <!-- 如果后台暂时没有数据，这里可以保留为空，由脚本填充 -->
-        </div>
-        <a class="button button-lg button-primary button-winona" href="#">加入我们</a>
-      </div>
-    </section>
-    <!-- Thin CTA-->
-    <section class="section section-xs bg-primary-darker text-center">
-      <div class="container">
-        <div class="row justify-content-center">
-          <div class="col-sm-10 col-md-12">
-            <div class="box-cta-thin">
-              <h4 class="wow-outer"><span class="wow slideInRight">了解我们如何帮助 <span class="font-weight-bold">您的企业</span>
-                  走得更稳、更远。</span></h4>
-              <div class="wow-outer button-outer"><a class="button button-primary button-winona wow slideInLeft"
-                  href="services.html">查看所有服务</a></div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-    <!-- Map & contacts-->
-    <section class="section bg-gray-100">
-      <div class="range justify-content-xl-between">
-        <div class="cell-xl-6 align-self-center container">
-          <div class="row">
-            <div class="col-lg-9 cell-inner">
-              <div class="section-lg">
-                <h3 class="wow-outer"><span class="wow slideInDown">联系我们</span></h3>
-                <!-- RD Mailform-->
-                <form class="rd-form rd-mailform" data-form-output="form-output-global" data-form-type="contact"
-                  method="post" action="bat/rd-mailform.php">
-                  <div class="row row-10">
-                    <div class="col-md-6 wow-outer">
-                      <div class="form-wrap wow fadeSlideInUp">
-                        <label class="form-label-outside" for="contact-first-name">姓</label>
-                        <input class="form-input" id="contact-first-name" type="text" name="name"
-                          data-constraints="@Required">
-                      </div>
-                    </div>
-                    <div class="col-md-6 wow-outer">
-                      <div class="form-wrap wow fadeSlideInUp">
-                        <label class="form-label-outside" for="contact-last-name">名</label>
-                        <input class="form-input" id="contact-last-name" type="text" name="name"
-                          data-constraints="@Required">
-                      </div>
-                    </div>
-                    <div class="col-md-6 wow-outer">
-                      <div class="form-wrap wow fadeSlideInUp">
-                        <label class="form-label-outside" for="contact-email">电子邮箱</label>
-                        <input class="form-input" id="contact-email" type="email" name="email"
-                          data-constraints="@Email @Required">
-                      </div>
-                    </div>
-                    <div class="col-md-6 wow-outer">
-                      <div class="form-wrap wow fadeSlideInUp">
-                        <label class="form-label-outside" for="contact-phone">电话</label>
-                        <input class="form-input" id="contact-phone" type="text" name="phone"
-                          data-constraints="@PhoneNumber">
-                      </div>
-                    </div>
-                    <div class="col-12 wow-outer">
-                      <div class="form-wrap wow fadeSlideInUp">
-                        <label class="form-label-outside" for="contact-message">留言内容</label>
-                        <textarea class="form-input" id="contact-message" name="message"
-                          data-constraints="@Required"></textarea>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="group group-middle">
-                    <div class="wow-outer">
-                      <button class="button button-primary button-winona wow slideInRight" type="submit">发送消息</button>
-                    </div>
-                    <p>or use</p>
-                    <div class="wow-outer"><a
-                        class="button button-primary-outline button-icon button-icon-left button-winona wow slideInLeft"
-                        href="#"><span class="icon text-primary mdi mdi-facebook-messenger"></span>信使</a></div>
-                  </div>
-                </form>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="cell-xl-5 height-fill wow fadeIn">
-          <div class="google-map-container google-map-align" id="googleMapContainer"></div>
-        </div>
-      </div>
-    </section>
-    <!-- Page Footer-->
+        <div class="application-honeypot" aria-hidden="true"><label>Website<input name="website" tabindex="-1" autocomplete="off"></label></div>
+        <label class="application-consent"><input type="checkbox" name="consent" value="true" required><span>我已阅读并同意上述招聘资料使用说明，所填信息真实，愿意由笠偲咨询通过所留联系方式进行招聘沟通。</span></label>
+        <button class="button button-primary" type="submit">提交个人资料</button><p class="application-status" id="applicationStatus" role="status" aria-live="polite" tabindex="-1"></p>
+        <noscript>提交表单需要启用 JavaScript。也可通过 winniehan@ec-in.com 联系我们。</noscript>
+      </form></div></section>
+    </main>
     <footer class="section footer-minimal bg-primary-darken">
       <div class="container">
         <div class="footer-minimal-inner"><a class="brand" href="index.html"><img src="images/ce-logo.png"
@@ -259,54 +175,9 @@
   <!-- JavaScript-->
   <script src="js/core.min.js"></script>
   <script src="js/script.js"></script>
-  <script src="js/map.js?v=7"></script>
   <script src="js/api.js?v=7"></script>
   <script src="js/footer.js?v=1"></script>
-  <script>
-    // 从后台加载职位列表
-    document.addEventListener('DOMContentLoaded', function () {
-      loadCareers();
-    });
 
-    async function loadCareers() {
-      const container = document.getElementById('careersList');
-      if (!container) return;
-
-      try {
-        const list = await window.API.Careers.getAll();
-
-        if (!list || !list.length) {
-          container.innerHTML = '<div class="col-12"><p>当前暂无招聘信息，敬请期待。</p></div>';
-          return;
-        }
-
-        container.innerHTML = list.map(item => `
-          <div class="col-md-6 col-lg-4">
-            <article class="career-classic">
-              <h4 class="career-classic-title">
-                <a href="single-job.html?id=${encodeURIComponent(item.id)}">${item.title || '招聘职位'}</a>
-              </h4>
-              <div class="career-classic-divider"></div>
-              <ul class="career-classic-list">
-                <li>
-                  <span class="icon mdi mdi-calendar-clock"></span>
-                  <span>${item.jobType || '全职'}</span>
-                </li>
-                <li>
-                  <span class="icon mdi mdi-map-marker"></span>
-                  <span>${item.location || '待定'}</span>
-                </li>
-              </ul>
-              <p>${item.description || ''}</p>
-            </article>
-          </div>
-        `).join('');
-      } catch (error) {
-        console.error('加载职位列表失败:', error);
-        container.innerHTML = '<div class="col-12"><p>加载职位信息失败，请稍后重试。</p></div>';
-      }
-    }
-  </script>
   <script src="js/footer.js?v=1"></script>
 </body>
 

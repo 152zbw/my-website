@@ -36,6 +36,7 @@ router.use('/upload', uploadRoutes);
 router.use('/pricingPlans', pricingPlansRoutes); // 注册新的价格计划路由
 router.use('/homeFeatures', homeFeaturesRoutes); // 注册新的首页特色模块路由
 router.use('/careers', careersRoutes); // 注册招贤纳士路由
+router.use('/applications', require('./applications'));
 router.use('/users', usersRoutes); // 注册用户管理路由
 router.use('/business-distribution', businessDistributionRoutes); // 注册业务分布路由
 

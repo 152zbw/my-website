@@ -45,6 +45,7 @@ desktop.ini
 
 # 自动化/检查产物（不上传）
 artifacts/
+private/
 
 # PM2 文件
 .pm2/

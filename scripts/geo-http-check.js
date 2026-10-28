@@ -50,6 +50,8 @@ async function run() {
         assert.strictEqual(response.status, 301);
         assert.strictEqual(response.headers.get('location'), '/company-facts.html#xin-li');
     }
+    assert.strictEqual((await fetch(`${origin}/data/database.sqlite`, {method:'HEAD'})).status, 404, 'database is not public');
+    assert.strictEqual((await fetch(`${origin}/data/world-countries-110m.geojson`, {method:'HEAD'})).status, 200, 'public map remains available');
     const robots = await (await fetch(`${origin}/robots.txt`)).text();
     for (const agent of ['Mozilla/5.0', 'Mozilla/5.0 (compatible; bingbot/2.0; +http://www.bing.com/bingbot.htm)']) {
         const icon = await fetch(`${origin}/favicon.ico`, {headers:{'User-Agent':agent}});

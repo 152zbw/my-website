@@ -84,7 +84,11 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
     maxAge: '1y',
     immutable: true
 }));
-app.use('/data', express.static(path.join(__dirname, 'data'), {
+app.use('/data', (req, res, next) => {
+    // Only the public map asset belongs here; the SQLite database is private.
+    if (!/\.geojson$/i.test(req.path)) return res.status(404).json({message:'请求的资源不存在'});
+    next();
+}, express.static(path.join(__dirname, 'data'), {
     maxAge: '30d'
 }));
 
