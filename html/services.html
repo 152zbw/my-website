@@ -12,7 +12,7 @@
   <script src="/js/i18n.js?v=contact-fix-20261023"></script>
   <script src="/js/api.js?v=8" defer></script>
   <script src="/js/business-cards.js?v=iaeste-20261027" defer></script>
-  <script src="/js/services-overview.js?v=1" defer></script>
+  <script src="/js/services-overview.js?v=2" defer></script>
   <style>
     .domestic-expertise { margin-top:28px; padding:28px; border:1px solid #d7e3f3; border-radius:12px; background:rgba(255,255,255,.7); }
     .domestic-expertise h2 { font-size:22px; color:#28466e; }
@@ -22,16 +22,69 @@
   </style>
 </head>
 <body class="services-overview-page">
-  <header class="service-site-header">
-    <div class="container service-header-inner">
-      <a class="service-brand rd-navbar-brand" href="/" aria-label="笠偲咨询首页"><img src="/images/ce-logo.png" width="200" height="50" alt="笠偲咨询 EC International"></a>
-      <button class="service-nav-toggle" type="button" aria-label="打开导航菜单" aria-expanded="false" aria-controls="servicePrimaryNav"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M3 6h18M3 12h18M3 18h18"/></svg></button>
-      <nav class="service-primary-nav" id="servicePrimaryNav" aria-label="主导航">
-        <a href="/">首页</a><a href="/services.html" aria-current="page">服务项目</a><a href="/grid-gallery.html">成功案例</a><a href="/sidebar-blog.html">专业洞察</a><a href="/about-company.html">关于我们</a>
-      </nav>
-      <div class="service-header-actions"><a class="service-contact-button" href="/contacts.html">联系我们</a><button id="languageToggle" class="language-toggle" type="button" aria-label="Switch to English">EN</button></div>
-    </div>
-  </header>
+    <header class="section page-header">
+      <!-- RD Navbar-->
+      <div class="rd-navbar-wrap">
+        <nav class="rd-navbar rd-navbar-minimal" data-layout="rd-navbar-fixed" data-sm-layout="rd-navbar-fixed"
+          data-md-layout="rd-navbar-fixed" data-md-device-layout="rd-navbar-fixed" data-lg-layout="rd-navbar-static"
+          data-lg-device-layout="rd-navbar-fixed" data-xl-layout="rd-navbar-static"
+          data-xl-device-layout="rd-navbar-static" data-xxl-layout="rd-navbar-static"
+          data-xxl-device-layout="rd-navbar-static" data-lg-stick-up-offset="46px" data-xl-stick-up-offset="46px"
+          data-xxl-stick-up-offset="46px" data-lg-stick-up="true" data-xl-stick-up="true" data-xxl-stick-up="true">
+          <div class="rd-navbar-main-outer">
+            <div class="rd-navbar-main">
+              <!-- RD Navbar Panel-->
+              <div class="rd-navbar-panel">
+                <!-- RD Navbar Toggle-->
+                <button class="rd-navbar-toggle" data-rd-navbar-toggle="#rd-navbar-nav-wrap-1"><span></span></button>
+                <!-- RD Navbar Brand--><a class="rd-navbar-brand" href="index.html"><img src="images/ce-logo.png"
+                    alt="CE International Group Co.,LTD" width="169" height="24" /></a>
+              </div>
+              <div class="rd-navbar-main-element">
+                <div class="rd-navbar-nav-wrap" id="rd-navbar-nav-wrap-1">
+                  <!-- RD Navbar Nav-->
+                  <ul class="rd-navbar-nav">
+                    <li class="rd-nav-item"><a class="rd-nav-link" href="index.html">首页</a>
+                    </li>
+                    <li class="rd-nav-item active"><a class="rd-nav-link" href="services.html" aria-current="page">服务项目</a>
+                    </li>
+                    <li class="rd-nav-item"><a class="rd-nav-link" href="sidebar-blog.html">博客</a>
+                      <!-- RD Navbar Dropdown-->
+                      <ul class="rd-menu rd-navbar-dropdown">
+                        <li class="rd-dropdown-item"><a class="rd-dropdown-link" href="sidebar-blog.html">博客列表</a></li>
+                        <li class="rd-dropdown-item"><a class="rd-dropdown-link" href="sidebar-blog.html">单篇博客</a>
+                        </li>
+                      </ul>
+                    </li>
+                    <li class="rd-nav-item"><a class="rd-nav-link" href="grid-gallery.html">成功案例</a>
+                    </li>
+                    <li class="rd-nav-item"><a class="rd-nav-link" href="about.html">关于我们</a>
+                      <!-- RD Navbar Megamenu-->
+                      <ul class="rd-menu rd-navbar-megamenu">
+                        <li class="rd-megamenu-item">
+                          <ul class="rd-megamenu-list">
+                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
+                                href="about.html">关于我们</a></li>
+                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
+                                href="about-company.html">公司简介</a></li>
+                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
+                                href="about-me.html">个人简介</a></li>
+                            <li class="rd-megamenu-list-item"><a class="rd-megamenu-list-link"
+                                href="careers.html">招贤纳士</a></li>
+                          </ul>
+                        </li>
+                      </ul>
+                    </li>
+                    <li class="rd-nav-item"><a class="rd-nav-link" href="contacts.html">联系我们</a>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nav>
+      </div>
+    </header>
   <main class="services-overview">
     <div class="container">
       <header class="services-overview-heading">
@@ -61,5 +114,7 @@
     </div>
   </main>
   <footer></footer>
+  <script src="/js/core.min.js"></script>
+  <script src="/js/script.js"></script>
 </body>
 </html>

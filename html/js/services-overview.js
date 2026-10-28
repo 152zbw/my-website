@@ -22,13 +22,6 @@
       filter(category);
     }));
     window.addEventListener('popstate', () => filter(new URL(location.href).searchParams.get('category')));
-    const toggle = document.querySelector('.service-nav-toggle');
-    const nav = document.getElementById('servicePrimaryNav');
-    function closeMenu() {nav.classList.remove('is-open');toggle.setAttribute('aria-expanded','false');}
-    toggle.addEventListener('click', () => {const open = nav.classList.toggle('is-open');toggle.setAttribute('aria-expanded',String(open));});
-    document.addEventListener('keydown', event => {if(event.key === 'Escape') closeMenu();});
-    document.addEventListener('click', event => {if(!event.target.closest('.service-header-inner')) closeMenu();});
-    nav.addEventListener('click', event => {if(event.target.closest('a')) closeMenu();});
     filter(new URL(location.href).searchParams.get('category'));
     if (!container.dataset.serverRendered || english()) {
       try {
