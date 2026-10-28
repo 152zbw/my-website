@@ -271,7 +271,7 @@
       const items=allBlogs.filter(item=>(!activeArchive||monthKey(item)===activeArchive)&&(!activeCategory||(item.category||'未分类')===activeCategory)&&(!keyword||[item.title,item.excerpt,item.content,item.author,item.category].some(v=>String(v||'').toLowerCase().includes(keyword))));
       document.getElementById('blogsContainer').innerHTML=InnerContent.news(items,english());
     }
-    function handleBlogSearch(event){event.preventDefault();activeArchive='';activeCategory='';renderBlogs();return false;}
+    function handleBlogSearch(event){event.preventDefault();activeArchive='';activeCategory='';document.querySelectorAll('.blog-layout-aside button[aria-pressed]').forEach(b=>b.setAttribute('aria-pressed','false'));renderBlogs();return false;}
     function fillFilters(id,items,kind){
       const list=document.getElementById(id);list.innerHTML='';
       const counts=new Map();items.forEach(value=>{if(value)counts.set(value,(counts.get(value)||0)+1);});

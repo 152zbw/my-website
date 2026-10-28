@@ -83,3 +83,5 @@
 .inner-insights .blog-layout-aside .list-marked{margin:0!important;padding:0!important}
 .inner-insights .blog-layout-aside .list-marked li{margin:9px 0!important;padding:0!important;transform:none}
 .inner-redesigned .ui-to-top{right:24px;bottom:90px;width:36px;height:36px;line-height:36px;font-size:16px;border-radius:5px;background:#526e8b}
+.inner-insights .blog-layout-aside .list-marked li,.inner-insights .blog-layout-aside .list-marked button{text-indent:0}
+.inner-redesigned .ui-to-top.active{right:24px!important;left:auto!important;margin:0!important;transform:none!important}
