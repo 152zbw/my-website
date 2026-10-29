@@ -261,3 +261,21 @@ h1,h2,h3,h4,h5,h6,.button{font-family:inherit;letter-spacing:-.025em}p{line-heig
 .breadcrumbs-custom-path>*{padding-left:20px;padding-right:20px}
 .breadcrumbs-custom-path{margin-left:-20px;margin-right:-20px}
 @media(max-width:767px){.breadcrumbs-custom-inner{padding:25px 0 22px!important}.breadcrumbs-custom-container{gap:14px}.breadcrumbs-custom-title{font-size:28px!important}.breadcrumbs-custom-subtitle{font-size:12px!important}.breadcrumbs-custom-path{font-size:12px!important}}
+
+/* Make text links recognizable before interaction, throughout public pages. */
+:root{--text-link:#1763a6;--text-link-hover:#104879}
+.page :is(p,li,dd,td,address,h2,h3,h4) a[href]:not(:is(.button,.btn,.icon,.rd-nav-link,.rd-dropdown-link,.rd-megamenu-list-link)),
+.page :is(.home-text-link,.home-contact-copy a[href],.contacts-classic a[href]){
+  color:var(--text-link)!important;text-decoration-line:underline;text-decoration-thickness:1px;
+  text-underline-offset:.22em;text-decoration-skip-ink:auto;
+}
+.page :is(p,li,dd,td,address,h2,h3,h4) a[href]:not(:is(.button,.btn,.icon,.rd-nav-link,.rd-dropdown-link,.rd-megamenu-list-link)):hover,
+.page :is(.home-text-link,.home-contact-copy a[href],.contacts-classic a[href]):hover{
+  color:var(--text-link-hover)!important;text-decoration-thickness:2px;
+}
+.page .public-source a[href][target="_blank"]::after{content:' ↗';display:inline-block;margin-left:.2em;font-size:.85em}
+.page a[href]:focus-visible{outline:3px solid #1763a6;outline-offset:4px;border-radius:2px}
+/* Keep light text readable on dark footer and banner backgrounds. */
+.page :is(.refined-footer,.footer-classic,.breadcrumbs-custom) :is(p,li,dd,address) a[href]{color:#e2edff!important}
+.page :is(.refined-footer,.footer-classic,.breadcrumbs-custom) a[href]:hover{color:#fff!important;text-decoration:underline;text-underline-offset:.22em}
+.page :is(.refined-footer,.footer-classic,.breadcrumbs-custom) a[href]:focus-visible{outline-color:#b8d9ff}
