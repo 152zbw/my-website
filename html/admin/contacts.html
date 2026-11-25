@@ -195,6 +195,10 @@
             }
         }
 
+        function escapeContact(value) {
+            return String(value ?? '').replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+        }
+
         function renderTable(list) {
             const tbody = document.getElementById('contactsTableBody');
             tbody.innerHTML = '';
@@ -205,10 +209,10 @@
                 tbody.insertAdjacentHTML('beforeend', `
                     <tr>
                         <td>${item.id}</td>
-                        <td>${item.name || ''}</td>
-                        <td>${item.email || ''}</td>
-                        <td>${item.phone || ''}</td>
-                        <td>${item.subject || ''}</td>
+                        <td>${escapeContact(item.name)}</td>
+                        <td>${escapeContact(item.email)}</td>
+                        <td>${escapeContact(item.phone)}</td>
+                        <td>${escapeContact(item.subject)}</td>
                         <td>${item.createdAt || item.created_at ? new Date(item.createdAt || item.created_at).toLocaleString() : ''}</td>
                         <td><span style="color:${statusColor};">${statusText}</span></td>
                         <td>
@@ -227,11 +231,11 @@
                 if (!item) return;
                 document.getElementById('modalTitle').textContent = '联系我们详情';
                 document.getElementById('contactDetails').innerHTML = `
-                    <div class="form-group"><label class="form-label">姓名</label><input class="form-input" readonly value="${item.name || ''}"></div>
-                    <div class="form-group"><label class="form-label">邮箱</label><input class="form-input" readonly value="${item.email || ''}"></div>
-                    <div class="form-group"><label class="form-label">电话</label><input class="form-input" readonly value="${item.phone || ''}"></div>
-                    <div class="form-group"><label class="form-label">主题</label><input class="form-input" readonly value="${item.subject || ''}"></div>
-                    <div class="form-group"><label class="form-label">留言内容</label><textarea class="form-textarea" readonly>${item.message || ''}</textarea></div>
+                    <div class="form-group"><label class="form-label">姓名</label><input class="form-input" readonly value="${escapeContact(item.name)}"></div>
+                    <div class="form-group"><label class="form-label">邮箱</label><input class="form-input" readonly value="${escapeContact(item.email)}"></div>
+                    <div class="form-group"><label class="form-label">电话</label><input class="form-input" readonly value="${escapeContact(item.phone)}"></div>
+                    <div class="form-group"><label class="form-label">主题</label><input class="form-input" readonly value="${escapeContact(item.subject)}"></div>
+                    <div class="form-group"><label class="form-label">留言内容</label><textarea class="form-textarea" readonly>${escapeContact(item.message)}</textarea></div>
                     <div class="form-group"><label class="form-label">提交时间</label><input class="form-input" readonly value="${item.createdAt || item.created_at ? new Date(item.createdAt || item.created_at).toLocaleString() : ''}"></div>
                     <div class="form-group"><label class="form-label">状态</label><input class="form-input" readonly value="${item.status ? '已处理' : '未处理'}"></div>
                 `;
