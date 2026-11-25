@@ -2,6 +2,7 @@
 <html class="wide wow-animation" lang="zh-CN">
 
 <head>
+  <style>#articleReaderCount[hidden] { display: none; }</style>
   <title>博客详情 - 咨询公司官网</title>
   <meta name="format-detection" content="telephone=no">
   <meta name="viewport"
@@ -133,6 +134,7 @@
                   <time datetime="2024" id="postDate">2024年5月9日 下午6:09</time>
                 </li>
                 <li><span class="icon mdi mdi-tag-multiple"></span><a href="#" id="postCategory">文章</a></li>
+                <li id="articleReaderCount" hidden title="同一浏览器阅读同一篇文章计一人"><span data-reader-label>阅读人数</span> <span data-reader-number></span></li>
               </ul>
               <h4 id="postSubtitle">企业内容营销正在从单一宣传转向更注重信任、转化和长期品牌沉淀。</h4><img
                 src="images/single-blog-post-1-770x458.jpg" alt="" width="770" height="458" id="postImage" />
@@ -501,7 +503,9 @@
           </div>
         `;
 
+        const readerCount = document.getElementById('articleReaderCount');
         blogContentContainer.innerHTML = blogHTML;
+        if (readerCount) blogContentContainer.querySelector('.post-creative-meta').append(readerCount);
       }
     }
 

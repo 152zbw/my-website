@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>博客/新闻管理 - 后台管理系统</title>
     <!-- 只使用本地资源，避免外网CDN加载过慢 -->
-    <script src="../js/api.js?v=8"></script>
+    <script src="../js/api.js?v=analytics-1"></script>
     <script src="js/admin-shell.js?v=1" defer></script>
     <link href="../css/quill.snow.css" rel="stylesheet">
     <script src="../js/quill.js"></script>
@@ -124,6 +124,7 @@
                                 <th>标题</th>
                                 <th>摘要</th>
                                 <th>作者</th>
+                                <th title="按浏览器对同一篇文章去重">阅读人数</th>
                                 <th>排序</th>
                                 <th>状态</th>
                                 <th>操作</th>
@@ -305,20 +306,23 @@
 
         async function loadNews() {
             const tbody = document.getElementById('newsTableBody');
-            tbody.innerHTML = '<tr><td colspan="7">加载中...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="8">加载中...</td></tr>';
             try {
-                const list = await window.API.News.getAll();
-                renderTable(list || []);
+                const [list, readers] = await Promise.all([
+                    window.API.News.getAll(),
+                    window.API.Analytics.getArticleReaders().catch(() => null)
+                ]);
+                renderTable(list || [], readers);
             } catch (err) {
                 console.error('加载失败', err);
-                tbody.innerHTML = '<tr><td colspan="7">加载失败，请稍后重试</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8">加载失败，请稍后重试</td></tr>';
             }
         }
 
-        function renderTable(list) {
+        function renderTable(list, readers) {
             const tbody = document.getElementById('newsTableBody');
             tbody.innerHTML = '';
-            if (!list.length) { tbody.innerHTML = '<tr><td colspan="7">暂无数据</td></tr>'; return; }
+            if (!list.length) { tbody.innerHTML = '<tr><td colspan="8">暂无数据</td></tr>'; return; }
             list.forEach(item => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
@@ -326,6 +330,7 @@
                     <td>${item.title || ''}</td>
                     <td>${item.excerpt || ''}</td>
                     <td>${item.author || ''}</td>
+                    <td>${readers ? Number(readers[item.id] ?? 0).toLocaleString('zh-CN') : '—'}</td>
                     <td>${item.sortOrder ?? item.sort_order ?? ''}</td>
                     <td>${item.isActive ?? item.is_active ? '激活' : '未激活'}</td>
                     <td>

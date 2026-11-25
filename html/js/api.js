@@ -309,6 +309,10 @@ window.API = {
     Services: ServicesAPI,
     Projects: ProjectsAPI,
     News: NewsAPI,
+    Analytics: {
+        getOverview: () => apiRequest('/analytics/overview'),
+        getArticleReaders: () => apiRequest('/analytics/article-readers')
+    },
     Testimonials: TestimonialsAPI,
     Partners: PartnersAPI,
     About: AboutAPI,

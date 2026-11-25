@@ -26,6 +26,7 @@ router.use('/website-info', websiteInfoRoutes);
 router.use('/services', serviceRoutes);
 router.use('/projects', projectRoutes);
 router.use('/news', newsRoutes);
+router.use('/analytics', require('./analytics'));
 router.use('/testimonials', testimonialRoutes);
 router.use('/partners', partnerRoutes);
 router.use('/about', aboutRoutes);

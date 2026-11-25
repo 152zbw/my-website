@@ -144,6 +144,12 @@ function sendSeoNotFound(res, templateFile, label) {
     return res.status(404).type('html').send(html);
 }
 
+function sendPublicPage(res, html, articleId = null) {
+    const article = articleId === null ? '' : ` data-article-id="${articleId}"`;
+    const tracker = `<script src="/js/site-analytics.js?v=1" defer${article}></script>`;
+    return res.type('html').send(html.replace(/<\/body>\s*<\/html>\s*$/i, end => tracker + end));
+}
+
 // 服务、案例、文章详情由服务器先读取数据库并输出完整 HTML；原有浏览器端动态更新逻辑继续保留。
 app.get('/single-service.html', async (req, res, next) => {
     try {
@@ -151,7 +157,7 @@ app.get('/single-service.html', async (req, res, next) => {
         if (!Number.isInteger(id) || id <= 0) return sendSeoNotFound(res, 'single-service.html', '服务');
         const service = await Service.findOne({ where: { id, isActive: 1 } });
         if (!service) return sendSeoNotFound(res, 'single-service.html', '服务');
-        res.type('html').send(renderServicePage(service.toJSON()));
+        sendPublicPage(res, renderServicePage(service.toJSON()));
     } catch (error) {
         next(error);
     }
@@ -163,7 +169,7 @@ app.get('/single-project.html', async (req, res, next) => {
         if (!Number.isInteger(id) || id <= 0) return sendSeoNotFound(res, 'single-project.html', '案例');
         const project = await Project.findOne({ where: { id, isActive: 1 } });
         if (!project) return sendSeoNotFound(res, 'single-project.html', '案例');
-        res.type('html').send(renderProjectPage(project.toJSON()));
+        sendPublicPage(res, renderProjectPage(project.toJSON()));
     } catch (error) {
         next(error);
     }
@@ -175,7 +181,7 @@ app.get('/single-blog-post.html', async (req, res, next) => {
         if (!Number.isInteger(id) || id <= 0) return sendSeoNotFound(res, 'single-blog-post.html', '文章');
         const article = await News.findOne({ where: { id, isActive: 1 } });
         if (!article) return sendSeoNotFound(res, 'single-blog-post.html', '文章');
-        res.type('html').send(renderArticlePage(article.toJSON()));
+        sendPublicPage(res, renderArticlePage(article.toJSON()), article.id);
     } catch (error) {
         next(error);
     }
@@ -187,7 +193,7 @@ app.get('/single-job.html', async (req, res, next) => {
         if (!Number.isInteger(id) || id <= 0) return sendSeoNotFound(res, 'single-job.html', '职位');
         const career = await Career.findOne({ where: { id, isActive: 1 } });
         if (!career) return sendSeoNotFound(res, 'single-job.html', '职位');
-        res.type('html').send(renderCareerPage(career.toJSON()));
+        sendPublicPage(res, renderCareerPage(career.toJSON()));
     } catch (error) {
         next(error);
     }
@@ -201,7 +207,7 @@ for (const pathname of Object.keys(PAGE_SEO)) {
     app.get(pathname, async (req, res, next) => {
         try {
             const [info, content] = await Promise.all([getWebsiteInfo(), getPublicContent(pathname)]);
-            res.type('html').send(renderStaticPage(pathname, info.toJSON ? info.toJSON() : info, content));
+            sendPublicPage(res, renderStaticPage(pathname, info.toJSON ? info.toJSON() : info, content));
         } catch (error) {
             console.error('公开页面内容读取失败:', error.message);
             res.set('Retry-After', '120').set('X-Robots-Tag', 'noindex').status(503).type('html').send('<!doctype html><html lang="zh-CN"><meta charset="utf-8"><title>页面暂时不可用｜笠偲咨询</title><p>页面暂时不可用，请稍后重试。</p></html>');
@@ -215,7 +221,7 @@ app.get('/search-results.html', (req, res) => {
         description: '笠偲咨询官方网站站内搜索结果。',
         noindex: true
     });
-    res.type('html').send(html);
+    sendPublicPage(res, html);
 });
 
 function xmlEscape(value) {

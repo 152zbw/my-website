@@ -507,7 +507,7 @@
         }
     </style>
     <!-- 移除外网 FontAwesome（避免加载卡顿） -->
-    <script src="../js/api.js?v=8"></script>
+    <script src="../js/api.js?v=analytics-1"></script>
     <script src="js/admin-shell.js?v=1" defer></script>
 </head>
 
@@ -548,6 +548,23 @@
                     <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> 退出登录</button>
                 </div>
             </header>
+
+            <section aria-labelledby="trafficHeading">
+                <div class="content-header"><h2 id="trafficHeading">网站访问</h2></div>
+                <div class="stats-grid" aria-live="polite">
+                    <div class="stat-card">
+                        <h3>今日浏览次数</h3>
+                        <div class="stat-number" id="todayPageViews">—</div>
+                        <div class="stat-change">按北京时间统计</div>
+                    </div>
+                    <div class="stat-card">
+                        <h3>累计浏览次数</h3>
+                        <div class="stat-number" id="totalPageViews">—</div>
+                        <div class="stat-change">自统计上线起</div>
+                    </div>
+                </div>
+                <p id="pageViewsError" role="status" hidden>访问统计暂时无法加载，请刷新重试。</p>
+            </section>
 
             <!-- 统计卡片 -->
             <div class="stats-grid">
@@ -653,6 +670,7 @@
             if (!user) {
                 // 未登录，跳转到登录页
                 window.location.href = 'index.html';
+                return;
             }
 
             // 初始化数据
@@ -661,8 +679,18 @@
 
         // 初始化数据
         function initData() {
-            // 从localStorage加载数据
             loadStats();
+            loadPageViews();
+        }
+
+        async function loadPageViews() {
+            try {
+                const { today, total } = await API.Analytics.getOverview();
+                document.getElementById('todayPageViews').textContent = today.toLocaleString('zh-CN');
+                document.getElementById('totalPageViews').textContent = total.toLocaleString('zh-CN');
+            } catch {
+                document.getElementById('pageViewsError').hidden = false;
+            }
         }
 
         // 加载统计数据
@@ -698,6 +726,7 @@
             if (confirm('确定要退出登录吗？')) {
                 localStorage.removeItem('adminUser');
                 window.location.href = 'index.html';
+                return;
             }
         }
 
