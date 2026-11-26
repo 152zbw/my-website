@@ -7,6 +7,8 @@ const { authenticateToken, authorizeAdmin } = require('../middleware/auth');
 
 const router = express.Router();
 const shanghaiDate = new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai' });
+const automationAgent = /bot\b|crawl|spider|slurp|headless|phantomjs|lighthouse|pagespeed|facebookexternalhit|whatsapp|telegram|discord|slack|preview|\bcurl\b|\bwget\b|python-requests|python-urllib|go-http-client|undici|\bnode\b|postmanruntime/i;
+const browserAgent = /^Mozilla\/5\.0\s.*(?:Chrome|Chromium|Firefox|Safari|Edg|AppleWebKit|Gecko)\//i;
 const browserIdPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 
 router.use((_req, res, next) => {
@@ -19,7 +21,7 @@ router.post('/views', async (req, res, next) => {
     if (!req.is('application/json') || (fetchSite && fetchSite !== 'same-origin')) {
         return res.sendStatus(400);
     }
-    const { articleId = null, browserId } = req.body || {};
+    const { articleId = null, browserId, automated } = req.body || {};
     if (articleId !== null && (!Number.isInteger(articleId) || articleId < 1 || articleId > 2147483647)) {
         return res.sendStatus(400);
     }
@@ -32,11 +34,16 @@ router.post('/views', async (req, res, next) => {
             return res.sendStatus(404);
         }
 
+        const userAgent = req.get('User-Agent') || '';
+        const trafficKind = automated === true || automationAgent.test(userAgent)
+            ? 'automated'
+            : browserAgent.test(userAgent) ? 'browser' : 'unknown';
+
         // Scope the hash to one article so it cannot link readers across articles.
-        const readerKey = articleId !== null && typeof browserId === 'string' && browserIdPattern.test(browserId)
+        const readerKey = trafficKind === 'browser' && articleId !== null && typeof browserId === 'string' && browserIdPattern.test(browserId)
             ? createHash('sha256').update(`${articleId}:${browserId}`).digest('hex')
             : null;
-        await PageView.create({ day: shanghaiDate.format(), articleId, readerKey });
+        await PageView.create({ day: shanghaiDate.format(), articleId, readerKey, trafficKind });
         if (articleId === null) return res.sendStatus(204);
 
         const readers = await PageView.count({ where: { articleId }, distinct: true, col: 'readerKey' });
@@ -48,11 +55,22 @@ router.post('/views', async (req, res, next) => {
 
 router.get('/overview', authenticateToken, authorizeAdmin, async (_req, res, next) => {
     try {
-        const [total, today] = await Promise.all([
-            PageView.count(),
-            PageView.count({ where: { day: shanghaiDate.format() } })
-        ]);
-        res.json({ total, today });
+        const day = shanghaiDate.format();
+        const rows = await PageView.findAll({
+            attributes: ['day', 'trafficKind', [fn('COUNT', col('id')), 'views']],
+            group: ['day', 'trafficKind'],
+            raw: true
+        });
+        const totals = { browser: 0, automated: 0, unknown: 0 };
+        const daily = { ...totals };
+        for (const row of rows) {
+            const kind = row.trafficKind ?? 'unknown';
+            const views = Number(row.views);
+            totals[kind] += views;
+            if (row.day === day) daily[kind] += views;
+        }
+        const sum = counts => Object.values(counts).reduce((total, count) => total + count, 0);
+        res.json({ total: sum(totals), today: sum(daily), totals, daily });
     } catch (error) {
         next(error);
     }

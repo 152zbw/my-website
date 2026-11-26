@@ -146,7 +146,7 @@ function sendSeoNotFound(res, templateFile, label) {
 
 function sendPublicPage(res, html, articleId = null) {
     const article = articleId === null ? '' : ` data-article-id="${articleId}"`;
-    const tracker = `<script src="/js/site-analytics.js?v=1" defer${article}></script>`;
+    const tracker = `<script src="/js/site-analytics.js?v=2" defer${article}></script>`;
     return res.type('html').send(html.replace(/<\/body>\s*<\/html>\s*$/i, end => tracker + end));
 }
 

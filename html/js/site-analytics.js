@@ -17,10 +17,15 @@
 
     async function trackView() {
         try {
+            const automated = navigator.webdriver === true;
             const response = await fetch('/api/analytics/views', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ articleId, browserId: articleId === null ? null : getBrowserId() }),
+                body: JSON.stringify({
+                    articleId,
+                    browserId: articleId === null || automated ? null : getBrowserId(),
+                    automated
+                }),
                 keepalive: true
             });
             if (articleId === null || !response.ok) return;

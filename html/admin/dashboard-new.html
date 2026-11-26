@@ -555,14 +555,15 @@
                     <div class="stat-card">
                         <h3>今日浏览次数</h3>
                         <div class="stat-number" id="todayPageViews">—</div>
-                        <div class="stat-change">按北京时间统计</div>
+                        <div class="stat-change" id="todayTrafficBreakdown">按北京时间统计</div>
                     </div>
                     <div class="stat-card">
                         <h3>累计浏览次数</h3>
                         <div class="stat-number" id="totalPageViews">—</div>
-                        <div class="stat-change">自统计上线起</div>
+                        <div class="stat-change" id="totalTrafficBreakdown">自统计上线起</div>
                     </div>
                 </div>
+                <p>打开或刷新公开页面会增加浏览次数。浏览器访问可能包含模拟真人的程序，未分类包含旧记录和无法识别的访问。</p>
                 <p id="pageViewsError" role="status" hidden>访问统计暂时无法加载，请刷新重试。</p>
             </section>
 
@@ -685,9 +686,13 @@
 
         async function loadPageViews() {
             try {
-                const { today, total } = await API.Analytics.getOverview();
+                const { today, total, daily, totals } = await API.Analytics.getOverview();
                 document.getElementById('todayPageViews').textContent = today.toLocaleString('zh-CN');
                 document.getElementById('totalPageViews').textContent = total.toLocaleString('zh-CN');
+                const breakdown = ({ browser, automated, unknown }) =>
+                    `浏览器访问 ${browser.toLocaleString('zh-CN')} · 已识别自动访问 ${automated.toLocaleString('zh-CN')} · 未分类 ${unknown.toLocaleString('zh-CN')}`;
+                document.getElementById('todayTrafficBreakdown').textContent = breakdown(daily);
+                document.getElementById('totalTrafficBreakdown').textContent = breakdown(totals);
             } catch {
                 document.getElementById('pageViewsError').hidden = false;
             }
